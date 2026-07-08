@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwiftStreet — Cửa hàng công cụ & file số</title>
+  <meta name="description" content="SwiftStreet — cửa hàng các công cụ và file số nhỏ gọn, mua 1 lần dùng mãi mãi." />
+
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="announcement-bar">
+    Ưu đãi ra mắt: giảm <strong>20%</strong> toàn bộ sản phẩm — Code: <strong>SWIFT20</strong>
+  </div>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-header.png" alt="SwiftStreet" />
+        <span>Swift<em>Street</em></span>
+      </a>
+
+      <nav class="main-nav">
+        <a href="index.html">Trang chủ</a>
+        <a href="#products">Sản phẩm</a>
+        <a href="#how-it-works">Cách mua hàng</a>
+        <a href="#">Liên hệ</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="#" class="btn btn-outline">Liên hệ</a>
+        <button class="nav-toggle" aria-label="Mở menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <span class="badge badge-orange hero-eyebrow">Store công cụ số</span>
+      <h1>Công cụ nhỏ gọn, <em>mua đứt 1 lần</em>, dùng mãi mãi</h1>
+      <p>SwiftStreet tổng hợp các công cụ và file Google Sheets giúp bạn tiết kiệm hàng giờ làm việc thủ công mỗi tuần — không phí thuê bao, không ràng buộc.</p>
+      <div class="hero-actions">
+        <a href="#products" class="btn btn-primary">Xem tất cả sản phẩm</a>
+        <a href="#how-it-works" class="btn btn-outline">Cách mua hàng</a>
+      </div>
+
+      <div class="hero-stats">
+        <div>
+          <strong>6+</strong>
+          <span>Sản phẩm</span>
+        </div>
+        <div>
+          <strong>1.000+</strong>
+          <span>Khách đã dùng</span>
+        </div>
+        <div>
+          <strong>1 lần</strong>
+          <span>Thanh toán duy nhất</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="products">
+    <div class="container">
+      <div class="section-heading">
+        <span class="badge badge-info">Tất cả sản phẩm</span>
+        <h2>Chọn công cụ phù hợp với bạn</h2>
+        <p>Mỗi sản phẩm là 1 file/công cụ độc lập, có hướng dẫn sử dụng chi tiết đi kèm.</p>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        <!-- Render tự động bằng js/main.js từ data/products.js -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="how-it-works">
+    <div class="container">
+      <div class="section-heading">
+        <span class="badge badge-orange">Quy trình</span>
+        <h2>Mua hàng đơn giản trong 3 bước</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Chọn sản phẩm & thanh toán</h3>
+          <p>Chọn sản phẩm phù hợp, thanh toán theo hướng dẫn hiển thị trên trang.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Admin xác nhận đơn hàng</h3>
+          <p>Đội ngũ SwiftStreet kiểm tra và duyệt thanh toán trong thời gian sớm nhất.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Nhận file qua email</h3>
+          <p>Bạn nhận file và hướng dẫn sử dụng trực tiếp qua email đã đăng ký.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">
+            <img src="assets/img/logo-header.png" alt="SwiftStreet" />
+            <span>Swift<em>Street</em></span>
+          </a>
+          <p>Cửa hàng công cụ & file số nhỏ gọn, giúp công việc của bạn nhanh và gọn hơn mỗi ngày.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sản phẩm</h4>
+          <ul>
+            <li><a href="#products">Tất cả sản phẩm</a></li>
+            <li><a href="products/swiftcopy-drive.html">SwiftCopy.Drive</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Hỗ trợ</h4>
+          <ul>
+            <li><a href="#">Hướng dẫn mua hàng</a></li>
+            <li><a href="#">Câu hỏi thường gặp</a></li>
+            <li><a href="#">Liên hệ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Công ty</h4>
+          <ul>
+            <li><a href="#">Về SwiftStreet</a></li>
+            <li><a href="#">Chính sách đổi trả</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 SwiftStreet. All rights reserved.</span>
+        <span>Made with care in Vietnam</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data/products.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
