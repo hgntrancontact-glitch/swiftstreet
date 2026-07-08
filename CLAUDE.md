@@ -52,6 +52,10 @@ Khung "laptop" (`.device-display`) cố định `height: 138px` — đây là ng
 
 Tiêu đề lớn trong `.hero-intro h1` dùng `<br />` ngắt dòng CỨNG theo đúng 3 dòng khách yêu cầu, KHÔNG dựa vào wrap tự nhiên theo độ rộng cột (thử wrap tự nhiên bằng cách chỉnh font-size/độ rộng cột không cho kết quả ổn định, phụ thuộc font render của trình duyệt). Vì vậy cột `.hero-intro` (`grid-template-columns` trong `.hero-shop-grid`) phải đủ rộng (hiện `minmax(280px, 440px)`) để dòng dài nhất ("mua một lần và dùng mãi mãi.") không tự bị wrap thêm lần nữa — nếu đổi font-size của h1 hoặc đổi lại nội dung tiêu đề, phải test bằng ảnh chụp thật để chỉnh lại độ rộng cột cho khớp (từng bị lệch 2 lần vì việc này).
 
+### Nút "Tự động hoá giúp tối ưu công việc" (hero-cta)
+
+Đây LÀ một nút thật (`.btn.btn-dark.hero-cta`, nền đen bo góc), KHÔNG phải chữ thường. Ở vòng sửa trước có lúc đổi thành `<p>` chữ thường theo yêu cầu, nhưng đã đổi lại thành nút vì khách xác nhận hình mẫu tham khảo của họ luôn hiển thị phần tử này dạng nút đen — nếu nhận yêu cầu đổi lại thành text, hỏi lại kỹ trước khi sửa vì đã đổi qua lại 1 lần.
+
 ### Nút "Xem thêm" trên trang chủ
 
 Nằm bên trong `.hero-products` (cùng cột với `.product-grid`, không phải block riêng full-width) và căn trái (`text-align:left`) — để nó bám sát ngay dưới lưới sản phẩm thay vì trôi giữa trang. Mũi tên dùng SVG inline (không dùng ký tự "→") để nét luôn đậm rõ, nhất quán với các icon khác trên trang.
@@ -93,7 +97,8 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 - ✅ Nút "★ Đánh giá Swiftstreet" dạng bầu dục, nền gradient cam→vàng cam, có hiệu ứng phóng to khi rê chuột.
 - ✅ Nút hỗ trợ nổi làm phẳng (bỏ bóng đổ/hiệu ứng phát sáng). Nút "Xem thêm" chuyển vào trong cột lưới sản phẩm, căn trái ngay dưới lưới thay vì căn giữa trang.
 - ✅ Tiêu đề hero ngắt dòng cứng theo đúng 3 dòng khách yêu cầu (xem "Lưu ý về tiêu đề Hero" bên dưới).
-- ✅ Vòng sửa 2: tăng lại cỡ chữ hero cho vừa tỉ lệ, menu header thu nhỏ rõ so với tên thương hiệu, nút "Tự động hoá..." đổi thành chữ thường (không còn dạng nút), nút hỗ trợ nổi vẽ lại đúng mẫu (nhãn đè góc trên-phải, icon lớn), mũi tên "Xem thêm" đổi sang SVG đậm nét, và sửa chính tả thương hiệu thành "Swiftstreet" (chữ s thường) trên toàn bộ trang.
+- ✅ Vòng sửa 2: tăng lại cỡ chữ hero cho vừa tỉ lệ, menu header thu nhỏ rõ so với tên thương hiệu, nút hỗ trợ nổi vẽ lại đúng mẫu (nhãn đè góc trên-phải, icon lớn), mũi tên "Xem thêm" đổi sang SVG đậm nét, và sửa chính tả thương hiệu thành "Swiftstreet" (chữ s thường) trên toàn bộ trang.
+- ✅ Vòng sửa 3: đối chiếu lại toàn bộ với ảnh chụp hình mẫu gốc của khách — khôi phục "Tự động hoá giúp tối ưu công việc" về dạng nút đen (đã có lúc đổi thành chữ thường ở vòng 2 rồi phải đổi lại), giảm line-height tiêu đề/đoạn khuyến mãi cho khít hơn.
 - ❌ Chưa có nội dung chi tiết thật (mô tả sản phẩm, FAQ, tính năng... hiện đang là placeholder).
 - ❌ Nút "Mua ngay"/"Thêm giỏ hàng" chưa có logic giỏ hàng thật (giỏ hàng trong modal là dữ liệu mẫu cố định).
 - ❌ Trang "Khuyến mãi" và "Kiếm Tiền" chỉ là placeholder, chưa có nội dung.
