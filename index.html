@@ -28,12 +28,18 @@
       <nav class="main-nav">
         <a href="index.html">Trang chủ</a>
         <a href="#products">Sản phẩm</a>
-        <a href="#how-it-works">Cách mua hàng</a>
-        <a href="#">Liên hệ</a>
+        <a href="#">Khuyến mãi</a>
+        <a href="#">Kiếm Tiền</a>
       </nav>
 
       <div class="header-actions">
-        <a href="#" class="btn btn-outline">Liên hệ</a>
+        <button class="icon-btn" aria-label="Thông báo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Giỏ hàng">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M2.5 3h2l2.3 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H5.5"/></svg>
+          <span class="icon-dot"></span>
+        </button>
         <button class="nav-toggle" aria-label="Mở menu">
           <span></span><span></span><span></span>
         </button>
@@ -41,46 +47,34 @@
     </div>
   </header>
 
-  <section class="hero">
+  <section class="hero-shop" id="products">
     <div class="container">
-      <span class="badge badge-orange hero-eyebrow">Store công cụ số</span>
-      <h1>Công cụ nhỏ gọn, <em>mua đứt 1 lần</em>, dùng mãi mãi</h1>
-      <p>SwiftStreet tổng hợp các công cụ và file Google Sheets giúp bạn tiết kiệm hàng giờ làm việc thủ công mỗi tuần — không phí thuê bao, không ràng buộc.</p>
-      <div class="hero-actions">
-        <a href="#products" class="btn btn-primary">Xem tất cả sản phẩm</a>
-        <a href="#how-it-works" class="btn btn-outline">Cách mua hàng</a>
-      </div>
+      <div class="hero-shop-grid">
+        <div class="hero-intro">
+          <span class="hero-eyebrow">Chào mừng</span>
+          <h1>Kho công cụ số giúp bạn làm việc <em>nhanh hơn</em>, mua một lần và dùng mãi mãi.</h1>
 
-      <div class="hero-stats">
-        <div>
-          <strong>6+</strong>
-          <span>Sản phẩm</span>
+          <div class="hero-promo">
+            Giảm ngay <strong>20%</strong> cho tất cả sản phẩm, chỉ đến ngày <strong>30/07/2026</strong>.
+            <span class="promo-code">SWIFT20</span>
+          </div>
+
+          <div class="hero-actions">
+            <a href="#" class="btn btn-outline">Thêm giỏ hàng</a>
+            <a href="products/swiftcopy-drive.html" class="btn btn-primary">Nhấn mua ngay</a>
+          </div>
         </div>
-        <div>
-          <strong>1.000+</strong>
-          <span>Khách đã dùng</span>
-        </div>
-        <div>
-          <strong>1 lần</strong>
-          <span>Thanh toán duy nhất</span>
+
+        <div class="product-grid" id="product-grid">
+          <!-- Render tự động bằng js/main.js từ data/products.js -->
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="products">
-    <div class="container">
-      <div class="section-heading">
-        <span class="badge badge-info">Tất cả sản phẩm</span>
-        <h2>Chọn công cụ phù hợp với bạn</h2>
-        <p>Mỗi sản phẩm là 1 file/công cụ độc lập, có hướng dẫn sử dụng chi tiết đi kèm.</p>
-      </div>
-
-      <div class="product-grid" id="product-grid">
-        <!-- Render tự động bằng js/main.js từ data/products.js -->
-      </div>
-    </div>
-  </section>
+  <div class="hero-more">
+    <a href="#" class="btn btn-outline">Xem thêm →</a>
+  </div>
 
   <section class="section section-alt" id="how-it-works">
     <div class="container">
@@ -152,6 +146,13 @@
       </div>
     </div>
   </footer>
+
+  <div class="support-fab">
+    <span class="fab-label">Hỗ trợ</span>
+    <button aria-label="Hỗ trợ">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14a2 2 0 0 1 2-2h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2v-2ZM20 14a2 2 0 0 0-2-2h-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1a2 2 0 0 0 2-2v-2ZM18 20a4 4 0 0 1-4 2h-1"/></svg>
+    </button>
+  </div>
 
   <script src="data/products.js"></script>
   <script src="js/main.js"></script>
