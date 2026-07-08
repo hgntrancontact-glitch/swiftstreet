@@ -26,7 +26,6 @@ function renderDashboard(type) {
           <ul class="dash-list">
             <li><b>bao-cao-q3.pdf</b><span>2p trước</span></li>
             <li><b>content-plan.xlsx</b><span>10p trước</span></li>
-            <li><b>banner-2026.png</b><span>1h trước</span></li>
           </ul>
         </div>`;
 
@@ -113,26 +112,34 @@ function renderDashboard(type) {
   }
 }
 
-// Render lưới sản phẩm từ data/products.js
+// Render lưới sản phẩm từ data/products.js — mỗi thẻ mô phỏng preview kiểu khung laptop
 function renderProductGrid() {
   const grid = document.getElementById("product-grid");
   if (!grid || typeof PRODUCTS === "undefined") return;
 
   grid.innerHTML = PRODUCTS.map((p) => `
-    <a class="product-card" href="products/${p.slug}.html">
-      <div class="product-thumb">
-        <span class="badge badge-orange">${p.badge}</span>
-        ${renderDashboard(p.type)}
-      </div>
-      <div class="product-body">
-        <h3>${p.name}</h3>
-        <p>${p.shortDesc}</p>
-        <div class="product-price">
-          <span class="price-current">${p.priceCurrent}</span>
-          <span class="price-old">${p.priceOld}</span>
+    <div class="product-card">
+      <a class="product-card-link" href="products/${p.slug}.html">
+        <div class="product-thumb">
+          <span class="badge badge-orange">${p.badge}</span>
+          <div class="device-screen">
+            <div class="device-display">${renderDashboard(p.type)}</div>
+          </div>
+          <div class="device-base"></div>
         </div>
+        <div class="product-body">
+          <h3>${p.name}</h3>
+          <div class="product-price">
+            <span class="price-current">${p.priceCurrent}</span>
+            <span class="price-old">${p.priceOld}</span>
+          </div>
+        </div>
+      </a>
+      <div class="product-card-actions">
+        <button type="button" class="btn btn-outline btn-sm" data-modal="cart">Thêm giỏ hàng</button>
+        <a class="btn btn-dark btn-sm" href="products/${p.slug}.html">Mua ngay</a>
       </div>
-    </a>
+    </div>
   `).join("");
 }
 
@@ -147,7 +154,115 @@ function setupNavToggle() {
   });
 }
 
+/** Nội dung mẫu (placeholder) cho 3 modal: thông báo, giỏ hàng, hỗ trợ. */
+const MODAL_CONTENT = {
+  notify: `
+    <div class="modal-head">
+      <h3>Thông báo</h3>
+      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
+    </div>
+    <div class="modal-notify-item">
+      <p>Đơn hàng #SW-1042 đã được duyệt</p>
+      <span>2 giờ trước</span>
+    </div>
+    <div class="modal-notify-item">
+      <p>Ưu đãi mới: giảm 20% toàn bộ sản phẩm</p>
+      <span>1 ngày trước</span>
+    </div>
+    <div class="modal-notify-item">
+      <p>SwiftHR Attendance vừa cập nhật tính năng xuất phiếu lương</p>
+      <span>3 ngày trước</span>
+    </div>`,
+
+  cart: `
+    <div class="modal-head">
+      <h3>Giỏ hàng</h3>
+      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
+    </div>
+    <div class="modal-cart-item">
+      <div>
+        <b>SwiftCopy.Drive</b>
+        <span>199.000đ</span>
+      </div>
+      <button class="modal-cart-remove" aria-label="Xoá">×</button>
+    </div>
+    <div class="modal-cart-item">
+      <div>
+        <b>SwiftPlanner Wedding</b>
+        <span>149.000đ</span>
+      </div>
+      <button class="modal-cart-remove" aria-label="Xoá">×</button>
+    </div>
+    <div class="modal-cart-total">
+      <span>Tổng cộng</span>
+      <span>348.000đ</span>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;">Tiến hành thanh toán</button>`,
+
+  support: `
+    <div class="modal-head">
+      <h3>Hỗ trợ</h3>
+      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
+    </div>
+    <div class="modal-support-row"><b>Email</b><span>support@swiftstreet.vn</span></div>
+    <div class="modal-support-row"><b>Hotline / Zalo</b><span>0909 xxx xxx</span></div>
+    <div class="modal-support-row"><b>Giờ làm việc</b><span>8:00 – 21:00 (T2 – CN)</span></div>
+    <p style="font-size:13px; color:var(--text-muted); margin-top:12px;">Đội ngũ SwiftStreet phản hồi trong vòng 24 giờ.</p>`,
+};
+
+let modalOverlayEl = null;
+
+function openModal(name) {
+  const content = MODAL_CONTENT[name];
+  if (!content || !modalOverlayEl) return;
+  const modal = document.getElementById("modal-" + name);
+  if (!modal) return;
+  modalOverlayEl.classList.add("show");
+  modal.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModals() {
+  if (!modalOverlayEl) return;
+  modalOverlayEl.classList.remove("show");
+  document.querySelectorAll(".modal.show").forEach((m) => m.classList.remove("show"));
+  document.body.style.overflow = "";
+}
+
+/** Chèn khung modal vào cuối trang và gắn sự kiện cho các icon/nút liên quan. */
+function setupModals() {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "modal-overlay";
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = Object.keys(MODAL_CONTENT).map((name) => `
+    <div class="modal" id="modal-${name}">${MODAL_CONTENT[name]}</div>
+  `).join("");
+
+  document.body.appendChild(overlay);
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+
+  modalOverlayEl = overlay;
+
+  overlay.addEventListener("click", closeModals);
+  document.body.addEventListener("click", (e) => {
+    if (e.target.closest("[data-modal-close]")) closeModals();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModals();
+  });
+
+  document.querySelectorAll("[data-modal]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal(btn.dataset.modal);
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderProductGrid();
   setupNavToggle();
+  setupModals();
 });
