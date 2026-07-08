@@ -153,8 +153,8 @@ p {
 }
 
 .btn-sm {
-  padding: 8px 8px;
-  font-size: 12.5px;
+  padding: 8px 6px;
+  font-size: 12px;
   font-weight: 600;
   border-width: 1px;
   border-radius: 6px;
@@ -1335,7 +1335,10 @@ p {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 960px) {
+/* Hero + lưới sản phẩm chuyển sang xếp dọc SỚM hơn breakpoint chung (960px) —
+   vì cột .hero-intro rộng tới 500px, nếu vẫn giữ 2 cột ở khoảng 960-1300px thì
+   lưới sản phẩm bên cạnh bị bóp quá hẹp (chữ vỡ dòng, nút bể). */
+@media (max-width: 1300px) {
   .hero-shop-grid {
     grid-template-columns: 1fr;
   }
@@ -1343,11 +1346,9 @@ p {
   .hero-intro {
     position: static;
   }
+}
 
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+@media (max-width: 960px) {
   .steps {
     grid-template-columns: 1fr;
   }
