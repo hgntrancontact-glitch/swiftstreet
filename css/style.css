@@ -152,8 +152,11 @@ p {
 }
 
 .btn-sm {
-  padding: 7px 8px;
-  font-size: 12.5px;
+  padding: 6px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-width: 1px;
+  border-radius: 6px;
   white-space: normal;
   text-align: center;
   line-height: 1.25;
@@ -300,8 +303,8 @@ p {
 
 .hero-shop-grid {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) 1fr;
-  gap: 32px;
+  grid-template-columns: minmax(240px, 300px) 1fr;
+  gap: 28px;
   align-items: start;
 }
 
@@ -312,29 +315,31 @@ p {
 
 .hero-eyebrow {
   display: block;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .hero-intro h1 {
-  font-size: clamp(28px, 3.4vw, 40px);
+  font-size: clamp(20px, 2.4vw, 28px);
   font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 20px;
+  line-height: 1.3;
+  margin-bottom: 16px;
 }
 
 .hero-cta {
-  margin-bottom: 26px;
-  font-size: 14px;
-  padding: 11px 20px;
+  margin-bottom: 20px;
+  font-size: 12.5px;
+  padding: 8px 14px;
+  border-radius: 6px;
 }
 
 .hero-promo-text {
-  font-size: 14.5px;
-  line-height: 1.9;
+  font-size: 12.5px;
+  line-height: 1.7;
   color: var(--text-main);
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
 .hero-promo-text strong {
@@ -345,12 +350,15 @@ p {
   background: var(--color-orange);
   color: var(--color-black);
   font-weight: 700;
-  font-size: 14px;
-  padding: 11px 20px;
+  font-size: 12.5px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: transform 0.18s ease, background 0.15s ease;
 }
 
 .hero-rate-btn:hover {
   background: var(--color-orange-dark);
+  transform: scale(1.08);
 }
 
 .hero-more {
@@ -378,9 +386,9 @@ p {
   position: relative;
   background: var(--color-black);
   color: var(--color-white);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 6px 12px;
+  padding: 5px 11px;
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -408,7 +416,7 @@ p {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(254, 178, 10, 0.45);
+  box-shadow: 0 4px 10px rgba(20, 20, 20, 0.18);
   transition: transform 0.15s ease;
 }
 
@@ -454,13 +462,13 @@ p {
 .product-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
 
 .product-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -476,34 +484,36 @@ p {
 .product-thumb {
   position: relative;
   background: var(--bg-section);
-  padding: 28px 16px 18px;
+  padding: 24px 12px 10px;
 }
 
 .product-thumb .badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  left: 8px;
   z-index: 2;
+  font-size: 9px;
+  padding: 3px 7px;
 }
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */
 .device-screen {
   background: #3b3b3d;
-  border-radius: 10px 10px 4px 4px;
-  padding: 6px 6px 8px;
-  box-shadow: 0 14px 26px rgba(20, 20, 20, 0.14);
+  border-radius: 8px 8px 3px 3px;
+  padding: 4px 4px 6px;
+  box-shadow: 0 8px 16px rgba(20, 20, 20, 0.1);
 }
 
 .device-display {
   position: relative;
   background: #ffffff;
-  border-radius: 5px;
+  border-radius: 4px;
   overflow: hidden;
-  height: 178px;
+  height: 138px;
   display: flex;
   flex-direction: column;
-  padding: 9px;
-  gap: 5px;
+  padding: 7px;
+  gap: 4px;
 
   /* Đổi bộ màu mini-dashboard sang nền sáng khi đặt trong màn hình laptop */
   --dash-bg: #ffffff;
@@ -520,10 +530,10 @@ p {
 
 .device-base {
   position: relative;
-  height: 9px;
-  margin: 0 16px;
+  height: 6px;
+  margin: 0 12px;
   background: linear-gradient(#d9d9d9, #adadad);
-  border-radius: 0 0 7px 7px;
+  border-radius: 0 0 5px 5px;
 }
 
 .device-base::after {
@@ -532,7 +542,7 @@ p {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 15%;
+  width: 12%;
   height: 100%;
   background: #949494;
   border-radius: 0 0 3px 3px;
@@ -547,15 +557,15 @@ p {
 .dash-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--dash-text);
-  font-size: 13px;
+  font-size: 10.5px;
   font-weight: 700;
 }
 
 .dash-title svg {
-  width: 15px;
-  height: 15px;
+  width: 11px;
+  height: 11px;
   color: var(--dash-accent);
   flex-shrink: 0;
 }
@@ -563,33 +573,33 @@ p {
 .dash-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .dash-stat {
   background: var(--dash-tile-bg);
   border: 1px solid var(--dash-border);
-  border-radius: 8px;
-  padding: 7px 8px;
+  border-radius: 6px;
+  padding: 4px 5px;
 }
 
 .dash-stat b {
   display: block;
   color: var(--dash-text);
-  font-size: 13px;
+  font-size: 10.5px;
   line-height: 1.3;
 }
 
 .dash-stat span {
   display: block;
-  font-size: 9px;
+  font-size: 7.5px;
   color: var(--dash-text-muted);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .dash-stat em {
   font-style: normal;
-  font-size: 9px;
+  font-size: 7.5px;
   font-weight: 700;
 }
 
@@ -604,15 +614,15 @@ p {
 .dash-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex: 1;
   min-height: 0;
 }
 
 .dash-donut {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -620,7 +630,7 @@ p {
 .dash-donut::after {
   content: "";
   position: absolute;
-  inset: 8px;
+  inset: 6px;
   background: var(--dash-bg);
   border-radius: 50%;
 }
@@ -631,7 +641,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 800;
   color: var(--dash-text);
   z-index: 1;
@@ -662,7 +672,7 @@ p {
 .dash-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
 }
@@ -671,19 +681,19 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   list-style: none;
-  font-size: 9.5px;
+  font-size: 7.5px;
   color: var(--dash-text-muted);
   background: var(--dash-tile-bg);
-  border-radius: 6px;
-  padding: 5px 8px;
+  border-radius: 5px;
+  padding: 3px 6px;
 }
 
 .dash-list li b {
   color: var(--dash-text);
   font-weight: 600;
-  font-size: 10px;
+  font-size: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -692,9 +702,9 @@ p {
 .dash-bars {
   display: flex;
   align-items: flex-end;
-  gap: 5px;
+  gap: 4px;
   flex: 1;
-  height: 56px;
+  height: 40px;
 }
 
 .dash-bars i {
@@ -712,17 +722,17 @@ p {
 .dash-progress {
   background: var(--dash-tile-bg);
   border: 1px solid var(--dash-border);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border-radius: 6px;
+  padding: 6px 8px;
   flex: 1;
 }
 
 .dash-progress-top {
   display: flex;
   justify-content: space-between;
-  font-size: 9.5px;
+  font-size: 8px;
   color: var(--dash-text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .dash-progress-top b {
@@ -730,7 +740,7 @@ p {
 }
 
 .dash-progress-track {
-  height: 6px;
+  height: 5px;
   background: var(--dash-border);
   border-radius: 999px;
   overflow: hidden;
@@ -746,7 +756,7 @@ p {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  gap: 2px;
 }
 
 .dash-calendar i {
@@ -770,7 +780,7 @@ p {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   min-height: 0;
 }
 
@@ -778,12 +788,12 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  font-size: 9.5px;
+  gap: 5px;
+  font-size: 7.5px;
   color: var(--dash-text-muted);
   background: var(--dash-tile-bg);
-  border-radius: 6px;
-  padding: 5px 8px;
+  border-radius: 5px;
+  padding: 3px 6px;
 }
 
 .dash-table .row b {
@@ -792,9 +802,9 @@ p {
 }
 
 .dash-pill {
-  font-size: 8.5px;
+  font-size: 7px;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -821,23 +831,23 @@ p {
 }
 
 .product-body {
-  padding: 14px 16px 6px;
+  padding: 10px 12px 4px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   flex: 1;
 }
 
 .product-body h3 {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .product-card-actions {
   display: flex;
-  gap: 8px;
-  padding: 4px 16px 16px;
+  gap: 6px;
+  padding: 2px 12px 12px;
 }
 
 .product-card-actions .btn {
@@ -854,17 +864,17 @@ p {
 .product-price {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
 }
 
 .price-current {
-  font-size: 19px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--color-black);
 }
 
 .price-old {
-  font-size: 14px;
+  font-size: 11.5px;
   color: var(--text-muted);
   text-decoration: line-through;
 }
