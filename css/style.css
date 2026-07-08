@@ -153,7 +153,7 @@ p {
 }
 
 .btn-sm {
-  padding: 6px 5px;
+  padding: 9px 5px;
   font-size: 11px;
   font-weight: 600;
   border-width: 1px;
@@ -361,7 +361,8 @@ p {
 }
 
 .hero-rate-btn:hover {
-  transform: scale(1.08);
+  transform: scale(1.04);
+  box-shadow: 0 6px 18px rgba(250, 154, 5, 0.35);
 }
 
 .hero-products {
@@ -486,7 +487,7 @@ p {
 .product-thumb {
   position: relative;
   background: var(--bg-section);
-  padding: 22px 12px 8px;
+  padding: 24px 14px 10px;
 }
 
 .product-thumb .badge {
@@ -511,11 +512,11 @@ p {
   background: #ffffff;
   border-radius: 4px;
   overflow: hidden;
-  height: 138px;
+  height: 150px;
   display: flex;
   flex-direction: column;
-  padding: 7px;
-  gap: 4px;
+  padding: 8px;
+  gap: 5px;
 
   /* Đổi bộ màu mini-dashboard sang nền sáng khi đặt trong màn hình laptop */
   --dash-bg: #ffffff;
