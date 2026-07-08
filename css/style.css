@@ -208,7 +208,7 @@ p {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--color-black);
   flex-shrink: 0;
@@ -227,7 +227,7 @@ p {
 
 .main-nav a {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13.5px;
   color: var(--text-main);
   transition: color 0.15s ease;
 }
@@ -303,7 +303,7 @@ p {
 
 .hero-shop-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 410px) 1fr;
+  grid-template-columns: minmax(280px, 440px) 1fr;
   gap: 28px;
   align-items: start;
 }
@@ -315,28 +315,28 @@ p {
 
 .hero-eyebrow {
   display: block;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-main);
   margin-bottom: 10px;
 }
 
 .hero-intro h1 {
-  font-size: clamp(24px, 2.6vw, 28px);
+  font-size: clamp(26px, 2.8vw, 30px);
   font-weight: 800;
   line-height: 1.35;
   margin-bottom: 18px;
 }
 
 .hero-cta {
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--text-main);
   margin-bottom: 22px;
-  font-size: 13.5px;
-  padding: 9px 16px;
-  border-radius: 6px;
 }
 
 .hero-promo-text {
-  font-size: 14.5px;
+  font-size: 15.5px;
   line-height: 1.7;
   color: var(--text-main);
   margin-bottom: 20px;
@@ -347,11 +347,11 @@ p {
 }
 
 .hero-rate-btn {
-  background: linear-gradient(90deg, var(--color-orange) 0%, #ffcf4d 100%);
+  background: linear-gradient(90deg, #ffcf4d 0%, var(--color-orange) 100%);
   color: var(--color-black);
   font-weight: 600;
-  font-size: 13.5px;
-  padding: 9px 18px;
+  font-size: 14.5px;
+  padding: 10px 20px;
   border-radius: 999px;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
@@ -371,8 +371,13 @@ p {
 }
 
 .hero-more .btn-outline {
-  padding: 8px 18px;
-  font-size: 13px;
+  padding: 9px 20px;
+  font-size: 14px;
+}
+
+.hero-more .btn-outline svg {
+  width: 15px;
+  height: 15px;
 }
 
 /* ---------- Nút hỗ trợ nổi ---------- */
@@ -381,25 +386,12 @@ p {
   right: 24px;
   bottom: 24px;
   z-index: 150;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.support-fab .fab-label {
-  background: var(--color-black);
-  color: var(--color-white);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 5px 11px;
-  border-radius: 999px;
-  white-space: nowrap;
 }
 
 .support-fab button {
-  width: 56px;
-  height: 56px;
+  position: relative;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   border: none;
   background: var(--color-orange);
@@ -416,9 +408,22 @@ p {
   transform: scale(1.06);
 }
 
+.support-fab .fab-label {
+  position: absolute;
+  top: -8px;
+  right: -14px;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .support-fab svg {
-  width: 24px;
-  height: 24px;
+  width: 38px;
+  height: 38px;
 }
 
 /* ---------- Section heading ---------- */

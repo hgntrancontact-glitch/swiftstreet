@@ -1,8 +1,8 @@
-# SwiftStreet
+# Swiftstreet
 
 ## Mô hình kinh doanh
 
-SwiftStreet là 1 "store" bán nhiều sản phẩm số nhỏ, độc lập với nhau (ví dụ: SwiftCopy.Drive — công cụ sao chép Google Drive; SwiftPlanner Wedding — file kế hoạch cưới; các file Google Sheets khác...).
+Swiftstreet là 1 "store" bán nhiều sản phẩm số nhỏ, độc lập với nhau (ví dụ: SwiftCopy.Drive — công cụ sao chép Google Drive; SwiftPlanner Wedding — file kế hoạch cưới; các file Google Sheets khác...).
 
 - Mỗi sản phẩm được bán **1 lần duy nhất** (mua đứt, không phải thuê bao).
 - Quy trình: khách chọn sản phẩm → thanh toán → **admin duyệt thanh toán thủ công** → khách nhận file/hướng dẫn sử dụng qua **email**.
@@ -50,11 +50,19 @@ Khung "laptop" (`.device-display`) cố định `height: 138px` — đây là ng
 
 ### Lưu ý về tiêu đề Hero (h1)
 
-Tiêu đề lớn trong `.hero-intro h1` dùng `<br />` ngắt dòng CỨNG theo đúng 3 dòng khách yêu cầu, KHÔNG dựa vào wrap tự nhiên theo độ rộng cột (thử wrap tự nhiên bằng cách chỉnh font-size/độ rộng cột không cho kết quả ổn định, phụ thuộc font render của trình duyệt). Vì vậy cột `.hero-intro` (`grid-template-columns` trong `.hero-shop-grid`) phải đủ rộng (hiện `minmax(280px, 410px)`) để dòng dài nhất ("mua một lần và dùng mãi mãi.") không tự bị wrap thêm lần nữa — nếu đổi lại nội dung tiêu đề, phải test bằng ảnh chụp thật để chỉnh lại độ rộng cột cho khớp.
+Tiêu đề lớn trong `.hero-intro h1` dùng `<br />` ngắt dòng CỨNG theo đúng 3 dòng khách yêu cầu, KHÔNG dựa vào wrap tự nhiên theo độ rộng cột (thử wrap tự nhiên bằng cách chỉnh font-size/độ rộng cột không cho kết quả ổn định, phụ thuộc font render của trình duyệt). Vì vậy cột `.hero-intro` (`grid-template-columns` trong `.hero-shop-grid`) phải đủ rộng (hiện `minmax(280px, 440px)`) để dòng dài nhất ("mua một lần và dùng mãi mãi.") không tự bị wrap thêm lần nữa — nếu đổi font-size của h1 hoặc đổi lại nội dung tiêu đề, phải test bằng ảnh chụp thật để chỉnh lại độ rộng cột cho khớp (từng bị lệch 2 lần vì việc này).
 
 ### Nút "Xem thêm" trên trang chủ
 
-Nằm bên trong `.hero-products` (cùng cột với `.product-grid`, không phải block riêng full-width) và căn trái (`text-align:left`) — để nó bám sát ngay dưới lưới sản phẩm thay vì trôi giữa trang.
+Nằm bên trong `.hero-products` (cùng cột với `.product-grid`, không phải block riêng full-width) và căn trái (`text-align:left`) — để nó bám sát ngay dưới lưới sản phẩm thay vì trôi giữa trang. Mũi tên dùng SVG inline (không dùng ký tự "→") để nét luôn đậm rõ, nhất quán với các icon khác trên trang.
+
+### Nút hỗ trợ nổi (support-fab)
+
+Nhãn "Hỗ trợ" nằm `position:absolute` đè lên góc trên-phải của vòng tròn cam (không phải xếp chồng phía trên như thiết kế lần đầu) — xem `.support-fab .fab-label` trong `css/style.css`. Icon tai nghe cỡ lớn (38px, stroke-width 1.8) chiếm phần lớn vòng tròn, không phải icon nhỏ nằm giữa nhiều khoảng trắng.
+
+### Tên thương hiệu — viết đúng chính tả
+
+Viết là **"Swiftstreet"** (chỉ hoa chữ S đầu), KHÔNG phải "SwiftStreet". Áp dụng cho mọi nơi xuất hiện tên thương hiệu (logo header/footer, title trang, nút, meta description...). Tên các sản phẩm riêng lẻ (SwiftCopy.Drive, SwiftPlanner Wedding...) giữ nguyên cách viết hoa của chúng — không liên quan đến quy tắc này.
 
 ## Bảng màu thương hiệu
 
@@ -82,9 +90,10 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 - ✅ Modal mẫu cho thông báo / giỏ hàng / hỗ trợ (dữ liệu placeholder, chưa có logic thật).
 - ✅ Đã kiểm tra responsive (mobile + desktop) và test modal mở/đóng thực tế bằng trình duyệt.
 - ✅ Đã thu gọn kích thước chữ/khoảng cách toàn bộ (hero, thẻ sản phẩm, nút bấm, nút hỗ trợ nổi) theo phản hồi để bớt thô/nặng, giống hình mẫu tham khảo.
-- ✅ Nút "★ Đánh giá SwiftStreet" dạng bầu dục, nền gradient cam→vàng cam, có hiệu ứng phóng to khi rê chuột.
+- ✅ Nút "★ Đánh giá Swiftstreet" dạng bầu dục, nền gradient cam→vàng cam, có hiệu ứng phóng to khi rê chuột.
 - ✅ Nút hỗ trợ nổi làm phẳng (bỏ bóng đổ/hiệu ứng phát sáng). Nút "Xem thêm" chuyển vào trong cột lưới sản phẩm, căn trái ngay dưới lưới thay vì căn giữa trang.
 - ✅ Tiêu đề hero ngắt dòng cứng theo đúng 3 dòng khách yêu cầu (xem "Lưu ý về tiêu đề Hero" bên dưới).
+- ✅ Vòng sửa 2: tăng lại cỡ chữ hero cho vừa tỉ lệ, menu header thu nhỏ rõ so với tên thương hiệu, nút "Tự động hoá..." đổi thành chữ thường (không còn dạng nút), nút hỗ trợ nổi vẽ lại đúng mẫu (nhãn đè góc trên-phải, icon lớn), mũi tên "Xem thêm" đổi sang SVG đậm nét, và sửa chính tả thương hiệu thành "Swiftstreet" (chữ s thường) trên toàn bộ trang.
 - ❌ Chưa có nội dung chi tiết thật (mô tả sản phẩm, FAQ, tính năng... hiện đang là placeholder).
 - ❌ Nút "Mua ngay"/"Thêm giỏ hàng" chưa có logic giỏ hàng thật (giỏ hàng trong modal là dữ liệu mẫu cố định).
 - ❌ Trang "Khuyến mãi" và "Kiếm Tiền" chỉ là placeholder, chưa có nội dung.

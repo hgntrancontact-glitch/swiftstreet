@@ -207,7 +207,7 @@ const MODAL_CONTENT = {
     <div class="modal-support-row"><b>Email</b><span>support@swiftstreet.vn</span></div>
     <div class="modal-support-row"><b>Hotline / Zalo</b><span>0909 xxx xxx</span></div>
     <div class="modal-support-row"><b>Giờ làm việc</b><span>8:00 – 21:00 (T2 – CN)</span></div>
-    <p style="font-size:13px; color:var(--text-muted); margin-top:12px;">Đội ngũ SwiftStreet phản hồi trong vòng 24 giờ.</p>`,
+    <p style="font-size:13px; color:var(--text-muted); margin-top:12px;">Đội ngũ Swiftstreet phản hồi trong vòng 24 giờ.</p>`,
 };
 
 let modalOverlayEl = null;
