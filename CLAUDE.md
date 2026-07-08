@@ -86,6 +86,20 @@ Font chữ thương hiệu là **Poppins** (Google Fonts, đã nhúng link trong
 
 Gradient 2 màu phải GẦN NHAU (vd `#ffbb2e` → `#fa9a05`), không được chọn 2 màu tương phản mạnh — vì nút có dạng viên thuốc (border-radius 999px) nên 2 đầu bo tròn gần như chỉ nhận 1 màu duy nhất của gradient, nếu 2 màu cách xa nhau (vd vàng nhạt và cam đậm) thì 2 đầu sẽ trông như 2 khối màu tách biệt ("2 cái đuôi" theo lời khách) thay vì 1 dải gradient mượt.
 
+Nút này có animation `heroRateGlow` (2.2s, lặp vô hạn) tạo hiệu ứng tỏa sáng/nhấp nháy nhẹ liên tục (không chỉ khi hover) — khách yêu cầu cụ thể "hiệu ứng tỏa sáng hoặc nhấp nháy tỏa ra". Khi hover, animation tạm dừng (`animation-play-state: paused`) và chuyển sang hiệu ứng phóng to + bóng đổ đậm hơn.
+
+### Nút "Thêm giỏ hàng"/"Mua ngay" trong thẻ sản phẩm — chiều rộng 80%
+
+`.product-card-actions` có `width: 80%` (không phải 100%) và `padding` chỉ có bên trái (13px), không có bên phải — để 2 nút dồn sát trái, chừa khoảng trống ~20% bên phải thẻ. Đây là yêu cầu cụ thể của khách ("đẩy về sát trái, chiếm ~80% chiều ngang"), KHÔNG phải lỗi — nếu thấy nút không full-width thì đó là chủ đích, đừng "sửa" lại thành 100%.
+
+### Cấu trúc Footer (4 cột — đã đổi từ 3 cột + logo)
+
+Footer KHÔNG còn cột logo/mô tả thương hiệu (`footer-brand` đã bị xoá) — giờ là 4 cột đều nhau: **Giới thiệu | Sản phẩm | Hỗ trợ | Liên hệ** (đúng thứ tự này). Cột "Liên hệ" gồm: email dạng text thường (không icon), dòng chữ "Quét mã Zalo kết nối" (`font-weight: 400`, KHÔNG in đậm), và khung mã QR bên dưới.
+
+**Mã QR Zalo là ảnh THẬT** — `assets/img/zalo-qr.png` (khách đã có sẵn file này trong thư mục dự án, đặt tên `zalo-qr.png` ở gốc, đã di chuyển vào `assets/img/` cho gọn cấu trúc). Khối `<div class="footer-qr">` chứa thẻ `<img src=".../assets/img/zalo-qr.png">` ở footer của cả 5 trang HTML — không phải SVG giả lập. Nếu khách đổi mã QR (đổi số Zalo...), chỉ cần thay file `assets/img/zalo-qr.png` bằng ảnh mới, giữ nguyên tên file.
+
+`.footer-bottom` dùng CSS Grid 3 cột (`1fr auto 1fr`) để hàng icon mạng xã hội (`.footer-social`) luôn nằm CHÍNH GIỮA bất kể độ dài text 2 bên (copyright bên trái, "Made with care in Vietnam" bên phải) — không dùng flex `space-between` vì sẽ không căn giữa đúng khi 2 đoạn text 2 bên có độ dài khác nhau. Icon mạng xã hội hiện có: Facebook, TikTok, Instagram, Threads (mô phỏng đơn giản, không phải logo chính thức), YouTube — toàn bộ là SVG inline vẽ tay đơn giản hoá, màu xám (`#9a9a9a`) chuyển cam khi hover, size 18px. Trên mobile (`max-width:720px`), `.footer-bottom` chuyển thành 1 cột, mọi phần tử căn giữa.
+
 ## Bảng màu thương hiệu
 
 Lấy từ logo gốc (`Logo Swiftstreet.png`), khai báo trong `css/style.css` mục `:root`:
@@ -127,6 +141,7 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 - ✅ Vòng sửa 11: tăng CHIỀU CAO nút Thêm giỏ hàng/Mua ngay (`.btn-sm` padding dọc 6px→9px, chỉ tăng chiều cao, không đổi cỡ chữ — khác vòng 10 là giảm cỡ chữ) — dùng chung 1 class cho cả desktop/mobile nên tự động đồng bộ. Tăng nhẹ khu vực sản phẩm (`.device-display` height 138→150px, `.product-thumb` padding tăng nhẹ). Thêm box-shadow phát sáng cam nhẹ cho `.hero-rate-btn:hover` (kèm giảm scale 1.08→1.04) cho cảm giác hover "nhẹ" hơn thay vì chỉ phóng to.
 - ✅ Vòng sửa 12: sửa lỗi NGHIÊM TRỌNG trên mobile — tiêu đề hero vỡ thành 6 dòng (do font desktop quá to cho màn hình hẹp làm mỗi dòng đã ngắt cứng tự wrap thêm lần nữa) — thêm override `font-size:26px` riêng cho `.hero-intro h1` ở `@media max-width:720px`. Đồng thời khách chê 3 dòng tiêu đề "đều nhau quá" khi đã cân bằng độ dài ở vòng 9-10 — đổi lại về 3 dòng so le tự nhiên như thiết kế gốc (ngắn/ngắn hơn/dài), nới cột `.hero-intro` lên `minmax(320px,600px)` để dòng dài nhất vẫn vừa 1 hàng, và nâng breakpoint xếp dọc từ 1400px lên 1500px tương ứng. Tăng thêm khu vực sản phẩm 1 nấc nữa (`.device-display` height 150→162px).
 - ✅ Vòng sửa 13: chữ "Swiftstreet" bị chê "ngày càng cứng và đậm" — giảm `.brand` font-weight 600→500 (giữ nguyên font Poppins + size 20px, chỉ giảm độ đậm). Tăng thêm khu vực sản phẩm 1 nấc nữa (`.device-display` height 162→174px, `.product-thumb` padding tăng nhẹ). Giảm nhẹ nút "Xem thêm" (`.hero-more .btn-outline` padding/font/icon giảm 1 chút). Nút Thêm giỏ hàng/Mua ngay bị chê THẤP trên mobile dù đã tăng cho desktop ở vòng 11 (cùng 1 class `.btn-sm` nên lẽ ra phải giống nhau) — thêm override riêng `padding: 12px 5px` cho `.btn-sm` trong `@media max-width:720px` để mobile cao hơn desktop một chút, giải quyết theo đúng yêu cầu thay vì cố tìm "lỗi code" không tồn tại.
+- ✅ Vòng sửa 14: 2 nút Thêm giỏ hàng/Mua ngay trong thẻ sản phẩm đổi sang chiếm 80% chiều ngang, dồn sát trái (xem mục riêng bên dưới). Thêm animation tỏa sáng/nhấp nháy liên tục cho nút "Đánh giá Swiftstreet". Viết lại HOÀN TOÀN cấu trúc footer: bỏ cột logo/mô tả, đổi thành 4 cột Giới thiệu/Sản phẩm/Hỗ trợ/Liên hệ (cột Liên hệ có email + "Quét mã Zalo kết nối" + QR placeholder tự sinh — cần khách cung cấp ảnh QR thật), và thêm hàng 5 icon mạng xã hội (Facebook/TikTok/Instagram/Threads/YouTube) căn giữa ở `.footer-bottom` bằng CSS Grid 3 cột. Đã áp dụng đồng bộ cho cả 5 trang HTML bằng script thay thế footer tự động.
 - ❌ Chưa có nội dung chi tiết thật (mô tả sản phẩm, FAQ, tính năng... hiện đang là placeholder).
 - ❌ Nút "Mua ngay"/"Thêm giỏ hàng" chưa có logic giỏ hàng thật (giỏ hàng trong modal là dữ liệu mẫu cố định).
 - ❌ Trang "Khuyến mãi" và "Kiếm Tiền" chỉ là placeholder, chưa có nội dung.
