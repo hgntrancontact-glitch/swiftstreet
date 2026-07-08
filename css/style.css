@@ -306,7 +306,7 @@ p {
 
 .hero-shop-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 540px) 1fr;
+  grid-template-columns: minmax(320px, 600px) 1fr;
   gap: 28px;
   align-items: start;
 }
@@ -487,7 +487,7 @@ p {
 .product-thumb {
   position: relative;
   background: var(--bg-section);
-  padding: 24px 14px 10px;
+  padding: 26px 15px 12px;
 }
 
 .product-thumb .badge {
@@ -512,10 +512,10 @@ p {
   background: #ffffff;
   border-radius: 4px;
   overflow: hidden;
-  height: 150px;
+  height: 162px;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 9px;
   gap: 5px;
 
   /* Đổi bộ màu mini-dashboard sang nền sáng khi đặt trong màn hình laptop */
@@ -1337,9 +1337,9 @@ p {
 
 /* ---------- Responsive ---------- */
 /* Hero + lưới sản phẩm chuyển sang xếp dọc SỚM hơn breakpoint chung (960px) —
-   vì cột .hero-intro rộng tới 540px, nếu vẫn giữ 2 cột ở khoảng 960-1400px thì
+   vì cột .hero-intro rộng tới 600px, nếu vẫn giữ 2 cột ở khoảng 960-1500px thì
    lưới sản phẩm bên cạnh bị bóp quá hẹp (chữ vỡ dòng, nút bể). */
-@media (max-width: 1400px) {
+@media (max-width: 1500px) {
   .hero-shop-grid {
     grid-template-columns: 1fr;
   }
@@ -1372,6 +1372,15 @@ p {
 }
 
 @media (max-width: 720px) {
+  /* Tiêu đề hero dùng <br> ngắt dòng cứng cho desktop (3 dòng độ dài so le) —
+     ở màn hình hẹp, font-size desktop (32-39px) khiến mỗi dòng đó tự wrap
+     thêm 1 lần nữa (vỡ thành 6 dòng, trông rất xấu). Giảm hẳn cỡ chữ riêng
+     cho mobile để mỗi dòng in đủ trên 1 hàng. */
+  .hero-intro h1 {
+    font-size: 26px;
+    line-height: 1.32;
+  }
+
   .main-nav,
   .header-actions .btn-outline {
     display: none;
