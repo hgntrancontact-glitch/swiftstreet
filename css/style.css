@@ -211,7 +211,7 @@ p {
   gap: 10px;
   font-family: var(--font-brand);
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-black);
   flex-shrink: 0;
 }
@@ -376,14 +376,14 @@ p {
 }
 
 .hero-more .btn-outline {
-  padding: 10px 24px;
-  font-size: 14.5px;
+  padding: 9px 20px;
+  font-size: 13.5px;
   border-radius: 999px;
 }
 
 .hero-more .btn-outline svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
 }
 
 /* ---------- Nút hỗ trợ nổi ---------- */
@@ -487,7 +487,7 @@ p {
 .product-thumb {
   position: relative;
   background: var(--bg-section);
-  padding: 26px 15px 12px;
+  padding: 28px 16px 13px;
 }
 
 .product-thumb .badge {
@@ -512,10 +512,10 @@ p {
   background: #ffffff;
   border-radius: 4px;
   overflow: hidden;
-  height: 162px;
+  height: 174px;
   display: flex;
   flex-direction: column;
-  padding: 9px;
+  padding: 10px;
   gap: 5px;
 
   /* Đổi bộ màu mini-dashboard sang nền sáng khi đặt trong màn hình laptop */
@@ -1379,6 +1379,12 @@ p {
   .hero-intro h1 {
     font-size: 26px;
     line-height: 1.32;
+  }
+
+  /* Nút Thêm giỏ hàng/Mua ngay trên mobile cần cao hơn 1 chút so với desktop
+     để không có cảm giác "bé" khi đặt trong thẻ sản phẩm full-width. */
+  .btn-sm {
+    padding: 12px 5px;
   }
 
   .main-nav,
