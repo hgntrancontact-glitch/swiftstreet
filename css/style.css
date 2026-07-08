@@ -47,7 +47,7 @@
   --shadow-card: 0 2px 10px rgba(26, 26, 26, 0.06);
   --shadow-card-hover: 0 10px 24px rgba(26, 26, 26, 0.12);
 
-  --container-width: 1560px;
+  --container-width: 1360px;
   --font-brand: "Poppins", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -210,15 +210,15 @@ p {
   align-items: center;
   gap: 10px;
   font-family: var(--font-brand);
-  font-size: 23px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--color-black);
   flex-shrink: 0;
 }
 
 .brand img {
-  height: 42px;
-  width: 42px;
+  height: 40px;
+  width: 40px;
 }
 
 .main-nav {
@@ -229,8 +229,8 @@ p {
 
 .main-nav a {
   font-family: var(--font-brand);
-  font-weight: 500;
-  font-size: 15.5px;
+  font-weight: 600;
+  font-size: 15px;
   color: var(--text-main);
   transition: color 0.15s ease;
 }
@@ -349,12 +349,13 @@ p {
 }
 
 .hero-rate-btn {
-  background: linear-gradient(90deg, #ffb020 0%, #f77f00 100%);
+  background: linear-gradient(90deg, #ffbb2e 0%, #fa9a05 100%);
   color: var(--color-black);
   font-family: var(--font-brand);
   font-weight: 600;
   font-size: 14.5px;
   padding: 10px 20px;
+  border: none;
   border-radius: 999px;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
@@ -417,7 +418,7 @@ p {
   top: -8px;
   right: -12px;
   background: var(--color-black);
-  color: var(--color-white);
+  color: var(--color-orange);
   font-size: 10px;
   font-weight: 700;
   padding: 4px 9px;
