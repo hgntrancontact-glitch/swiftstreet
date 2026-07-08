@@ -50,7 +50,7 @@ Khung "laptop" (`.device-display`) cố định `height: 138px` — đây là ng
 
 ### Lưu ý về tiêu đề Hero (h1)
 
-Tiêu đề lớn trong `.hero-intro h1` dùng `<br />` ngắt dòng CỨNG theo đúng 3 dòng khách yêu cầu, KHÔNG dựa vào wrap tự nhiên theo độ rộng cột (thử wrap tự nhiên bằng cách chỉnh font-size/độ rộng cột không cho kết quả ổn định, phụ thuộc font render của trình duyệt). Vì vậy cột `.hero-intro` (`grid-template-columns` trong `.hero-shop-grid`) phải đủ rộng (hiện `minmax(280px, 440px)`) để dòng dài nhất ("mua một lần và dùng mãi mãi.") không tự bị wrap thêm lần nữa — nếu đổi font-size của h1 hoặc đổi lại nội dung tiêu đề, phải test bằng ảnh chụp thật để chỉnh lại độ rộng cột cho khớp (từng bị lệch 2 lần vì việc này).
+Tiêu đề lớn trong `.hero-intro h1` dùng `<br />` ngắt dòng CỨNG (hiện tại: "Kho công cụ số giúp bạn" / "làm việc nhanh hơn, mua" / "một lần và dùng mãi mãi." — 3 dòng độ dài khá đều nhau), KHÔNG dựa vào wrap tự nhiên theo độ rộng cột (thử wrap tự nhiên bằng cách chỉnh font-size/độ rộng cột không cho kết quả ổn định, phụ thuộc font render của trình duyệt). Vì vậy cột `.hero-intro` (`grid-template-columns` trong `.hero-shop-grid`, hiện `minmax(320px, 500px)`) phải đủ rộng để dòng dài nhất không tự bị wrap thêm lần nữa — nếu đổi font-size của h1 (hiện `clamp(30px, 3.2vw, 38px)`) hoặc đổi lại nội dung/vị trí ngắt dòng, phải test bằng ảnh chụp thật để chỉnh lại độ rộng cột cho khớp (từng bị lệch nhiều lần vì việc này). Khi tăng cỡ chữ h1, ưu tiên chia lại vị trí ngắt dòng sao cho 3 dòng có độ dài ký tự tương đối bằng nhau (thay vì giữ nguyên vị trí ngắt cũ) để không cần nới cột quá rộng, ảnh hưởng lưới sản phẩm bên cạnh.
 
 ### Nút "Tự động hoá giúp tối ưu công việc" (hero-cta)
 
@@ -111,6 +111,7 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 - ✅ Vòng sửa 3: đối chiếu lại toàn bộ với ảnh chụp hình mẫu gốc của khách — khôi phục "Tự động hoá giúp tối ưu công việc" về dạng nút đen (đã có lúc đổi thành chữ thường ở vòng 2 rồi phải đổi lại), giảm line-height tiêu đề/đoạn khuyến mãi cho khít hơn.
 - ✅ Vòng sửa 4: thêm font thương hiệu Poppins (logo, menu, nút đánh giá), tăng `--container-width` lên 1560px để giảm khoảng trắng 2 bên ở màn hình rộng, nút "Xem thêm" đổi sang dạng bầu dục hoàn toàn, gradient nút đánh giá chỉnh lại cho ngả cam rõ hơn (bớt vàng), nút hỗ trợ nổi thu nhỏ lại (50px) và thêm lại hiệu ứng phát sáng mềm màu cam.
 - ✅ Vòng sửa 5: sửa gradient nút đánh giá dùng 2 màu gần nhau hơn (hết lỗi "2 cái đuôi" ở 2 đầu bo tròn), đổi màu chữ "Hỗ trợ" sang cam/vàng, vẽ lại icon tai nghe đơn giản hơn (bỏ chi tiết mic), giảm độ đậm + cỡ chữ tên thương hiệu (700→600, 23px→20px), giảm `--container-width` từ 1560 xuống 1360 vì 1560 làm footer bị dãn xấu.
+- ✅ Vòng sửa 6: khách so sánh với web đối thủ (OKX) ở cùng mức zoom 100%, thấy chữ hero của mình quá nhỏ/thiếu tự tin — tăng đáng kể cỡ chữ hero (h1 26-30px → 30-38px, promo-text 15.5px → 17px, các nút liên quan cũng tăng theo), nới cột `.hero-intro` lên `minmax(320px,500px)` và chia lại vị trí ngắt dòng h1 cho 3 dòng đều nhau hơn để không phải nới cột quá mức.
 - ❌ Chưa có nội dung chi tiết thật (mô tả sản phẩm, FAQ, tính năng... hiện đang là placeholder).
 - ❌ Nút "Mua ngay"/"Thêm giỏ hàng" chưa có logic giỏ hàng thật (giỏ hàng trong modal là dữ liệu mẫu cố định).
 - ❌ Trang "Khuyến mãi" và "Kiếm Tiền" chỉ là placeholder, chưa có nội dung.
