@@ -3,33 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hướng dẫn mua hàng — Swiftstreet</title>
-  <meta name="description" content="Hướng dẫn từng bước mua hàng tại Swiftstreet — đơn giản, không cần tạo tài khoản." />
+  <title>Thanh toán — Swiftstreet</title>
+  <meta name="description" content="Hoàn tất đơn hàng tại Swiftstreet — quét mã chuyển khoản, nhận file qua email." />
 
-  <link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/favicon-32x32.png" />
-  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../css/style.css?v=25" />
+  <link rel="stylesheet" href="css/style.css?v=25" />
 </head>
 <body>
 
   <header class="site-header">
     <div class="container">
-      <a href="../index.html" class="brand">
-        <img src="../assets/img/logo-header.png" alt="Swiftstreet" />
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-header.png" alt="Swiftstreet" />
         <span>Swiftstreet</span>
       </a>
 
       <nav class="main-nav">
-        <a href="../index.html">Trang chủ</a>
-        <a href="../san-pham.html">Sản phẩm</a>
-        <a href="../khuyen-mai.html">Khuyến mãi</a>
-        <a href="../kiem-tien.html">Kiếm Tiền</a>
+        <a href="index.html">Trang chủ</a>
+        <a href="san-pham.html">Sản phẩm</a>
+        <a href="khuyen-mai.html">Khuyến mãi</a>
+        <a href="kiem-tien.html">Kiếm Tiền</a>
       </nav>
 
       <div class="header-actions">
@@ -55,53 +55,51 @@
 
   <div class="container">
     <div class="breadcrumb">
-      <a href="../index.html">Trang chủ</a> / Hướng dẫn mua hàng
+      <a href="index.html">Trang chủ</a> / Thanh toán
     </div>
   </div>
 
   <section class="section">
     <div class="container">
-      <div class="section-heading">
-        <span class="badge badge-orange">Hướng dẫn</span>
-        <h1>Hướng dẫn mua hàng</h1>
-        <p>Quy trình mua hàng tại Swiftstreet được thiết kế đơn giản, không yêu cầu tạo tài khoản, và có thể hoàn tất chỉ trong vài phút. Dưới đây là hướng dẫn từng bước chi tiết.</p>
+      <div class="section-heading" style="margin-bottom: 32px;">
+        <span class="badge badge-orange">Thanh toán</span>
+        <h1>Hoàn tất đơn hàng</h1>
       </div>
 
-      <div class="guide-steps">
-        <div class="guide-step">
-          <div class="step-number">1</div>
-          <div>
-            <h3>Tìm sản phẩm phù hợp</h3>
-            <p>Truy cập trang chủ Swiftstreet hoặc mục Sản phẩm để xem toàn bộ danh sách công cụ hiện có. Mỗi sản phẩm đều có mô tả ngắn gọn, mức giá, và trang chi tiết riêng với đầy đủ thông tin về tính năng, câu hỏi thường gặp, và hướng dẫn sử dụng cụ thể cho sản phẩm đó.</p>
+      <div id="checkout-main">
+        <div class="checkout-grid">
+          <div class="checkout-col">
+            <div class="checkout-product-list" id="checkout-product-list"></div>
+
+            <h3 class="checkout-subheading">Điền thông tin của bạn</h3>
+            <div class="simple-form" style="max-width:none; margin:0 0 4px; padding:0; background:none; border:none;">
+              <label>
+                Họ tên
+                <input type="text" id="checkout-name" placeholder="Nguyễn Văn A" />
+              </label>
+              <label>
+                Số điện thoại / Zalo
+                <input type="tel" id="checkout-phone" placeholder="09xx xxx xxx" />
+              </label>
+              <label>
+                Email nhận file
+                <input type="email" id="checkout-email" placeholder="ban@email.com" />
+              </label>
+            </div>
+
+            <div class="checkout-total-box">
+              <span>Tổng cộng</span>
+              <span id="checkout-total">0đ</span>
+            </div>
+
+            <p class="checkout-note">
+              Vui lòng nhập chính xác email — đây là địa chỉ chúng tôi dùng để gửi thông tin đơn hàng ngay sau khi thanh toán thành công. Cần hỗ trợ trong quá trình mua hàng, hoặc muốn được tư vấn thanh toán trực tiếp, liên hệ SĐT/Zalo <a href="#" class="checkout-phone-link" data-modal="support">0909 821 702</a>.
+            </p>
           </div>
-        </div>
 
-        <div class="guide-step">
-          <div class="step-number">2</div>
-          <div>
-            <h3>Thêm vào giỏ hàng hoặc mua ngay</h3>
-            <p>Nếu bạn muốn mua một sản phẩm duy nhất, hãy chọn <strong>Mua ngay</strong> để chuyển thẳng đến trang thanh toán cho sản phẩm đó. Nếu bạn muốn mua nhiều sản phẩm cùng lúc, hãy chọn <strong>Thêm giỏ hàng</strong> cho từng sản phẩm, sau đó mở giỏ hàng ở góc trên bên phải để xem lại danh sách trước khi thanh toán.</p>
-          </div>
-        </div>
-
-        <div class="guide-step">
-          <div class="step-number">3</div>
-          <div>
-            <h3>Điền thông tin nhận hàng</h3>
-            <p>Tại trang thanh toán, bạn cần điền đầy đủ họ tên, số điện thoại hoặc Zalo, và đặc biệt là địa chỉ email chính xác — đây là nơi chúng tôi sẽ gửi thông tin đơn hàng sau khi thanh toán thành công. Vui lòng kiểm tra kỹ thông tin trước khi tiếp tục.</p>
-          </div>
-        </div>
-
-        <div class="guide-step">
-          <div class="step-number">4</div>
-          <div>
-            <h3>Thanh toán qua chuyển khoản</h3>
-            <p>Hệ thống sẽ hiển thị mã QR chuyển khoản cùng đầy đủ thông tin ngân hàng, số tiền, và nội dung chuyển khoản tương ứng với đơn hàng của bạn. Vui lòng mở ứng dụng ngân hàng, quét mã QR hoặc nhập thủ công đúng thông tin được cung cấp, đặc biệt giữ nguyên nội dung chuyển khoản để đơn hàng được đối chiếu chính xác.</p>
-
-            <!-- Ảnh minh hoạ màn hình "Quét mã để thanh toán" — mô phỏng tạm bằng
-                 code (chưa có ảnh chụp thật của từng sản phẩm), khách sẽ bổ
-                 sung ảnh thật sau. -->
-            <div class="payment-mock">
+          <div class="checkout-col">
+            <h3 class="checkout-subheading">Quét mã để thanh toán</h3>
+            <div class="payment-mock" style="max-width: 340px; margin: 0 auto;">
               <div class="payment-mock-head">Quét mã để thanh toán</div>
               <div class="payment-mock-qr">
                 <svg viewBox="0 0 90 90" role="img" aria-label="Mã QR minh hoạ (mô phỏng)">
@@ -123,29 +121,21 @@
               </div>
               <div class="payment-mock-row"><span>Ngân hàng</span><b>Vietcombank</b></div>
               <div class="payment-mock-row"><span>Chủ tài khoản</span><b>CTY SWIFTSTREET</b></div>
-              <div class="payment-mock-row amount"><span>Số tiền</span><b>199.000đ</b></div>
-              <div class="payment-mock-row"><span>Nội dung CK</span><b>SWIFT DH12345</b></div>
+              <div class="payment-mock-row"><span>Số tài khoản</span><b>0071000123456</b></div>
+              <div class="payment-mock-row amount"><span>Số tiền</span><b id="checkout-amount">0đ</b></div>
+              <div class="payment-mock-row"><span>Nội dung CK</span><b id="checkout-order-code">SS0000</b></div>
             </div>
-          </div>
-        </div>
 
-        <div class="guide-step">
-          <div class="step-number">5</div>
-          <div>
-            <h3>Chờ xác nhận và nhận sản phẩm</h3>
-            <p>Sau khi chuyển khoản thành công, đội ngũ Swiftstreet sẽ kiểm tra và xác nhận đơn hàng trong thời gian sớm nhất. Ngay khi đơn hàng được xác nhận, bạn sẽ nhận được email chứa toàn bộ thông tin và hướng dẫn sử dụng sản phẩm. Vui lòng kiểm tra cả hộp thư rác nếu không thấy email trong hộp thư đến.</p>
+            <button type="button" class="btn btn-dark btn-block" id="checkout-paid-btn" style="margin-top:16px;">Tôi đã chuyển khoản</button>
+
+            <p class="checkout-note-2">Sau khi thanh toán, chúng tôi sẽ gửi thông tin đơn hàng qua email trong thời gian sớm nhất. Vui lòng kiểm tra cả hộp thư rác nếu không thấy thư.</p>
           </div>
         </div>
       </div>
 
-      <div class="legal-content" style="margin-top: 48px;">
-        <h2>Một số lưu ý quan trọng</h2>
-        <ul>
-          <li>Luôn kiểm tra kỹ địa chỉ email trước khi thanh toán, vì đây là kênh duy nhất chúng tôi dùng để gửi sản phẩm.</li>
-          <li>Giữ nguyên nội dung chuyển khoản được hệ thống cung cấp để quá trình xác nhận diễn ra nhanh chóng.</li>
-          <li>Nếu sau một khoảng thời gian hợp lý mà chưa nhận được email xác nhận, vui lòng liên hệ trực tiếp qua Zalo để được hỗ trợ kịp thời.</li>
-          <li>Mọi thắc mắc trong quá trình mua hàng đều có thể được giải đáp qua mục Hỗ trợ ở góc dưới bên phải màn hình.</li>
-        </ul>
+      <div class="checkout-empty" id="checkout-empty" style="display:none;">
+        <p>Chưa có sản phẩm nào để thanh toán.</p>
+        <a href="san-pham.html" class="btn btn-dark" style="margin-top:16px;">Xem sản phẩm</a>
       </div>
     </div>
   </section>
@@ -154,8 +144,8 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <a href="../index.html" class="brand">
-            <img src="../assets/img/logo-header.png" alt="Swiftstreet" />
+          <a href="index.html" class="brand">
+            <img src="assets/img/logo-header.png" alt="Swiftstreet" />
             <span>Swiftstreet</span>
           </a>
           <p>Cửa hàng công cụ &amp; file số nhỏ gọn, giúp công việc của bạn nhanh và gọn hơn mỗi ngày.</p>
@@ -164,27 +154,27 @@
         <div class="footer-col">
           <h4>Giới thiệu</h4>
           <ul>
-            <li><a href="ve-chung-toi.html">Về chúng tôi</a></li>
-            <li><a href="cau-hoi-thuong-gap.html">Câu hỏi thường gặp</a></li>
-            <li><a href="huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></li>
+            <li><a href="footer-pages/ve-chung-toi.html">Về chúng tôi</a></li>
+            <li><a href="footer-pages/cau-hoi-thuong-gap.html">Câu hỏi thường gặp</a></li>
+            <li><a href="footer-pages/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>Sản phẩm</h4>
           <ul>
-            <li><a href="../thanh-toan.html?slug=swiftcopy-drive">SwiftCopy.Drive</a></li>
-            <li><a href="../thanh-toan.html?slug=swiftplanner-wedding">SwiftPlanner Wedding</a></li>
-            <li><a href="../san-pham.html">Nhiều sản phẩm khác...</a></li>
+            <li><a href="thanh-toan.html?slug=swiftcopy-drive">SwiftCopy.Drive</a></li>
+            <li><a href="thanh-toan.html?slug=swiftplanner-wedding">SwiftPlanner Wedding</a></li>
+            <li><a href="san-pham.html">Nhiều sản phẩm khác...</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>Hỗ trợ</h4>
           <ul>
-            <li><a href="dieu-khoan-su-dung.html">Điều khoản sử dụng</a></li>
-            <li><a href="chinh-sach-doi-tra.html">Chính sách đổi trả</a></li>
-            <li><a href="kiem-tien-ctv.html">Kiếm tiền CTV</a></li>
+            <li><a href="footer-pages/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></li>
+            <li><a href="footer-pages/chinh-sach-doi-tra.html">Chính sách đổi trả</a></li>
+            <li><a href="footer-pages/kiem-tien-ctv.html">Kiếm tiền CTV</a></li>
           </ul>
         </div>
 
@@ -193,7 +183,7 @@
           <p class="footer-email">hgntran.contact@gmail.com</p>
           <p class="footer-zalo-label">Quét mã Zalo kết nối</p>
           <div class="footer-qr">
-            <img src="../assets/img/zalo-qr.png" alt="Mã QR Zalo Swiftstreet" />
+            <img src="assets/img/zalo-qr.png" alt="Mã QR Zalo Swiftstreet" />
           </div>
         </div>
       </div>
@@ -224,6 +214,7 @@
     </button>
   </div>
 
-  <script src="../js/main.js"></script>
+  <script src="data/products.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

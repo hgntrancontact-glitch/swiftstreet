@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../css/style.css?v=24" />
+  <link rel="stylesheet" href="../css/style.css?v=25" />
 </head>
 <body>
 
@@ -33,9 +33,15 @@
       </nav>
 
       <div class="header-actions">
-        <button class="icon-btn" aria-label="Thông báo" data-modal="notify">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        </button>
+        <div class="notify-wrap">
+          <button class="icon-btn" aria-label="Thông báo" id="notify-trigger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          </button>
+          <div class="notify-dropdown" id="notify-dropdown">
+            <div class="notify-dropdown-head">Thông báo</div>
+            <div class="notify-dropdown-list" id="notify-dropdown-list"></div>
+          </div>
+        </div>
         <button class="icon-btn" aria-label="Giỏ hàng" data-modal="cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M2.5 3h2l2.3 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H5.5"/></svg>
           <span class="icon-dot"></span>
@@ -114,8 +120,8 @@
         <div class="footer-col">
           <h4>Sản phẩm</h4>
           <ul>
-            <li><a href="../products/swiftcopy-drive.html">SwiftCopy.Drive</a></li>
-            <li><a href="../products/swiftplanner-wedding.html">SwiftPlanner Wedding</a></li>
+            <li><a href="../thanh-toan.html?slug=swiftcopy-drive">SwiftCopy.Drive</a></li>
+            <li><a href="../thanh-toan.html?slug=swiftplanner-wedding">SwiftPlanner Wedding</a></li>
             <li><a href="../san-pham.html">Nhiều sản phẩm khác...</a></li>
           </ul>
         </div>
@@ -154,7 +160,12 @@
   </footer>
 
   <div class="support-fab">
-    <button aria-label="Hỗ trợ" data-modal="support">
+    <div class="support-fab-menu" id="support-fab-menu">
+      <button type="button" data-modal="support">Hỗ trợ</button>
+      <button type="button" data-modal="faq">FAQ</button>
+      <button type="button" data-report-bug>Báo lỗi</button>
+    </div>
+    <button class="support-fab-trigger" aria-label="Hỗ trợ" id="support-fab-trigger">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2" y="13" width="5" height="7" rx="2"/><rect x="17" y="13" width="5" height="7" rx="2"/></svg>
       <span class="fab-label">Hỗ trợ</span>
     </button>
