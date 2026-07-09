@@ -1772,8 +1772,11 @@ p {
 }
 
 /* ---------- Trang thanh toán (thanh-toan.html) — thiết kế lại vòng sửa V2 (mục C/D), tinh chỉnh tiếp vòng 26 ---------- */
+/* Vòng 29: giảm khoảng trống dưới breadcrumb, phía trên tiêu đề "Hoàn tất..."
+   — trước đó cộng với padding-bottom 20px của `.breadcrumb` tạo khoảng trắng
+   ~40px trông thừa, khách chê "khoảng trống nhiều quá". */
 .checkout-section {
-  padding: 20px 0 48px;
+  padding: 4px 0 48px;
 }
 
 /* Vòng 26: container riêng hẹp hơn cho trang thanh toán (áp cho CẢ breadcrumb
@@ -1931,19 +1934,40 @@ p {
   max-width: 260px;
 }
 
+/* Vòng 29: thêm icon minh hoạ bên trong mỗi ô nhập (người/điện thoại/email)
+   cho đẹp và "khớp" hơn với phần còn lại của trang — trước đó chỉ là ô nhập
+   trơn không có điểm nhấn. */
+.checkout-field-input {
+  position: relative;
+}
+
+.checkout-field-input svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
 .checkout-input-form input {
+  width: 100%;
   font-family: inherit;
   font-size: 14px;
-  padding: 10px 12px;
+  padding: 11px 12px 11px 36px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--color-white);
   color: var(--text-main);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .checkout-input-form input:focus {
   outline: none;
   border-color: var(--color-orange);
+  box-shadow: 0 0 0 3px rgba(254, 178, 10, 0.15);
 }
 
 .checkout-note {
@@ -2290,17 +2314,15 @@ p {
   opacity: 1;
 }
 
-/* Vòng 28: không còn cần padding-left riêng để căn thẳng hàng với checkbox
-   từng sản phẩm — giờ "Chọn tất cả" và từng dòng sản phẩm đều là con trực
-   tiếp của CÙNG 1 thẻ `.checkout-left-card` nên tự thẳng hàng theo padding
-   chung của thẻ. Thêm đường kẻ mảnh ngăn cách với danh sách bên dưới. */
+/* Vòng 29: tách "Chọn tất cả" ra khỏi thẻ thống nhất — khách yêu cầu để mục
+   này nằm NGOÀI bình thường (không đóng khung/không đường kẻ ngăn cách), chỉ
+   còn khoảng cách với thẻ `.checkout-left-card` bên dưới. `padding-left:20px`
+   để checkbox thẳng hàng tương đối với nội dung bên trong thẻ (padding 20px). */
 .cart-select-all {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 0 14px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 14px;
+  padding: 0 0 14px 20px;
 }
 
 .cart-select-all span {
