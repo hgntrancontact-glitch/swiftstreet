@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/style.css?v=26" />
+  <link rel="stylesheet" href="css/style.css?v=27" />
 </head>
 <body>
 
@@ -53,15 +53,15 @@
     </div>
   </header>
 
-  <div class="container">
+  <div class="checkout-container">
     <div class="breadcrumb">
       <a href="index.html">Trang chủ</a> / Thanh toán
     </div>
   </div>
 
   <section class="section checkout-section">
-    <div class="container">
-      <h1 class="checkout-heading">Hoàn tất đơn hàng</h1>
+    <div class="checkout-container">
+      <h1 class="checkout-heading" id="checkout-heading">Hoàn tất đơn hàng</h1>
 
       <div id="checkout-main">
         <div class="checkout-grid">
@@ -97,10 +97,13 @@
             <div class="checkout-summary-box">
               <h3 class="checkout-subheading">Thông tin đơn hàng</h3>
               <div class="summary-row"><span>Tổng tiền</span><span id="checkout-subtotal">0đ</span></div>
-              <div class="summary-row"><span>Tổng khuyến mãi</span><span id="checkout-discount" class="discount-value">-0đ</span></div>
+              <div class="summary-row">
+                <span class="summary-discount-label"><span>Khuyến mãi</span><small id="checkout-discount-percent">đã giảm 0%</small></span>
+                <span id="checkout-discount" class="discount-value">-0đ</span>
+              </div>
               <div class="summary-row summary-voucher-row" id="voucher-toggle" data-voucher-toggle>
-                <span>Voucher</span>
-                <span class="voucher-chevron">▾</span>
+                <span class="voucher-label-group"><span class="voucher-chevron">▾</span>Voucher</span>
+                <span id="checkout-voucher-amount">-0đ</span>
               </div>
               <div class="voucher-input-wrap" id="voucher-input-wrap">
                 <input type="text" class="voucher-input" placeholder="Nhập mã voucher" />
@@ -110,7 +113,7 @@
 
             <div class="checkout-bank-box">
               <h3 class="checkout-subheading">Thông tin chuyển khoản</h3>
-              <div class="payment-mock">
+              <div class="payment-mock payment-mock-split">
                 <div class="payment-mock-qr">
                   <svg viewBox="0 0 90 90" role="img" aria-label="Mã QR minh hoạ (mô phỏng)">
                     <rect width="90" height="90" fill="#fff"/>
@@ -129,13 +132,15 @@
                     <rect x="30" y="78" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="78" width="6" height="6" fill="#1a1a1a"/><rect x="72" y="78" width="6" height="6" fill="#1a1a1a"/>
                   </svg>
                 </div>
-                <div class="payment-mock-row"><span>Ngân hàng</span><b>Vietcombank</b></div>
-                <div class="payment-mock-row"><span>Chủ tài khoản</span><b>CTY SWIFTSTREET</b></div>
-                <div class="payment-mock-row"><span>Số tài khoản</span><b>0071000123456</b></div>
-                <div class="payment-mock-row"><span>Nội dung CK</span><b id="checkout-order-code">SS0000</b></div>
+                <div class="payment-mock-info">
+                  <div class="payment-mock-row"><span>Ngân hàng</span><b>Vietcombank</b><button type="button" class="copy-btn" data-copy="Vietcombank" aria-label="Sao chép"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+                  <div class="payment-mock-row"><span>Chủ tài khoản</span><b>CTY SWIFTSTREET</b><button type="button" class="copy-btn" data-copy="CTY SWIFTSTREET" aria-label="Sao chép"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+                  <div class="payment-mock-row"><span>Số tài khoản</span><b>0071000123456</b><button type="button" class="copy-btn" data-copy="0071000123456" aria-label="Sao chép"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+                  <div class="payment-mock-row"><span>Nội dung CK</span><b id="checkout-order-code">SS0000</b><button type="button" class="copy-btn" data-copy-target="checkout-order-code" aria-label="Sao chép"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+                </div>
               </div>
 
-              <button type="button" class="btn btn-dark checkout-paid-btn" id="checkout-paid-btn">Tôi đã chuyển khoản</button>
+              <button type="button" class="btn btn-dark checkout-paid-btn" id="checkout-paid-btn">Thanh toán</button>
 
               <p class="checkout-final-note">
                 Sau khi thanh toán, chúng tôi sẽ gửi thông tin đơn hàng qua email trong thời gian sớm nhất. Vui lòng kiểm tra cả hộp thư rác nếu không thấy thư. Khi thanh toán, bạn đồng ý với <a href="footer-pages/dieu-khoan-su-dung.html" class="note-link">Điều khoản sử dụng</a>, <a href="khuyen-mai.html" class="note-link">Khuyến mãi</a> và <a href="footer-pages/chinh-sach-doi-tra.html" class="note-link">Chính sách đổi trả dịch vụ</a>, và cho phép Swiftstreet lưu trữ và tính phí phương thức thanh toán của bạn.

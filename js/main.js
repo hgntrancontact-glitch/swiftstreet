@@ -610,6 +610,11 @@ function setupCheckoutPage() {
   const orderCodeEl = document.getElementById("checkout-order-code");
   if (orderCodeEl) orderCodeEl.textContent = orderCode;
 
+  // Tiêu đề đổi theo ngữ cảnh vào (vòng 26): mua thẳng 1 sản phẩm vẫn là "Hoàn
+  // tất đơn hàng"; vào từ icon giỏ hàng (nhiều sản phẩm) đổi thành "Hoàn tất giỏ hàng".
+  const headingEl = document.getElementById("checkout-heading");
+  if (headingEl) headingEl.textContent = isSingleSlug ? "Hoàn tất đơn hàng" : "Hoàn tất giỏ hàng";
+
   const selectAllRow = document.getElementById("checkout-select-all");
   const selectAllCircle = document.getElementById("checkout-select-all-circle");
   if (selectAllRow) selectAllRow.style.display = isSingleSlug ? "none" : "flex";
@@ -632,27 +637,28 @@ function setupCheckoutPage() {
 
     if (selectAllCircle) selectAllCircle.classList.toggle("checked", items.every((item) => item.selected));
 
+    // Vòng 26: 1 HÀNG NGANG duy nhất (checkbox — ảnh sản phẩm — tên/mô tả —
+    // giá — icon xoá), không còn làm mờ sản phẩm bị bỏ chọn.
     list.innerHTML = items.map((item) => {
       const nameHTML = CHECKOUT_LINKABLE_SLUGS.includes(item.slug)
         ? `<a href="${getRootPrefix()}products/${item.slug}.html" class="checkout-item-name-link">${item.name}</a>`
         : `<b class="checkout-item-name">${item.name}</b>`;
       return `
-      <div class="checkout-item-row${!isSingleSlug && !item.selected ? " is-unselected" : ""}">
+      <div class="checkout-item-row">
         ${isSingleSlug ? "" : `<button class="cart-item-select${item.selected ? " checked" : ""}" data-checkout-toggle-select="${item.slug}" aria-label="Chọn sản phẩm"></button>`}
+        <div class="checkout-item-thumb">${DASH_ICONS[PRODUCT_TYPE_ICON[item.type]] || DASH_ICONS.cart}</div>
         <div class="checkout-item-content">
-          <div class="checkout-item-name-row">
-            ${nameHTML}
-            ${isSingleSlug ? "" : `
-              <button class="cart-item-delete" data-checkout-remove="${item.slug}" aria-label="Xoá">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7"/></svg>
-              </button>`}
-          </div>
+          <div class="checkout-item-name-row">${nameHTML}</div>
           ${item.shortDesc ? `<p class="cart-item-desc">${item.shortDesc}</p>` : ""}
-          <div class="item-price-stack">
-            <span class="cart-price-current">${formatPriceVN(item.price)}</span>
-            ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}
-          </div>
         </div>
+        <div class="item-price-stack">
+          <span class="cart-price-current">${formatPriceVN(item.price)}</span>
+          ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}
+        </div>
+        ${isSingleSlug ? "" : `
+          <button class="cart-item-delete" data-checkout-remove="${item.slug}" aria-label="Xoá">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7"/></svg>
+          </button>`}
       </div>`;
     }).join("");
 
@@ -660,12 +666,15 @@ function setupCheckoutPage() {
     const subtotalOld = calcItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
     const total = calcItems.reduce((sum, item) => sum + item.price * item.qty, 0);
     const discount = subtotalOld - total;
+    const discountPercent = subtotalOld > 0 ? Math.round((discount / subtotalOld) * 100) : 0;
 
     const subtotalEl = document.getElementById("checkout-subtotal");
     const discountEl = document.getElementById("checkout-discount");
+    const discountPercentEl = document.getElementById("checkout-discount-percent");
     const totalEl = document.getElementById("checkout-total");
     if (subtotalEl) subtotalEl.textContent = formatPriceVN(subtotalOld);
     if (discountEl) discountEl.textContent = "-" + formatPriceVN(discount);
+    if (discountPercentEl) discountPercentEl.textContent = `đã giảm ${discountPercent}%`;
     if (totalEl) totalEl.textContent = formatPriceVN(total);
   }
 
@@ -700,6 +709,18 @@ function setupCheckoutPage() {
       voucherToggle.classList.toggle("open");
     });
   }
+
+  // Icon sao chép cạnh mỗi dòng thông tin chuyển khoản (vòng 26).
+  document.querySelectorAll(".payment-mock .copy-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.copyTarget;
+      const text = targetId ? document.getElementById(targetId)?.textContent : btn.dataset.copy;
+      if (!text) return;
+      navigator.clipboard.writeText(text)
+        .then(() => showToast(`Đã sao chép "${text}"`))
+        .catch(() => showToast("Không thể sao chép, vui lòng thử lại"));
+    });
+  });
 
   const paidBtn = document.getElementById("checkout-paid-btn");
   if (paidBtn) {

@@ -61,6 +61,9 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   background: var(--bg-page);
   color: var(--text-main);
@@ -85,6 +88,7 @@ ul {
 }
 
 .container {
+  width: 100%;
   max-width: var(--container-width);
   margin: 0 auto;
   padding: 0 clamp(20px, 3.5vw, 40px);
@@ -1150,7 +1154,11 @@ p {
 }
 
 /* ---------- Footer ---------- */
+/* margin-top:auto + body flex column (xem rule `body` ở đầu file) đẩy footer luôn
+   dán sát đáy màn hình trên các trang nội dung ngắn (Khuyến mãi/Kiếm Tiền...),
+   tránh khoảng trắng lớn giữa footer và đáy trình duyệt (vòng sửa 26). */
 .site-footer {
+  margin-top: auto;
   background: var(--color-black);
   color: #cfcfcf;
   padding: 56px 0 24px;
@@ -1620,6 +1628,88 @@ p {
   font-weight: 700;
 }
 
+/* Bố cục riêng cho trang thanh toán: QR bên TRÁI, thông tin ngân hàng bên PHẢI
+   (vòng 26, tham khảo bố cục ChatGPT) — CHỈ áp dụng khi có thêm class
+   `.payment-mock-split` (trang Hướng dẫn mua hàng vẫn giữ bố cục dọc cũ). */
+.payment-mock-split {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: none;
+}
+
+.payment-mock-split .payment-mock-qr {
+  flex-shrink: 0;
+  width: 110px;
+  max-width: 110px;
+  margin: 0;
+}
+
+.payment-mock-split .payment-mock-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-mock-split .payment-mock-row {
+  gap: 6px;
+}
+
+.payment-mock-split .payment-mock-row b {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dưới ~480px, cột QR+thông tin nằm ngang không đủ chỗ hiển thị đầy đủ số tài
+   khoản (bị cắt "..."), nên chuyển về xếp dọc như bố cục gốc — ưu tiên đọc rõ
+   thông tin chuyển khoản hơn giữ đúng bố cục ngang trên màn hình rất hẹp. */
+@media (max-width: 480px) {
+  .payment-mock-split {
+    flex-direction: column;
+  }
+
+  .payment-mock-split .payment-mock-qr {
+    width: 140px;
+    max-width: 140px;
+    margin: 0 auto 12px;
+  }
+
+  .payment-mock-split .payment-mock-row b {
+    white-space: normal;
+    text-overflow: clip;
+  }
+}
+
+/* Icon sao chép mờ cạnh mỗi dòng thông tin chuyển khoản (vòng 26). */
+.copy-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  opacity: 0.55;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.copy-btn:hover {
+  opacity: 1;
+  color: var(--color-orange-dark);
+}
+
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
 .payment-mock-row.amount b {
   color: var(--color-orange-dark);
   font-size: 15px;
@@ -1661,9 +1751,20 @@ p {
   border-color: var(--color-orange);
 }
 
-/* ---------- Trang thanh toán (thanh-toan.html) — thiết kế lại vòng sửa V2 (mục C/D) ---------- */
+/* ---------- Trang thanh toán (thanh-toan.html) — thiết kế lại vòng sửa V2 (mục C/D), tinh chỉnh tiếp vòng 26 ---------- */
 .checkout-section {
   padding: 20px 0 48px;
+}
+
+/* Vòng 26: container riêng hẹp hơn cho trang thanh toán (áp cho CẢ breadcrumb
+   lẫn nội dung chính, dùng class `.checkout-container` thay vì `.container` mặc
+   định) — khách chê layout "kéo dài 2 bên quá" khi dùng chung --container-width
+   (1480px) của toàn site; tham khảo tỉ lệ gọn của màn thanh toán ChatGPT. */
+.checkout-container {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 3.5vw, 40px);
 }
 
 .checkout-heading {
@@ -1693,27 +1794,41 @@ p {
   padding-right: 2px;
 }
 
-/* Mỗi sản phẩm gói gọn trong 1 khung riêng (mục D). */
+/* Mỗi sản phẩm gói gọn trong 1 khung riêng (mục D). Vòng 26: sắp lại thành 1
+   HÀNG NGANG duy nhất (checkbox — ảnh sản phẩm — tên/mô tả — giá — icon xoá,
+   tất cả căn giữa theo chiều dọc) thay vì xếp dọc như trước, để giá luôn nằm
+   cùng hàng với nút xoá (tham khảo bố cục giỏ hàng FPT Shop). KHÔNG còn làm mờ
+   sản phẩm khi bỏ chọn (`.is-unselected` đã bỏ) — khách yêu cầu giữ nguyên độ
+   rõ, chỉ dựa vào trạng thái tick để biết đã chọn hay chưa. */
 .checkout-item-row {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   margin-bottom: 8px;
 }
 
-.checkout-item-row .cart-item-select {
-  margin-top: 2px;
-}
-
-.checkout-item-row.is-unselected {
-  opacity: 0.5;
-}
-
 .checkout-item-row:last-child {
   margin-bottom: 0;
+}
+
+.checkout-item-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg-section);
+  color: var(--color-orange-dark);
+  flex-shrink: 0;
+}
+
+.checkout-item-thumb svg {
+  width: 22px;
+  height: 22px;
 }
 
 .checkout-item-content {
@@ -1723,7 +1838,6 @@ p {
 
 .checkout-item-name-row {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
   margin-bottom: 3px;
@@ -1745,8 +1859,10 @@ p {
 .item-price-stack {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 1px;
-  margin-top: 4px;
+  flex-shrink: 0;
+  text-align: right;
 }
 
 .checkout-input-form {
@@ -1794,10 +1910,13 @@ p {
   cursor: pointer;
 }
 
-/* Mục C.10: 2 khối tách riêng — "Thông tin đơn hàng" và "Thông tin chuyển khoản". */
+/* Mục C.10: 2 khối tách riêng — "Thông tin đơn hàng" và "Thông tin chuyển khoản".
+   Vòng 26: đổi nền xám sang TRẮNG + viền mỏng bao quanh (tham khảo thẻ trắng
+   của ChatGPT), không còn dùng nền xám đặc. */
 .checkout-summary-box,
 .checkout-bank-box {
-  background: var(--bg-section);
+  background: var(--color-white);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 18px 20px;
 }
@@ -1810,20 +1929,42 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 0;
+  padding: 9px 0;
   font-size: 13.5px;
   color: var(--text-main);
 }
 
+/* Khuyến mãi: chữ số KHÔNG đậm/không màu đỏ nữa (vòng 26, yêu cầu tường minh
+   của khách) — chỉ còn 1 dòng phụ nhỏ "đã giảm X%" bên dưới nhãn để giải thích. */
+.summary-discount-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summary-discount-label small {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
 .summary-row .discount-value {
-  color: var(--color-error);
-  font-weight: 600;
+  color: var(--text-main);
+  font-weight: 400;
 }
 
 .summary-voucher-row {
   cursor: pointer;
   border-top: 1px solid var(--border-color);
   user-select: none;
+}
+
+/* Chevron nằm SÁT bên trái chữ "Voucher" (vòng 26 — trước đó chevron bị đẩy
+   tách hẳn sang phải, xa chữ). */
+.voucher-label-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .voucher-chevron {
@@ -1868,19 +2009,25 @@ p {
   font-size: 15px;
 }
 
+/* "Cần thanh toán": đổi từ cam sang XANH LÁ ĐẬM (vòng 26, khách chủ động cho
+   phép lệch quy tắc màu thương hiệu riêng cho số tiền này — dùng lại biến màu
+   success `#2e7d52` có sẵn, không tạo mã màu mới). */
 .summary-total-row .total-amount {
-  color: var(--color-orange-dark);
+  color: var(--color-success);
   font-weight: 800;
   font-size: 18px;
 }
 
+/* Nút "Thanh toán" dạng viên thuốc bo tròn hoàn toàn (vòng 26, tham khảo nút
+   "Đăng ký" của ChatGPT — trước đó đổi tên từ "Tôi đã chuyển khoản"). */
 .checkout-paid-btn {
   display: block;
   width: 100%;
-  max-width: 220px;
+  max-width: 240px;
   margin: 16px auto 0;
-  padding: 12px 20px;
+  padding: 13px 20px;
   font-size: 14px;
+  border-radius: 999px;
 }
 
 .checkout-final-note {
@@ -2040,11 +2187,13 @@ p {
   text-decoration: line-through;
 }
 
+/* Ô tích dạng VUÔNG bo góc nhẹ (vòng 26 — trước đó là hình tròn, khách yêu cầu
+   đổi sang vuông bo 4 góc kiểu FPT Shop, dấu tích cơ bản không uốn lượn). */
 .cart-item-select,
 .cart-select-all-circle {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
   border: 2px solid var(--border-color);
   background: var(--color-white);
   flex-shrink: 0;
@@ -2068,8 +2217,8 @@ p {
   align-items: center;
   justify-content: center;
   color: var(--color-black);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .cart-select-all {
