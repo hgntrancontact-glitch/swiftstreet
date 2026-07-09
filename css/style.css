@@ -1819,10 +1819,14 @@ p {
    điền thông tin (khách gửi ảnh mô phỏng yêu cầu gộp lại thành 1 khối, ngăn
    cách các phần bên trong bằng đường kẻ mảnh thay vì mỗi phần 1 khung riêng).
    Áp dụng cho CẢ 2 luồng: mua thẳng 1 sản phẩm lẫn nhiều sản phẩm từ giỏ. */
+/* Vòng 31: giảm padding-top (khách chê khoảng trống phía trên danh sách sản
+   phẩm khá lớn — cộng dồn với padding-bottom của "Chọn tất cả" phía trên tạo
+   khoảng cách lớn trước khi thấy sản phẩm đầu tiên). Giữ nguyên padding các
+   cạnh còn lại. */
 .checkout-left-card {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: 14px 20px 20px;
 }
 
 /* Mỗi sản phẩm gói gọn trong 1 khung riêng (mục D). Vòng 26: sắp lại thành 1
@@ -1922,6 +1926,15 @@ p {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Vòng 31: khi danh sách có icon xoá (chế độ nhiều sản phẩm từ giỏ hàng), ô
+   nhập phải dừng lại đúng ngay vị trí giá tiền — KHÔNG kéo dài vượt qua chỗ
+   nút xoá đang chiếm. 33px = đúng bằng khoảng gap(12px) + chiều rộng nút xoá
+   (21px) trong `.checkout-item-row`, đo trực tiếp bằng ảnh chụp thật. Lớp này
+   được gắn/gỡ bằng JS tại `setupCheckoutPage()` tuỳ theo có nút xoá hay không. */
+.checkout-input-form.has-delete-gutter {
+  padding-right: 33px;
 }
 
 /* Vòng 30: bỏ giới hạn max-width:260px — khách yêu cầu kéo dài 3 ô nhập bằng
@@ -2304,11 +2317,13 @@ p {
    này nằm NGOÀI bình thường (không đóng khung/không đường kẻ ngăn cách), chỉ
    còn khoảng cách với thẻ `.checkout-left-card` bên dưới. `padding-left:20px`
    để checkbox thẳng hàng tương đối với nội dung bên trong thẻ (padding 20px). */
+/* Vòng 31: giảm padding-bottom (8px, trước 14px) để bớt khoảng trống trước
+   khi vào tới danh sách sản phẩm — xem thêm ghi chú ở `.checkout-left-card`. */
 .cart-select-all {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 0 14px 20px;
+  padding: 0 0 8px 20px;
 }
 
 .cart-select-all span {

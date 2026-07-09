@@ -635,6 +635,11 @@ function setupCheckoutPage() {
   const selectAllCircle = document.getElementById("checkout-select-all-circle");
   if (selectAllRow) selectAllRow.style.display = isSingleSlug ? "none" : "flex";
 
+  // Vòng 31: chỉ chế độ nhiều sản phẩm mới có icon xoá chiếm chỗ bên phải mỗi
+  // dòng — ô nhập cần chừa đúng khoảng đó ra để không vượt qua nút xoá.
+  const inputForm = document.querySelector(".checkout-input-form");
+  if (inputForm) inputForm.classList.toggle("has-delete-gutter", !isSingleSlug);
+
   // Vòng 27: tách riêng "vẽ lại toàn bộ danh sách" (renderList — chỉ gọi khi
   // tải trang/thêm/xoá sản phẩm) khỏi "cập nhật tổng tiền" (updateTotals —
   // gọi mỗi khi tick chọn). Trước đó MỌI lần tick đều render lại toàn bộ HTML
