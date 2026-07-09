@@ -163,6 +163,15 @@ p {
   line-height: 1.25;
 }
 
+/* Nút Thêm giỏ hàng/Mua ngay trong lưới sản phẩm ở trang chủ (.hero-products)
+   PHẢI giữ nguyên cỡ nhỏ ban đầu — khách chỉ yêu cầu tăng size nút này khi vào
+   trang "Sản phẩm" (san-pham.html, không có .hero-products bao ngoài), không
+   yêu cầu đổi trên landing/trang chủ. */
+.hero-products .btn-sm {
+  padding: 9px 4px;
+  font-size: 10px;
+}
+
 /* ---------- Badges ---------- */
 .badge {
   display: inline-block;
@@ -1447,22 +1456,27 @@ p {
 }
 
 /* ---------- Responsive ---------- */
-/* Hero + lưới sản phẩm xếp dọc CHỈ khi màn hình thực sự hẹp (≤1300px) — đã
-   test bằng ảnh chụp thật (zoom từng ô mini-dashboard) ở nhiều độ rộng:
-   dưới ~1250-1280px, ô số liệu thứ 3 trong mini-dashboard ("Dung lượng
-   256,8GB") bị bóp hẹp tới mức chữ tràn ra ngoài khung thẻ (bị cắt chữ, xem
-   thêm ghi chú ở .dash-stat bên dưới). Từ 1300px trở lên, 2 cột hiển thị
-   sạch, không cắt chữ (chỉ tên sản phẩm dài có thể tự xuống 2 dòng — không
-   phải lỗi). 1300px vẫn đảm bảo 2 cột hiển thị đúng ở hầu hết mọi độ phân
-   giải laptop/desktop phổ biến (1366px trở lên) — trước đây breakpoint là
-   1500px khiến các laptop 1440-1512px bị xếp dọc nhầm dù thực ra đã đủ chỗ. */
+/* QUAN TRỌNG: hero-intro PHẢI luôn nằm bên trái ở mọi độ rộng desktop, CHỈ
+   xếp dọc (hero trên, lưới sản phẩm dưới) ở mobile thật (≤720px) — khách yêu
+   cầu rõ "hero auto bên trái trừ trường hợp xem trên mobile". Trước đây (vòng
+   18) khoảng 721-1300px bị xếp dọc toàn bộ vì lưới sản phẩm 3 cột không đủ
+   chỗ (dưới ~1280px, ô "Dung lượng 256,8GB" trong mini-dashboard bị cắt chữ —
+   xem ghi chú .dash-stat). Thay vì xếp dọc, ở dải 721-1300px: thu hẹp cột
+   .hero-intro (giữ bên trái, position:sticky) VÀ giảm lưới sản phẩm xuống 2
+   cột (thay vì 3) để mỗi thẻ đủ rộng, không còn bị cắt chữ. Đã test bằng ảnh
+   chụp thật ở dải 730-1300px trước khi chốt các con số min/max bên dưới. */
 @media (max-width: 1300px) {
   .hero-shop-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(260px, 420px) 1fr;
+    gap: 20px;
   }
 
-  .hero-intro {
-    position: static;
+  .hero-intro h1 {
+    font-size: clamp(26px, 3vw, 32px);
+  }
+
+  .hero-products .product-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1486,9 +1500,67 @@ p {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* Ở dải hẹp hơn (721-960px), lưới sản phẩm 2 cột vẫn không đủ chỗ — chuyển
+     xuống 1 cột (nhưng KHÔNG xếp dọc toàn bộ hero-shop-grid) để hero-intro
+     vẫn nằm bên trái, mỗi thẻ sản phẩm bên phải được full chiều rộng còn lại. */
+  .hero-shop-grid {
+    grid-template-columns: minmax(200px, 300px) 1fr;
+    gap: 16px;
+  }
+
+  .hero-intro h1 {
+    font-size: 22px;
+    line-height: 1.28;
+  }
+
+  .hero-eyebrow {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .hero-promo-text {
+    font-size: 15px;
+  }
+
+  .hero-products .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Lưới sản phẩm KHÔNG nằm trong hero (trang san-pham.html) cũng cần giảm
+     xuống 2 cột ở dải này — nút Thêm giỏ hàng/Mua ngay cỡ to (đã tăng riêng
+     cho trang này ở vòng 19) sẽ tràn chữ nếu vẫn giữ 3 cột lúc thẻ bị bóp hẹp. */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 720px) {
+  /* Chỉ ở mobile thật mới xếp dọc hero (hero trên, lưới sản phẩm dưới). */
+  .hero-shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-intro {
+    position: static;
+  }
+
+  .hero-products .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Trên mobile, hero-intro full chiều rộng (không còn bị bó hẹp bởi cột
+     bên cạnh) nên khôi phục lại cỡ chữ gốc cho eyebrow/đoạn khuyến mãi
+     (khác với dải 721-960px vẫn còn 2 cột nên phải thu nhỏ 2 phần này). */
+  .hero-eyebrow {
+    font-size: 17px;
+    margin-bottom: 12px;
+  }
+
+  .hero-promo-text {
+    font-size: 18.5px;
+  }
+
   /* Tiêu đề hero dùng <br> ngắt dòng cứng cho desktop (3 dòng độ dài so le) —
      ở màn hình hẹp, font-size desktop (32-39px) khiến mỗi dòng đó tự wrap
      thêm 1 lần nữa (vỡ thành 6 dòng, trông rất xấu). Giảm hẳn cỡ chữ riêng
