@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/style.css?v=25" />
+  <link rel="stylesheet" href="css/style.css?v=26" />
 </head>
 <body>
 
@@ -42,10 +42,10 @@
             <div class="notify-dropdown-list" id="notify-dropdown-list"></div>
           </div>
         </div>
-        <button class="icon-btn" aria-label="Giỏ hàng" data-modal="cart">
+        <a class="icon-btn" aria-label="Giỏ hàng" href="thanh-toan.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M2.5 3h2l2.3 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H5.5"/></svg>
           <span class="icon-dot"></span>
-        </button>
+        </a>
         <button class="nav-toggle" aria-label="Mở menu">
           <span></span><span></span><span></span>
         </button>
@@ -59,20 +59,21 @@
     </div>
   </div>
 
-  <section class="section">
+  <section class="section checkout-section">
     <div class="container">
-      <div class="section-heading" style="margin-bottom: 32px;">
-        <span class="badge badge-orange">Thanh toán</span>
-        <h1>Hoàn tất đơn hàng</h1>
-      </div>
+      <h1 class="checkout-heading">Hoàn tất đơn hàng</h1>
 
       <div id="checkout-main">
         <div class="checkout-grid">
           <div class="checkout-col">
+            <div class="cart-select-all" id="checkout-select-all" data-checkout-toggle-select-all style="display:none;">
+              <span class="cart-select-all-circle" id="checkout-select-all-circle"></span>
+              <span>Chọn tất cả</span>
+            </div>
             <div class="checkout-product-list" id="checkout-product-list"></div>
 
             <h3 class="checkout-subheading">Điền thông tin của bạn</h3>
-            <div class="simple-form" style="max-width:none; margin:0 0 4px; padding:0; background:none; border:none;">
+            <div class="checkout-input-form">
               <label>
                 Họ tên
                 <input type="text" id="checkout-name" placeholder="Nguyễn Văn A" />
@@ -83,13 +84,8 @@
               </label>
               <label>
                 Email nhận file
-                <input type="email" id="checkout-email" placeholder="ban@email.com" />
+                <input type="email" id="checkout-email" placeholder="your@gmail.com" />
               </label>
-            </div>
-
-            <div class="checkout-total-box">
-              <span>Tổng cộng</span>
-              <span id="checkout-total">0đ</span>
             </div>
 
             <p class="checkout-note">
@@ -98,37 +94,53 @@
           </div>
 
           <div class="checkout-col">
-            <h3 class="checkout-subheading">Quét mã để thanh toán</h3>
-            <div class="payment-mock" style="max-width: 340px; margin: 0 auto;">
-              <div class="payment-mock-head">Quét mã để thanh toán</div>
-              <div class="payment-mock-qr">
-                <svg viewBox="0 0 90 90" role="img" aria-label="Mã QR minh hoạ (mô phỏng)">
-                  <rect width="90" height="90" fill="#fff"/>
-                  <rect x="6" y="6" width="18" height="18" fill="#1a1a1a"/><rect x="12" y="12" width="6" height="6" fill="#fff"/>
-                  <rect x="66" y="6" width="18" height="18" fill="#1a1a1a"/><rect x="72" y="12" width="6" height="6" fill="#fff"/>
-                  <rect x="6" y="66" width="18" height="18" fill="#1a1a1a"/><rect x="12" y="72" width="6" height="6" fill="#fff"/>
-                  <rect x="30" y="6" width="6" height="6" fill="#1a1a1a"/><rect x="42" y="6" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="6" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="30" y="18" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="18" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="36" y="30" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="30" width="6" height="6" fill="#1a1a1a"/><rect x="66" y="30" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="6" y="36" width="6" height="6" fill="#1a1a1a"/><rect x="30" y="36" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="36" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="18" y="42" width="6" height="6" fill="#1a1a1a"/><rect x="42" y="42" width="6" height="6" fill="#1a1a1a"/><rect x="60" y="42" width="6" height="6" fill="#1a1a1a"/><rect x="78" y="42" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="30" y="48" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="48" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="42" y="54" width="6" height="6" fill="#1a1a1a"/><rect x="66" y="54" width="6" height="6" fill="#1a1a1a"/><rect x="78" y="54" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="30" y="60" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="60" width="6" height="6" fill="#1a1a1a"/><rect x="60" y="60" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="36" y="72" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="72" width="6" height="6" fill="#1a1a1a"/><rect x="66" y="72" width="6" height="6" fill="#1a1a1a"/>
-                  <rect x="30" y="78" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="78" width="6" height="6" fill="#1a1a1a"/><rect x="72" y="78" width="6" height="6" fill="#1a1a1a"/>
-                </svg>
+            <div class="checkout-summary-box">
+              <h3 class="checkout-subheading">Thông tin đơn hàng</h3>
+              <div class="summary-row"><span>Tổng tiền</span><span id="checkout-subtotal">0đ</span></div>
+              <div class="summary-row"><span>Tổng khuyến mãi</span><span id="checkout-discount" class="discount-value">-0đ</span></div>
+              <div class="summary-row summary-voucher-row" id="voucher-toggle" data-voucher-toggle>
+                <span>Voucher</span>
+                <span class="voucher-chevron">▾</span>
               </div>
-              <div class="payment-mock-row"><span>Ngân hàng</span><b>Vietcombank</b></div>
-              <div class="payment-mock-row"><span>Chủ tài khoản</span><b>CTY SWIFTSTREET</b></div>
-              <div class="payment-mock-row"><span>Số tài khoản</span><b>0071000123456</b></div>
-              <div class="payment-mock-row amount"><span>Số tiền</span><b id="checkout-amount">0đ</b></div>
-              <div class="payment-mock-row"><span>Nội dung CK</span><b id="checkout-order-code">SS0000</b></div>
+              <div class="voucher-input-wrap" id="voucher-input-wrap">
+                <input type="text" class="voucher-input" placeholder="Nhập mã voucher" />
+              </div>
+              <div class="summary-row summary-total-row"><span>Cần thanh toán</span><span id="checkout-total" class="total-amount">0đ</span></div>
             </div>
 
-            <button type="button" class="btn btn-dark btn-block" id="checkout-paid-btn" style="margin-top:16px;">Tôi đã chuyển khoản</button>
+            <div class="checkout-bank-box">
+              <h3 class="checkout-subheading">Thông tin chuyển khoản</h3>
+              <div class="payment-mock">
+                <div class="payment-mock-qr">
+                  <svg viewBox="0 0 90 90" role="img" aria-label="Mã QR minh hoạ (mô phỏng)">
+                    <rect width="90" height="90" fill="#fff"/>
+                    <rect x="6" y="6" width="18" height="18" fill="#1a1a1a"/><rect x="12" y="12" width="6" height="6" fill="#fff"/>
+                    <rect x="66" y="6" width="18" height="18" fill="#1a1a1a"/><rect x="72" y="12" width="6" height="6" fill="#fff"/>
+                    <rect x="6" y="66" width="18" height="18" fill="#1a1a1a"/><rect x="12" y="72" width="6" height="6" fill="#fff"/>
+                    <rect x="30" y="6" width="6" height="6" fill="#1a1a1a"/><rect x="42" y="6" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="6" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="30" y="18" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="18" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="36" y="30" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="30" width="6" height="6" fill="#1a1a1a"/><rect x="66" y="30" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="6" y="36" width="6" height="6" fill="#1a1a1a"/><rect x="30" y="36" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="36" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="18" y="42" width="6" height="6" fill="#1a1a1a"/><rect x="42" y="42" width="6" height="6" fill="#1a1a1a"/><rect x="60" y="42" width="6" height="6" fill="#1a1a1a"/><rect x="78" y="42" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="30" y="48" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="48" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="42" y="54" width="6" height="6" fill="#1a1a1a"/><rect x="66" y="54" width="6" height="6" fill="#1a1a1a"/><rect x="78" y="54" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="30" y="60" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="60" width="6" height="6" fill="#1a1a1a"/><rect x="60" y="60" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="36" y="72" width="6" height="6" fill="#1a1a1a"/><rect x="54" y="72" width="6" height="6" fill="#1a1a1a"/><rect x="66" y="72" width="6" height="6" fill="#1a1a1a"/>
+                    <rect x="30" y="78" width="6" height="6" fill="#1a1a1a"/><rect x="48" y="78" width="6" height="6" fill="#1a1a1a"/><rect x="72" y="78" width="6" height="6" fill="#1a1a1a"/>
+                  </svg>
+                </div>
+                <div class="payment-mock-row"><span>Ngân hàng</span><b>Vietcombank</b></div>
+                <div class="payment-mock-row"><span>Chủ tài khoản</span><b>CTY SWIFTSTREET</b></div>
+                <div class="payment-mock-row"><span>Số tài khoản</span><b>0071000123456</b></div>
+                <div class="payment-mock-row"><span>Nội dung CK</span><b id="checkout-order-code">SS0000</b></div>
+              </div>
 
-            <p class="checkout-note-2">Sau khi thanh toán, chúng tôi sẽ gửi thông tin đơn hàng qua email trong thời gian sớm nhất. Vui lòng kiểm tra cả hộp thư rác nếu không thấy thư.</p>
+              <button type="button" class="btn btn-dark checkout-paid-btn" id="checkout-paid-btn">Tôi đã chuyển khoản</button>
+
+              <p class="checkout-final-note">
+                Sau khi thanh toán, chúng tôi sẽ gửi thông tin đơn hàng qua email trong thời gian sớm nhất. Vui lòng kiểm tra cả hộp thư rác nếu không thấy thư. Khi thanh toán, bạn đồng ý với <a href="footer-pages/dieu-khoan-su-dung.html" class="note-link">Điều khoản sử dụng</a>, <a href="khuyen-mai.html" class="note-link">Khuyến mãi</a> và <a href="footer-pages/chinh-sach-doi-tra.html" class="note-link">Chính sách đổi trả dịch vụ</a>, và cho phép Swiftstreet lưu trữ và tính phí phương thức thanh toán của bạn.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -163,7 +175,7 @@
         <div class="footer-col">
           <h4>Sản phẩm</h4>
           <ul>
-            <li><a href="thanh-toan.html?slug=swiftcopy-drive">SwiftCopy.Drive</a></li>
+            <li><a href="products/swiftcopy-drive.html">SwiftCopy.Drive</a></li>
             <li><a href="thanh-toan.html?slug=swiftplanner-wedding">SwiftPlanner Wedding</a></li>
             <li><a href="san-pham.html">Nhiều sản phẩm khác...</a></li>
           </ul>

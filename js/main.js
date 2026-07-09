@@ -195,24 +195,29 @@ function setCart(cart) {
   syncCartUI();
 }
 
+/**
+ * Thêm sản phẩm vào giỏ. Nếu sản phẩm đã có sẵn, KHÔNG tăng số lượng (mỗi sản
+ * phẩm luôn chỉ có đúng 1 dòng trong giỏ) — chỉ báo lại bằng bảng trượt trái.
+ */
 function addToCart(product) {
   const cart = getCart();
   const existing = cart.find((item) => item.slug === product.slug);
   if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({
-      slug: product.slug,
-      name: product.name,
-      price: parsePriceVN(product.priceCurrent),
-      priceOld: parsePriceVN(product.priceOld),
-      shortDesc: product.shortDesc || "",
-      type: product.type,
-      qty: 1,
-      selected: true,
-    });
+    showSlideToast("Sản phẩm này đã có trong giỏ hàng");
+    return;
   }
+  cart.push({
+    slug: product.slug,
+    name: product.name,
+    price: parsePriceVN(product.priceCurrent),
+    priceOld: parsePriceVN(product.priceOld),
+    shortDesc: product.shortDesc || "",
+    type: product.type,
+    qty: 1,
+    selected: true,
+  });
   setCart(cart);
+  showSlideToast(`Đã thêm "${product.name}" vào giỏ hàng`);
 }
 
 function removeFromCart(slug) {
@@ -246,69 +251,12 @@ function updateCartBadge(cart) {
   });
 }
 
-function buildCartModalHTML(cart) {
-  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-  const head = `
-    <div class="modal-head cart-modal-head">
-      <h3>Giỏ hàng (${totalQty})</h3>
-      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
-    </div>`;
-
-  if (!cart.length) {
-    return `${head}<p class="modal-empty">Giỏ hàng của bạn đang trống.</p>`;
-  }
-
-  const allSelected = cart.every((item) => item.selected);
-  const selectedTotal = cart.reduce((sum, item) => (item.selected ? sum + item.price * item.qty : sum), 0);
-
-  const itemsHTML = cart.map((item) => {
-    const save = item.priceOld > item.price ? item.priceOld - item.price : 0;
-    return `
-    <div class="cart-item">
-      <div class="cart-item-name-row">
-        <b>${item.name}${item.qty > 1 ? ` × ${item.qty}` : ""}</b>
-        <button class="cart-item-delete" data-remove-slug="${item.slug}" aria-label="Xoá">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7"/></svg>
-        </button>
-      </div>
-      <div class="cart-item-body">
-        <div class="cart-item-thumb">${DASH_ICONS[PRODUCT_TYPE_ICON[item.type]] || DASH_ICONS.cart}</div>
-        <div class="cart-item-info">
-          ${item.shortDesc ? `<p class="cart-item-desc">${item.shortDesc}</p>` : ""}
-          <div class="cart-item-price">
-            <span class="cart-price-current">${formatPriceVN(item.price)}</span>
-            ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}
-            ${save > 0 ? `<span class="cart-price-save">Giảm ${formatPriceVN(save)}</span>` : ""}
-          </div>
-        </div>
-        <button class="cart-item-select${item.selected ? " checked" : ""}" data-toggle-select="${item.slug}" aria-label="Chọn sản phẩm"></button>
-      </div>
-    </div>`;
-  }).join("");
-
-  return `
-    ${head}
-    ${itemsHTML}
-    <div class="cart-select-all" data-toggle-select-all>
-      <span class="cart-select-all-circle${allSelected ? " checked" : ""}"></span>
-      <span>Chọn tất cả</span>
-    </div>
-    <div class="modal-cart-total">
-      <span>Tổng cộng</span>
-      <span>${formatPriceVN(selectedTotal)}</span>
-    </div>
-    <button class="btn btn-primary btn-block" data-cart-checkout style="margin-top:16px;">Mua ngay</button>`;
-}
-
-/** Đồng bộ badge số lượng ở icon giỏ hàng header + nội dung modal giỏ hàng theo localStorage hiện tại. */
+/** Đồng bộ badge số lượng ở icon giỏ hàng header theo localStorage hiện tại. */
 function syncCartUI() {
-  const cart = getCart();
-  updateCartBadge(cart);
-  const modalEl = document.getElementById("modal-cart");
-  if (modalEl) modalEl.innerHTML = buildCartModalHTML(cart);
+  updateCartBadge(getCart());
 }
 
-/** Gắn sự kiện cho nút "Thêm giỏ hàng", xoá/chọn sản phẩm, và nút "Mua ngay" của giỏ hàng. */
+/** Gắn sự kiện cho nút "Thêm giỏ hàng" (icon giỏ hàng ở header giờ là link thẳng sang trang thanh toán). */
 function setupCartActions() {
   document.body.addEventListener("click", (e) => {
     const addBtn = e.target.closest("[data-add-to-cart]");
@@ -316,34 +264,8 @@ function setupCartActions() {
       e.preventDefault();
       const slug = addBtn.dataset.addToCart;
       const product = typeof PRODUCTS !== "undefined" ? PRODUCTS.find((p) => p.slug === slug) : null;
-      if (product) {
-        addToCart(product);
-        openModal("cart");
-      }
+      if (product) addToCart(product);
       return;
-    }
-
-    const removeBtn = e.target.closest("[data-remove-slug]");
-    if (removeBtn) {
-      removeFromCart(removeBtn.dataset.removeSlug);
-      return;
-    }
-
-    const selectBtn = e.target.closest("[data-toggle-select]");
-    if (selectBtn) {
-      toggleCartItemSelected(selectBtn.dataset.toggleSelect);
-      return;
-    }
-
-    const selectAllBtn = e.target.closest("[data-toggle-select-all]");
-    if (selectAllBtn) {
-      toggleSelectAllCart();
-      return;
-    }
-
-    const checkoutBtn = e.target.closest("[data-cart-checkout]");
-    if (checkoutBtn) {
-      window.location.href = getRootPrefix() + "thanh-toan.html";
     }
   });
 }
@@ -403,11 +325,89 @@ function buildFaqModalHTML() {
     <a href="${prefix}footer-pages/cau-hoi-thuong-gap.html" class="btn btn-outline btn-block" style="margin-top:16px;">Xem tất cả câu hỏi</a>`;
 }
 
-/** Nội dung modal: giỏ hàng (động, xem buildCartModalHTML), hỗ trợ, FAQ rút gọn. */
+/** 10 đánh giá giả lập cho modal "Đánh giá Swiftstreet" — email che một phần, sao xen kẽ 4-5. */
+const REVIEWS = [
+  { email: "tr********ork@gmail.com", rating: 5, comment: "Dùng SwiftCopy.Drive sao chép hồ sơ khách hàng nhanh gấp nhiều lần, tiết kiệm cả buổi làm việc." },
+  { email: "an********99@gmail.com", rating: 4, comment: "Giao diện dễ dùng, chỉ mong có thêm hướng dẫn video chi tiết hơn." },
+  { email: "mi**********le@gmail.com", rating: 5, comment: "File Wedding Planner rất chi tiết, mình dùng để chuẩn bị đám cưới đỡ rối hẳn." },
+  { email: "hu***********an@gmail.com", rating: 5, comment: "Giá hợp lý, mua 1 lần dùng lâu dài, không lo phí gia hạn." },
+  { email: "th*******12@gmail.com", rating: 4, comment: "Sản phẩm tốt, nhận file qua email hơi chậm một chút nhưng vẫn ổn." },
+  { email: "lin**********rk@gmail.com", rating: 5, comment: "Hỗ trợ nhiệt tình khi mình nhắn Zalo hỏi cách dùng." },
+  { email: "kh***********88@gmail.com", rating: 5, comment: "SwiftTrack Finance giúp mình theo dõi chi tiêu rõ ràng hơn hẳn so với ghi tay." },
+  { email: "ng************99@gmail.com", rating: 4, comment: "Công cụ hữu ích, cần thêm vài mẫu báo cáo có sẵn thì sẽ hoàn hảo hơn." },
+  { email: "ph**********ng@gmail.com", rating: 5, comment: "Đặt hàng xong nhận file rất nhanh, đúng như mô tả." },
+  { email: "vu*******an@gmail.com", rating: 4, comment: "Ổn trong tầm giá, sẽ ủng hộ thêm sản phẩm khác của Swiftstreet." },
+];
+
+function renderStars(rating) {
+  return `<span class="stars"><span class="star-filled">${"★".repeat(rating)}</span><span class="star-empty">${"★".repeat(5 - rating)}</span></span>`;
+}
+
+/** Modal "Đánh giá Swiftstreet": danh sách đánh giá giả lập + khu vực để khách tự đánh giá. */
+function buildRateModalHTML() {
+  const reviewsHTML = REVIEWS.map((r) => `
+    <div class="review-item">
+      <div class="review-item-head">
+        <span class="review-email">${r.email}</span>
+        ${renderStars(r.rating)}
+      </div>
+      <p class="review-comment">${r.comment}</p>
+    </div>
+  `).join("");
+
+  const starsPicker = [1, 2, 3, 4, 5].map((n) => `<button type="button" class="rate-star-btn" data-star="${n}" aria-label="${n} sao">★</button>`).join("");
+
+  return `
+    <div class="modal-head">
+      <h3>Đánh giá Swiftstreet</h3>
+      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
+    </div>
+    <div class="review-list">${reviewsHTML}</div>
+    <div class="rate-your-section">
+      <p class="rate-your-label">Để lại đánh giá của bạn</p>
+      <div class="rate-picker" id="rate-picker">${starsPicker}</div>
+      <div class="rate-feedback" id="rate-feedback">
+        <label for="rate-feedback-text">Nội dung ý kiến phản hồi</label>
+        <textarea id="rate-feedback-text" placeholder="Nhập trải nghiệm thực tế của bạn tại đây..."></textarea>
+      </div>
+      <div class="rate-actions">
+        <button type="button" class="btn btn-cancel-gray" id="rate-cancel-btn">Không phải bây giờ</button>
+        <button type="button" class="btn rate-submit-btn" id="rate-submit-btn">Gửi đánh giá</button>
+      </div>
+    </div>`;
+}
+
+/** Gắn tương tác cho modal đánh giá: chọn sao → hiện ô nhập, gửi/bỏ qua → đóng modal. */
+function setupRateModalActions() {
+  document.body.addEventListener("click", (e) => {
+    const starBtn = e.target.closest(".rate-star-btn");
+    if (starBtn) {
+      const val = parseInt(starBtn.dataset.star, 10);
+      document.querySelectorAll(".rate-star-btn").forEach((b) => {
+        b.classList.toggle("active", parseInt(b.dataset.star, 10) <= val);
+      });
+      const feedback = document.getElementById("rate-feedback");
+      if (feedback) feedback.classList.add("show");
+      return;
+    }
+
+    if (e.target.closest("#rate-submit-btn")) {
+      closeModals();
+      showToast("Cảm ơn bạn đã gửi đánh giá!");
+      return;
+    }
+
+    if (e.target.closest("#rate-cancel-btn")) {
+      closeModals();
+    }
+  });
+}
+
+/** Nội dung modal: hỗ trợ, FAQ rút gọn, đánh giá Swiftstreet. */
 const MODAL_CONTENT = {
-  cart: buildCartModalHTML(getCart()),
   support: buildSupportModalHTML(),
   faq: buildFaqModalHTML(),
+  rate: buildRateModalHTML(),
 };
 
 let modalOverlayEl = null;
@@ -471,6 +471,21 @@ function setupModals() {
       openModal(btn.dataset.modal);
     });
   });
+}
+
+/** Bảng nhỏ trượt từ mép trái, tự ẩn sau 2 giây — dùng cho xác nhận "Thêm giỏ hàng". */
+function showSlideToast(message) {
+  let toast = document.getElementById("swiftstreet-slide-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "swiftstreet-slide-toast";
+    toast.className = "cart-slide-toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
 /** Toast nhỏ tự ẩn sau vài giây (dùng cho "Báo lỗi"). */
@@ -572,12 +587,18 @@ function getCheckoutItems() {
       slug: product.slug,
       name: product.name,
       price: parsePriceVN(product.priceCurrent),
+      priceOld: parsePriceVN(product.priceOld),
+      shortDesc: product.shortDesc || "",
       type: product.type,
       qty: 1,
+      selected: true,
     }];
   }
   return getCart().filter((item) => item.selected);
 }
+
+/** Chỉ SwiftCopy.Drive đã có trang chi tiết thật — các sản phẩm khác chưa link được. */
+const CHECKOUT_LINKABLE_SLUGS = ["swiftcopy-drive"];
 
 /** Render trang thanh-toan.html (chỉ chạy nếu trang hiện tại có #checkout-product-list). */
 function setupCheckoutPage() {
@@ -589,8 +610,15 @@ function setupCheckoutPage() {
   const orderCodeEl = document.getElementById("checkout-order-code");
   if (orderCodeEl) orderCodeEl.textContent = orderCode;
 
+  const selectAllRow = document.getElementById("checkout-select-all");
+  const selectAllCircle = document.getElementById("checkout-select-all-circle");
+  if (selectAllRow) selectAllRow.style.display = isSingleSlug ? "none" : "flex";
+
   function render() {
-    const items = getCheckoutItems();
+    // Chế độ nhiều sản phẩm: hiển thị TOÀN BỘ giỏ hàng (kể cả sản phẩm đang bỏ
+    // chọn) để khách vẫn thấy và có thể tick lại — chỉ sản phẩm được chọn mới
+    // tính vào "Cần thanh toán". Chế độ 1 sản phẩm dùng getCheckoutItems() như cũ.
+    const items = isSingleSlug ? getCheckoutItems() : getCart();
     const mainEl = document.getElementById("checkout-main");
     const emptyEl = document.getElementById("checkout-empty");
 
@@ -602,35 +630,76 @@ function setupCheckoutPage() {
     if (mainEl) mainEl.style.display = "";
     if (emptyEl) emptyEl.style.display = "none";
 
-    list.innerHTML = items.map((item) => `
-      <div class="checkout-product-item">
-        <div class="cart-item-thumb">${DASH_ICONS[PRODUCT_TYPE_ICON[item.type]] || DASH_ICONS.cart}</div>
-        <div class="checkout-product-info">
-          <b>${item.name}</b>
-          <span>${formatPriceVN(item.price)}${item.qty > 1 ? ` × ${item.qty}` : ""}</span>
-        </div>
-        ${isSingleSlug ? "" : `
-          <button class="cart-item-delete" data-checkout-remove="${item.slug}" aria-label="Xoá">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7"/></svg>
-          </button>`}
-      </div>
-    `).join("");
+    if (selectAllCircle) selectAllCircle.classList.toggle("checked", items.every((item) => item.selected));
 
-    const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    list.innerHTML = items.map((item) => {
+      const nameHTML = CHECKOUT_LINKABLE_SLUGS.includes(item.slug)
+        ? `<a href="${getRootPrefix()}products/${item.slug}.html" class="checkout-item-name-link">${item.name}</a>`
+        : `<b class="checkout-item-name">${item.name}</b>`;
+      return `
+      <div class="checkout-item-row${!isSingleSlug && !item.selected ? " is-unselected" : ""}">
+        ${isSingleSlug ? "" : `<button class="cart-item-select${item.selected ? " checked" : ""}" data-checkout-toggle-select="${item.slug}" aria-label="Chọn sản phẩm"></button>`}
+        <div class="checkout-item-content">
+          <div class="checkout-item-name-row">
+            ${nameHTML}
+            ${isSingleSlug ? "" : `
+              <button class="cart-item-delete" data-checkout-remove="${item.slug}" aria-label="Xoá">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7"/></svg>
+              </button>`}
+          </div>
+          ${item.shortDesc ? `<p class="cart-item-desc">${item.shortDesc}</p>` : ""}
+          <div class="item-price-stack">
+            <span class="cart-price-current">${formatPriceVN(item.price)}</span>
+            ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+
+    const calcItems = items.filter((item) => item.selected);
+    const subtotalOld = calcItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
+    const total = calcItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const discount = subtotalOld - total;
+
+    const subtotalEl = document.getElementById("checkout-subtotal");
+    const discountEl = document.getElementById("checkout-discount");
     const totalEl = document.getElementById("checkout-total");
-    const amountEl = document.getElementById("checkout-amount");
+    if (subtotalEl) subtotalEl.textContent = formatPriceVN(subtotalOld);
+    if (discountEl) discountEl.textContent = "-" + formatPriceVN(discount);
     if (totalEl) totalEl.textContent = formatPriceVN(total);
-    if (amountEl) amountEl.textContent = formatPriceVN(total);
   }
 
   render();
 
   list.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-checkout-remove]");
-    if (!btn) return;
-    removeFromCart(btn.dataset.checkoutRemove);
-    render();
+    const removeBtn = e.target.closest("[data-checkout-remove]");
+    if (removeBtn) {
+      removeFromCart(removeBtn.dataset.checkoutRemove);
+      render();
+      return;
+    }
+    const selectBtn = e.target.closest("[data-checkout-toggle-select]");
+    if (selectBtn) {
+      toggleCartItemSelected(selectBtn.dataset.checkoutToggleSelect);
+      render();
+    }
   });
+
+  if (selectAllRow) {
+    selectAllRow.addEventListener("click", () => {
+      toggleSelectAllCart();
+      render();
+    });
+  }
+
+  const voucherToggle = document.getElementById("voucher-toggle");
+  const voucherWrap = document.getElementById("voucher-input-wrap");
+  if (voucherToggle && voucherWrap) {
+    voucherToggle.addEventListener("click", () => {
+      voucherWrap.classList.toggle("show");
+      voucherToggle.classList.toggle("open");
+    });
+  }
 
   const paidBtn = document.getElementById("checkout-paid-btn");
   if (paidBtn) {
@@ -648,5 +717,6 @@ document.addEventListener("DOMContentLoaded", () => {
   syncCartUI();
   setupSupportFab();
   setupNotifyDropdown();
+  setupRateModalActions();
   setupCheckoutPage();
 });
