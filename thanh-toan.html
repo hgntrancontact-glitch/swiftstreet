@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/style.css?v=28" />
+  <link rel="stylesheet" href="css/style.css?v=29" />
 </head>
 <body>
 
@@ -66,27 +66,29 @@
       <div id="checkout-main">
         <div class="checkout-grid">
           <div class="checkout-col">
-            <div class="cart-select-all" id="checkout-select-all" data-checkout-toggle-select-all style="display:none;">
-              <span class="cart-select-all-circle" id="checkout-select-all-circle"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
-              <span>Chọn tất cả</span>
-            </div>
-            <div class="checkout-product-list" id="checkout-product-list"></div>
+            <div class="checkout-left-card">
+              <div class="cart-select-all" id="checkout-select-all" data-checkout-toggle-select-all style="display:none;">
+                <span class="cart-select-all-circle" id="checkout-select-all-circle"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+                <span>Chọn tất cả</span>
+              </div>
+              <div class="checkout-product-list" id="checkout-product-list"></div>
 
-            <div class="checkout-input-form-wrap">
-              <h3 class="checkout-subheading">Điền thông tin của bạn</h3>
-              <div class="checkout-input-form">
-                <label>
-                  Họ tên
-                  <input type="text" id="checkout-name" placeholder="Nguyễn Văn A" />
-                </label>
-                <label>
-                  Số điện thoại / Zalo
-                  <input type="tel" id="checkout-phone" placeholder="09xx xxx xxx" />
-                </label>
-                <label>
-                  Email nhận file
-                  <input type="email" id="checkout-email" placeholder="your@gmail.com" />
-                </label>
+              <div class="checkout-form-section">
+                <h3 class="checkout-subheading">Điền thông tin của bạn</h3>
+                <div class="checkout-input-form">
+                  <label>
+                    Họ tên
+                    <input type="text" id="checkout-name" placeholder="Nguyễn Văn A" />
+                  </label>
+                  <label>
+                    Số điện thoại / Zalo
+                    <input type="tel" id="checkout-phone" placeholder="09xx xxx xxx" />
+                  </label>
+                  <label>
+                    Email nhận file
+                    <input type="email" id="checkout-email" placeholder="your@gmail.com" />
+                  </label>
+                </div>
               </div>
             </div>
 

@@ -1809,7 +1809,17 @@ p {
 /* Vòng 27: bỏ giới hạn 5 dòng + cuộn riêng (yêu cầu vòng 25/26) — khách đổi ý,
    giờ muốn hiện HẾT toàn bộ sản phẩm trong giỏ, không cuộn danh sách nữa. */
 .checkout-product-list {
-  margin-bottom: 18px;
+  margin-bottom: 0;
+}
+
+/* Vòng 28: thẻ thống nhất bọc CẢ "Chọn tất cả" + danh sách sản phẩm + form
+   điền thông tin (khách gửi ảnh mô phỏng yêu cầu gộp lại thành 1 khối, ngăn
+   cách các phần bên trong bằng đường kẻ mảnh thay vì mỗi phần 1 khung riêng).
+   Áp dụng cho CẢ 2 luồng: mua thẳng 1 sản phẩm lẫn nhiều sản phẩm từ giỏ. */
+.checkout-left-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
 }
 
 /* Mỗi sản phẩm gói gọn trong 1 khung riêng (mục D). Vòng 26: sắp lại thành 1
@@ -1818,18 +1828,14 @@ p {
    cùng hàng với nút xoá (tham khảo bố cục giỏ hàng FPT Shop). KHÔNG còn làm mờ
    sản phẩm khi bỏ chọn (`.is-unselected` đã bỏ) — khách yêu cầu giữ nguyên độ
    rõ, chỉ dựa vào trạng thái tick để biết đã chọn hay chưa. */
+/* Vòng 28: bỏ khung viền riêng từng dòng, đổi sang đường kẻ mảnh ngăn cách
+   (khách gửi ảnh mô phỏng gộp toàn bộ cột trái thành 1 thẻ thống nhất). */
 .checkout-item-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
-}
-
-.checkout-item-row:last-child {
-  margin-bottom: 0;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .checkout-item-thumb {
@@ -1903,11 +1909,10 @@ p {
 
 /* Vòng 27: bọc khung viền mỏng cho khu vực "Điền thông tin của bạn" — trước đó
    không có khung bao, trông lỏng lẻo/nhiều khoảng trống thừa. */
-.checkout-input-form-wrap {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  margin-bottom: 18px;
+/* Vòng 28: không còn khung viền riêng cho khu vực form — giờ nằm chung 1 thẻ
+   với danh sách sản phẩm (`.checkout-left-card`), chỉ cần khoảng cách trên. */
+.checkout-form-section {
+  margin-top: 18px;
 }
 
 .checkout-input-form {
@@ -2285,14 +2290,17 @@ p {
   opacity: 1;
 }
 
-/* Vòng 27: thêm padding-left 12px để ô tích "Chọn tất cả" thẳng hàng với ô
-   tích từng sản phẩm bên dưới (`.checkout-item-row` có padding 12px quanh, nên
-   checkbox của từng dòng lùi vào 12px so với mép trái cột). */
+/* Vòng 28: không còn cần padding-left riêng để căn thẳng hàng với checkbox
+   từng sản phẩm — giờ "Chọn tất cả" và từng dòng sản phẩm đều là con trực
+   tiếp của CÙNG 1 thẻ `.checkout-left-card` nên tự thẳng hàng theo padding
+   chung của thẻ. Thêm đường kẻ mảnh ngăn cách với danh sách bên dưới. */
 .cart-select-all {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 0 4px 12px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 14px;
 }
 
 .cart-select-all span {
