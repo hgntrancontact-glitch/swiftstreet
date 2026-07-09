@@ -1924,6 +1924,9 @@ p {
   gap: 12px;
 }
 
+/* Vòng 30: bỏ giới hạn max-width:260px — khách yêu cầu kéo dài 3 ô nhập bằng
+   đúng chiều rộng thẻ (thẳng tới vị trí giá tiền/icon xoá trong dòng sản phẩm
+   phía trên, không để hẹp/lọt thỏm giữa khoảng trống thừa). */
 .checkout-input-form label {
   display: flex;
   flex-direction: column;
@@ -1931,32 +1934,15 @@ p {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-main);
-  max-width: 260px;
 }
 
-/* Vòng 29: thêm icon minh hoạ bên trong mỗi ô nhập (người/điện thoại/email)
-   cho đẹp và "khớp" hơn với phần còn lại của trang — trước đó chỉ là ô nhập
-   trơn không có điểm nhấn. */
-.checkout-field-input {
-  position: relative;
-}
-
-.checkout-field-input svg {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
+/* Vòng 30: BỎ icon trong ô nhập (khách yêu cầu gỡ lại sau khi xem thử ở vòng
+   29) — quay về ô nhập trơn, không còn `.checkout-field-input`/svg bên trong. */
 .checkout-input-form input {
   width: 100%;
   font-family: inherit;
   font-size: 14px;
-  padding: 11px 12px 11px 36px;
+  padding: 11px 12px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   background: var(--color-white);
