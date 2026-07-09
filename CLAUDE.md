@@ -24,6 +24,9 @@ san-pham.html                  Trang danh sách đầy đủ tất cả sản ph
 khuyen-mai.html                Trang placeholder "Khuyến mãi" (chưa có nội dung thật)
 kiem-tien.html                 Trang placeholder "Kiếm Tiền" (chưa có nội dung thật)
 products/swiftcopy-drive.html  Trang chi tiết sản phẩm (mẫu — nhân bản file này cho sản phẩm khác)
+footer-pages/                  6 trang nội dung footer riêng biệt (Về chúng tôi, Câu hỏi thường gặp,
+                                Hướng dẫn mua hàng, Điều khoản sử dụng, Chính sách đổi trả, Kiếm tiền
+                                CTV) — xem mục "Trang nội dung footer" bên dưới
 css/style.css                  Toàn bộ style + biến màu (:root) + responsive
 js/main.js                     Render lưới sản phẩm (khung "laptop" mô phỏng giao diện),
                                 xử lý menu mobile, và hệ thống modal (thông báo/giỏ hàng/hỗ trợ)
@@ -160,6 +163,31 @@ Footer gồm **5 cột**: `.footer-brand` (logo header + tên "Swiftstreet" + đ
 
 `.footer-bottom` dùng CSS Grid 3 cột (`1fr auto 1fr`) để hàng icon mạng xã hội (`.footer-social`) luôn nằm CHÍNH GIỮA bất kể độ dài text 2 bên (copyright bên trái, "Made with care in Vietnam" bên phải) — không dùng flex `space-between` vì sẽ không căn giữa đúng khi 2 đoạn text 2 bên có độ dài khác nhau. Icon mạng xã hội hiện có: Facebook, TikTok, Instagram, Threads (mô phỏng đơn giản, không phải logo chính thức), YouTube — toàn bộ là SVG inline vẽ tay đơn giản hoá, màu xám (`#9a9a9a`) chuyển cam khi hover, size 18px. Trên mobile (`max-width:720px`), `.footer-bottom` chuyển thành 1 cột, mọi phần tử căn giữa.
 
+### Trang nội dung footer (`footer-pages/`) — vòng sửa 23
+
+6 trang nội dung thật (KHÔNG phải placeholder) tách riêng thành 6 file HTML độc lập trong `footer-pages/` — cố tình KHÔNG gộp vào `index.html` hay các file hiện có để tránh phình code, theo đúng yêu cầu khách:
+
+- `ve-chung-toi.html` — Về chúng tôi
+- `cau-hoi-thuong-gap.html` — Câu hỏi thường gặp (dùng lại `.faq-item`/`<details>` giống FAQ ở `products/swiftcopy-drive.html`, có link chéo sang Điều khoản/Chính sách đổi trả/Kiếm tiền CTV ngay trong câu trả lời)
+- `huong-dan-mua-hang.html` — Hướng dẫn mua hàng (5 bước dọc dùng class mới `.guide-steps`/`.guide-step`, tái dùng `.step-number` từ khối "Quy trình" ở trang chủ)
+- `dieu-khoan-su-dung.html` — Điều khoản sử dụng (7 mục đánh số)
+- `chinh-sach-doi-tra.html` — Chính sách đổi trả
+- `kiem-tien-ctv.html` — Kiếm tiền CTV, có thêm form UI "Đăng ký nhanh" (`.ctv-form`, các input thật nhưng CHƯA nối backend — giống tinh thần nút "Tiến hành thanh toán" trong giỏ hàng, chỉ là giao diện)
+
+**Nguồn nội dung**: `Swiftstreet_NoiDung_Footer.txt` ở gốc dự án (khách tự chuyển từ Word sang txt). File này bị lỗi font khi chuyển đổi — rất nhiều ký tự dấu tiếng Việt bị mất, một phần giải mã được bằng `iconv -f VISCII -t UTF-8`, phần còn lại (khoảng 1650 dấu `?` rải khắp file) đã được khôi phục dựa theo NGỮ CẢNH (không phải chép nguyên văn 100% chắc chắn, vì dữ liệu gốc đã mất một phần không thể phục hồi tuyệt đối). Nội dung 6 trang hiện tại là bản diễn giải lại theo đúng ý từng đoạn của file gốc — nếu khách cần đối chiếu chính xác tuyệt đối từng chữ (đặc biệt 2 trang Điều khoản sử dụng/Chính sách đổi trả), nên nhờ khách xác nhận lại hoặc cung cấp lại bản Word gốc.
+
+**CSS dùng chung** (thêm ở vòng 23, đặt trong `css/style.css` ngay trước mục Modal): `.legal-content` (khung nội dung dạng bài viết, max-width 760px, style cho `h2`/`p`/`ul`), `.guide-steps`/`.guide-step` (danh sách bước dọc), `.payment-mock` (mockup màn hình "Quét mã để thanh toán"), `.ctv-form` (form UI đăng ký CTV). **Lưu ý một lỗi CSS đã gặp và sửa trong vòng này**: ban đầu `.legal-content ul li` dùng `display:flex` để đặt chấm tròn đầu dòng — nhưng vì mọi PHẦN TỬ con trực tiếp (kể cả `<strong>`) đều tự động trở thành flex-item RIÊNG BIỆT trong flex container, phần `<strong>Nhãn:</strong>` bị tách thành "cột" riêng khỏi phần mô tả theo sau, làm bullet list trông như bảng 2 cột sai lệch. Đã sửa bằng cách bỏ `display:flex`, dùng `position:relative` + `::before` định vị tuyệt đối (`position:absolute`) làm chấm tròn thay thế — đây là cách an toàn hơn cho bullet list có chứa phần tử inline (`<strong>`, `<a>`...) bên trong `<li>`.
+
+**Ảnh minh hoạ "Quét mã để thanh toán"** (`.payment-mock` trong `huong-dan-mua-hang.html`, bước 4): mô phỏng bằng code (SVG giả QR + các dòng thông tin ngân hàng/số tiền/nội dung CK dạng text), KHÔNG phải ảnh chụp thật — đúng yêu cầu khách "chưa có, mô phỏng tạm bằng code, để tôi bổ sung ảnh thật sau". Đây là mockup CHUNG cho quy trình thanh toán, không phải ảnh riêng cho từng sản phẩm.
+
+**Hành vi link đặc biệt trong footer** (áp dụng ở CẢ 6 trang mới VÀ 5 trang cũ index/san-pham/khuyen-mai/kiem-tien/products-swiftcopy-drive):
+- "SwiftCopy.Drive" → `products/swiftcopy-drive.html` (đã đúng sẵn — tương đương "Mua ngay" vì nút "Mua ngay" trong thẻ sản phẩm cũng chỉ link tới trang chi tiết này).
+- "SwiftPlanner Wedding" → đổi từ `href="#"` sang `products/swiftplanner-wedding.html` để khớp đúng hành vi "Mua ngay" — file này **CHƯA tồn tại** (việc nhân bản `products/swiftcopy-drive.html` cho sản phẩm khác vẫn là việc tồn đọng, xem "Việc cần làm tiếp theo") nên link này sẽ 404 cho tới khi trang đó được tạo. Đây là hành vi ĐÃ TỒN TẠI SẴN cho 5/6 sản phẩm còn lại trong lưới sản phẩm trang chủ/san-pham.html (mọi thẻ đều link `products/<slug>.html` dù chỉ `swiftcopy-drive.html` có thật) — không phải lỗi mới phát sinh, chỉ là footer giờ nhất quán với hành vi sẵn có.
+- "Nhiều sản phẩm khác..." → `san-pham.html` (đã đúng sẵn, tương đương mục nav "Sản phẩm").
+- "Kiếm tiền CTV" ở footer **đổi từ** `kiem-tien.html` (trang placeholder nav "Kiếm Tiền") **sang** `footer-pages/kiem-tien-ctv.html` (trang nội dung thật mới). Lưu ý: mục nav "Kiếm Tiền" trên header (`kiem-tien.html`) vẫn là placeholder riêng, KHÔNG bị đụng tới trong vòng sửa này — 2 trang "Kiếm Tiền" (nav placeholder) và "Kiếm tiền CTV" (footer, nội dung thật) hiện tồn tại song song, không phải trùng lặp nhầm.
+
+Cả 6 trang `footer-pages/*.html` đều KHÔNG gắn `class="active"` cho bất kỳ mục nav nào (không tương ứng trực tiếp với 1 trong 4 mục Trang chủ/Sản phẩm/Khuyến mãi/Kiếm Tiền).
+
 ## Bảng màu thương hiệu
 
 Lấy từ logo gốc (`Logo Swiftstreet.png`), khai báo trong `css/style.css` mục `:root`:
@@ -210,18 +238,21 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 - ✅ Vòng sửa 20: khách làm rõ tăng size nút Thêm giỏ hàng/Mua ngay ở vòng 19 CHỈ áp dụng cho `san-pham.html`, không áp dụng cho trang chủ — đã thu hẹp phạm vi bằng rule `.hero-products .btn-sm` (khôi phục cỡ nhỏ ban đầu cho riêng trang chủ, xem mục riêng). Thiết kế lại HOÀN TOÀN cách `.hero-shop-grid` phản hồi khi thu nhỏ màn hình: KHÔNG còn xếp dọc ở bất kỳ độ rộng desktop nào (khách yêu cầu rõ "hero auto bên trái trừ mobile") — thay bằng 3 tầng breakpoint (1300/960/720px) giảm dần độ rộng cột `.hero-intro`, cỡ chữ H1, và số cột lưới sản phẩm (3→2→1), chỉ xếp dọc thật ở ≤720px. San-pham.html cũng giảm xuống 2 cột ở tầng 721-960px để nút cỡ to (vòng 19) không tràn chữ khi thẻ bị bóp hẹp. Đã test toàn bộ dải 720-1350px bằng ảnh chụp thật (xem mục "`.hero-shop-grid` KHÔNG BAO GIỜ xếp dọc" phía trên).
 - ✅ Vòng sửa 21: theo ảnh so sánh với đối thủ (Optimate), khách chê khoảng cách giữa các thẻ sản phẩm trên `san-pham.html` "chưa tốt" (chật/dính nhau) — tăng `.product-grid` gap 14px→28px CHỈ cho trang này, giữ nguyên 14px ở trang chủ qua rule `.hero-products .product-grid` (cùng pattern scoping với `.btn-sm` ở vòng 20 — xem mục "Khoảng cách giữa các thẻ sản phẩm").
 - ✅ Vòng sửa 22: khách chụp ảnh khoanh đỏ chỉ ra khoảng trắng giữa các thẻ trên `san-pham.html` VẪN quá rộng dù đã tăng gap ở vòng 21 — hoá ra gốc lỗi không phải do gap mà do `grid-template-columns: repeat(N, 1fr)` khiến mỗi cột giãn hết cỡ container trong khi thẻ bị chặn `max-width:340px` và tự canh giữa, tạo khoảng trắng thừa lớn trong lòng mỗi cột. Sửa bằng cách đổi toàn bộ khai báo cột (mọi breakpoint) sang `repeat(N, minmax(0, 340px))` + `justify-content: center` trên `.product-grid` — xem mục "Khoảng cách giữa các thẻ sản phẩm" (đã cập nhật).
-- ❌ Chưa có nội dung chi tiết thật (mô tả sản phẩm, FAQ, tính năng... hiện đang là placeholder).
+- ✅ Vòng sửa 23: tạo 6 trang nội dung footer thật trong `footer-pages/` (Về chúng tôi, Câu hỏi thường gặp, Hướng dẫn mua hàng, Điều khoản sử dụng, Chính sách đổi trả, Kiếm tiền CTV) từ nội dung khách cung cấp trong `Swiftstreet_NoiDung_Footer.txt` (file bị lỗi font khi chuyển từ Word, đã giải mã + khôi phục theo ngữ cảnh — xem mục "Trang nội dung footer"). Cập nhật link footer ở cả 5 trang cũ trỏ đúng tới 6 trang mới, sửa link "SwiftPlanner Wedding" và đổi link "Kiếm tiền CTV" sang trang nội dung thật thay vì trang placeholder cũ. Thêm mockup "Quét mã để thanh toán" bằng code cho bước 4 hướng dẫn mua hàng, và form UI "Đăng ký nhanh" cho trang CTV (cả 2 đều chưa nối backend thật).
+- ❌ Nội dung sản phẩm riêng lẻ (mô tả, tính năng, FAQ theo từng sản phẩm cụ thể trên `products/*.html`) vẫn là placeholder — khác với 6 trang footer (đã có nội dung thật từ vòng 23).
 - ❌ Giỏ hàng đã lưu thật bằng localStorage (xem vòng 19) nhưng CHƯA có trang/luồng thanh toán thật — nút "Tiến hành thanh toán" trong modal mới chỉ là UI.
-- ❌ Trang "Khuyến mãi" và "Kiếm Tiền" chỉ là placeholder, chưa có nội dung.
+- ❌ Trang "Khuyến mãi" và "Kiếm Tiền" (2 trang placeholder ở nav, khác với `footer-pages/kiem-tien-ctv.html` đã có nội dung) chỉ là placeholder, chưa có nội dung.
 - ❌ Chưa kết nối Firebase, chưa xử lý thanh toán thật.
-- ❌ Chưa có trang admin, chưa có trang CTV.
+- ❌ Chưa có trang admin, chưa có trang CTV (trang quản lý CTV thật — khác với trang giới thiệu chương trình `kiem-tien-ctv.html` đã làm).
 - ❌ Chưa deploy Vercel (dự kiến chưa dùng ở giai đoạn này).
+- ❌ `products/swiftplanner-wedding.html` chưa tồn tại — các link "SwiftPlanner Wedding" (thẻ sản phẩm + footer) đang trỏ tới file chưa có, sẽ 404 cho tới khi nhân bản trang mẫu.
 
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
-1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ).
-2. Nhân bản `products/swiftcopy-drive.html` cho các sản phẩm còn lại trong `data/products.js`.
+1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.
+2. Nhân bản `products/swiftcopy-drive.html` cho các sản phẩm còn lại trong `data/products.js` (ưu tiên `swiftplanner-wedding.html` vì đã có link trỏ tới từ nhiều nơi).
 3. Giỏ hàng đã lưu thật bằng localStorage (vòng 19) — còn thiếu trang/luồng thanh toán thật cho nút "Tiến hành thanh toán".
-4. Viết nội dung thật cho trang "Khuyến mãi" và "Kiếm Tiền".
+4. Viết nội dung thật cho trang "Khuyến mãi" và "Kiếm Tiền" (2 trang placeholder ở nav).
 5. Kết nối Firebase Firestore để lưu đơn hàng.
-6. Xây trang admin duyệt đơn + gửi email giao file.
+6. Xây trang admin duyệt đơn + gửi email giao file, và trang quản lý CTV thật (khác với trang giới thiệu chương trình đã có).
+7. Nếu khách xác nhận nội dung 6 trang footer cần khớp chính xác 100% với file Word gốc, xin lại bản gốc để đối chiếu (file txt hiện tại bị lỗi font mất một phần dấu, đã khôi phục theo ngữ cảnh chứ không phải chép nguyên văn chắc chắn tuyệt đối).

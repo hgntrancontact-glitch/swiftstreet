@@ -1306,6 +1306,188 @@ p {
   color: var(--text-muted);
 }
 
+/* ---------- Trang nội dung footer (Về chúng tôi/FAQ/Hướng dẫn/Điều khoản/Đổi trả/CTV) ---------- */
+.section-heading h1 {
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.legal-content {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.legal-content h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 36px 0 12px;
+}
+
+.legal-content h2:first-child {
+  margin-top: 0;
+}
+
+.legal-content p {
+  color: var(--text-main);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.legal-content ul {
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legal-content ul li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.legal-content ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-orange);
+}
+
+.legal-content strong {
+  font-weight: 700;
+}
+
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.guide-step {
+  display: flex;
+  gap: 20px;
+}
+
+.guide-step .step-number {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.guide-step h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.guide-step p {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+/* Ảnh minh hoạ "Quét mã để thanh toán" — mô phỏng bằng code (chưa có ảnh
+   thật, khách sẽ bổ sung sau); dùng cho bước 4 trong Hướng dẫn mua hàng. */
+.payment-mock {
+  margin-top: 16px;
+  max-width: 300px;
+  background: var(--color-black);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.payment-mock-head {
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.payment-mock-qr {
+  background: var(--color-white);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 14px;
+}
+
+.payment-mock-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.payment-mock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12.5px;
+}
+
+.payment-mock-row:first-of-type {
+  border-top: none;
+}
+
+.payment-mock-row span {
+  color: #9a9a9a;
+}
+
+.payment-mock-row b {
+  color: var(--color-white);
+  font-weight: 700;
+}
+
+.payment-mock-row.amount b {
+  color: var(--color-orange);
+  font-size: 15px;
+}
+
+.ctv-form {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg-section);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ctv-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.ctv-form input {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 11px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--text-main);
+}
+
+.ctv-form input:focus {
+  outline: none;
+  border-color: var(--color-orange);
+}
+
 /* ---------- Modal (thông báo / giỏ hàng / hỗ trợ) ---------- */
 .modal-overlay {
   position: fixed;
