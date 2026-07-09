@@ -153,8 +153,8 @@ p {
 }
 
 .btn-sm {
-  padding: 9px 4px;
-  font-size: 10px;
+  padding: 13px 6px;
+  font-size: 12px;
   font-weight: 600;
   border-width: 1px;
   border-radius: 6px;
@@ -239,6 +239,11 @@ p {
   color: var(--color-orange-dark);
 }
 
+.main-nav a.active {
+  font-weight: 700;
+  color: var(--color-black);
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -271,14 +276,26 @@ p {
 }
 
 .icon-btn .icon-dot {
+  display: none;
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 999px;
   background: var(--color-orange);
   border: 2px solid var(--color-white);
+  color: var(--color-black);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn .icon-dot.show {
+  display: flex;
 }
 
 .nav-toggle {
@@ -1351,10 +1368,31 @@ p {
 .modal-cart-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
   padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
+}
+
+.modal-cart-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--bg-section);
+  color: var(--color-orange);
+  flex-shrink: 0;
+}
+
+.modal-cart-thumb svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal-cart-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-cart-item b {
@@ -1458,12 +1496,6 @@ p {
   .hero-intro h1 {
     font-size: 26px;
     line-height: 1.32;
-  }
-
-  /* Nút Thêm giỏ hàng/Mua ngay trên mobile cần cao hơn 1 chút so với desktop
-     để không có cảm giác "bé" khi đặt trong thẻ sản phẩm full-width. */
-  .btn-sm {
-    padding: 12px 5px;
   }
 
   .main-nav,

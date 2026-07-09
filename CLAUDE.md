@@ -42,7 +42,26 @@ Mỗi thẻ sản phẩm trên `index.html`/`san-pham.html` gồm 3 phần, rend
 
 ### Hệ thống modal
 
-3 modal dùng chung (thông báo / giỏ hàng / hỗ trợ) được `setupModals()` trong `js/main.js` tự động chèn vào `<body>` của MỌI trang có include `js/main.js` — không cần viết HTML modal thủ công ở từng trang. Bất kỳ phần tử nào có `data-modal="notify|cart|support"` sẽ mở modal tương ứng khi bấm (dùng cho icon chuông/giỏ hàng ở header, nút hỗ trợ nổi, và nút "Thêm giỏ hàng" trong thẻ sản phẩm).
+3 modal dùng chung (thông báo / giỏ hàng / hỗ trợ) được `setupModals()` trong `js/main.js` tự động chèn vào `<body>` của MỌI trang có include `js/main.js` — không cần viết HTML modal thủ công ở từng trang. Bất kỳ phần tử nào có `data-modal="notify|cart|support"` sẽ mở modal tương ứng khi bấm (dùng cho icon chuông/giỏ hàng ở header, nút hỗ trợ nổi). Modal `notify` và `support` vẫn là nội dung mẫu tĩnh (`MODAL_CONTENT.notify`/`.support`); modal `cart` từ vòng sửa 19 trở đi là **nội dung động**, xem mục "Giỏ hàng (localStorage)" ngay bên dưới.
+
+### Giỏ hàng (localStorage) — không backend, không đăng nhập
+
+Từ vòng sửa 19: giỏ hàng lưu trong `localStorage` của trình duyệt, key `swiftstreet_cart` (mảng JSON các item `{ slug, name, price (số nguyên VNĐ), type, qty }`). Toàn bộ logic nằm trong `js/main.js`:
+
+- `getCart()`/`setCart()`: đọc/ghi localStorage, `setCart()` tự gọi `syncCartUI()` sau khi ghi.
+- `addToCart(product)`: nếu sản phẩm (theo `slug`) đã có trong giỏ thì tăng `qty`, chưa có thì thêm mới với `qty:1`. Giá lưu dạng SỐ (parse từ chuỗi `p.priceCurrent` như `"199.000đ"` bằng `parsePriceVN()`, bỏ hết ký tự không phải số) — không lưu chuỗi giá gốc, để cộng tổng tiền chính xác.
+- `removeFromCart(slug)`: xoá hẳn 1 item khỏi giỏ (không có nút giảm số lượng, chỉ có xoá — đúng yêu cầu khách "nút xoá từng sản phẩm").
+- `syncCartUI()`: gọi sau mỗi lần thêm/xoá — cập nhật SONG SONG 2 chỗ: (1) badge số lượng ở MỌI icon giỏ hàng header (`.icon-btn .icon-dot`, dùng `querySelectorAll` vì về mặt kỹ thuật mỗi trang chỉ có 1 icon giỏ hàng nhưng viết tổng quát cho an toàn), (2) nội dung modal `#modal-cart` (`buildCartModalHTML()`).
+- `.icon-dot` mặc định `display:none`; chỉ hiện (`display:flex`, class `.show`) khi giỏ hàng có ít nhất 1 sản phẩm, hiển thị TỔNG SỐ LƯỢNG (cộng dồn `qty`, không phải số loại sản phẩm khác nhau), tối đa hiển thị "9+" nếu vượt quá 9.
+- Nút "Thêm giỏ hàng" trong thẻ sản phẩm (render bởi `renderProductGrid()`) dùng `data-add-to-cart="${slug}"` (KHÔNG còn dùng `data-modal="cart"` trực tiếp) — bấm vào sẽ vừa gọi `addToCart()` vừa tự mở modal giỏ hàng (`openModal("cart")`) để khách thấy ngay sản phẩm vừa thêm, xử lý trong `setupCartActions()`.
+- Ảnh nhỏ trong modal giỏ hàng thực chất là icon SVG đơn giản (tái dùng `DASH_ICONS`, map qua field `type` của sản phẩm bằng bảng `PRODUCT_TYPE_ICON` vì tên `type` trong `data/products.js` — "drive"/"wedding"/"finance"... — không trùng tên key trong `DASH_ICONS` — "folder"/"heart"/"trend"...) — KHÔNG phải ảnh chụp thật, vì sản phẩm chưa có ảnh thật.
+- Giỏ hàng persist qua việc mở tab mới/đóng tab (cùng trình duyệt, cùng origin) vì đọc/ghi cùng 1 key localStorage; đổi trình duyệt hoặc xoá dữ liệu duyệt web thì mất — đây LÀ hành vi đúng theo yêu cầu khách, không phải lỗi cần sửa.
+- Nút "Tiến hành thanh toán" trong modal hiện CHƯA có chức năng thật (chỉ là nút UI) — đúng theo yêu cầu "chưa cần chức năng thật ở bước này".
+- Trang chi tiết sản phẩm (`products/*.html`) hiện chỉ có nút "Mua ngay" trong `.buy-box`, KHÔNG có nút "Thêm giỏ hàng" riêng — nên chưa được nối vào hệ thống giỏ hàng này. Nếu sau này thêm nút "Thêm giỏ hàng" ở đó, dùng lại đúng `data-add-to-cart="<slug>"` là đủ (không cần viết lại logic).
+
+### Trạng thái active của menu header
+
+`.main-nav a.active` (CSS: `font-weight:700`, giữ nguyên màu `var(--color-black)`) đánh dấu mục đang được xem. Đây là class gắn TĨNH thủ công vào đúng thẻ `<a>` trong từng file HTML (không phải tính toán bằng JS theo URL hiện tại) — vì đây là các trang HTML tĩnh riêng biệt, mỗi file tự "biết" nó là trang nào: `san-pham.html`/`khuyen-mai.html`/`kiem-tien.html`/`products/*.html` (mục "Sản phẩm") đều đã gắn `class="active"` vào đúng mục nav tương ứng. **`index.html` (trang chủ) KHÔNG gắn `active` cho mục nào** — đúng yêu cầu khách "cả 4 mục đều hiển thị bình thường". Nếu nhân bản thêm trang mới (vd sản phẩm chi tiết khác), nhớ gắn `class="active"` cho mục "Sản phẩm" ở nav của trang đó để nhất quán.
 
 ### QUAN TRỌNG: cache CSS trên trình duyệt của khách
 
@@ -106,7 +125,9 @@ Nút này có animation `heroRateGlow` (2.2s, lặp vô hạn) tạo hiệu ứn
 
 `.product-card-actions` có `width: 80%` (không phải 100%) và `padding` chỉ có bên trái (13px), không có bên phải — để 2 nút dồn sát trái, chừa khoảng trống ~20% bên phải thẻ. Đây là yêu cầu cụ thể của khách ("đẩy về sát trái, chiếm ~80% chiều ngang"), KHÔNG phải lỗi — nếu thấy nút không full-width thì đó là chủ đích, đừng "sửa" lại thành 100%.
 
-**`.btn-sm` bắt buộc `white-space: nowrap`** (không phải `normal`) — chữ "Thêm giỏ hàng" (13 ký tự) từng bị xuống dòng làm thẻ cao không đều, khách yêu cầu rõ "không được xuống hàng". Vì nowrap không tự wrap khi hết chỗ (sẽ tràn ra ngoài thay vì xuống dòng), cỡ chữ đã giảm xuống **10px** (kèm padding ngang 4px) để luôn đủ chỗ trong 80% chiều rộng thẻ, ngay cả ở layout 3 cột hẹp nhất (~800px viewport). Nếu tăng cỡ chữ nút này trở lại, PHẢI test bằng ảnh chụp ở nhiều độ rộng (800/1920px) để chắc chắn chữ không tràn ra ngoài khung nút.
+**`.btn-sm` bắt buộc `white-space: nowrap`** (không phải `normal`) — chữ "Thêm giỏ hàng" (13 ký tự) từng bị xuống dòng làm thẻ cao không đều, khách yêu cầu rõ "không được xuống hàng". Vì nowrap không tự wrap khi hết chỗ (sẽ tràn ra ngoài thay vì xuống dòng), cỡ chữ và padding phải luôn đủ chỗ trong 80% chiều rộng thẻ, ngay cả ở layout 3 cột hẹp nhất (~800px viewport). Nếu tăng cỡ chữ nút này, PHẢI test bằng ảnh chụp ở nhiều độ rộng (800/1920px) để chắc chắn chữ không tràn ra ngoài khung nút.
+
+**Lịch sử cỡ chữ/padding `.btn-sm` đã dao động rất nhiều lần** (11→10.5→11.5→11→10px qua các vòng 8-15, luôn theo hướng thu nhỏ do sợ vỡ dòng). Đến **vòng sửa 19**, khách gửi ảnh trang sản phẩm của đối thủ (Optimate) làm chuẩn, chê nút hiện tại "chiều cao và size không đúng" so với tổng thể — đã **tăng ngược lại đáng kể**: `padding: 9px 4px`→`13px 6px`, `font-size: 10px`→`12px` (đã test kỹ không tràn chữ ở cả 2 ngữ cảnh hẹp nhất: lưới 3 cột 800px VÀ cột hero bị chia đôi). Đây là NGOẠI LỆ đảo ngược xu hướng giảm nhiều vòng trước — nếu nhận phản hồi "nút to quá" trong tương lai, đừng tự động quay về mốc 10px cũ vì đó chưa chắc còn là ý khách; hỏi lại hoặc so khớp với ảnh mẫu mới nhất trước khi giảm. Cũng đã xoá override riêng `padding: 12px 5px` cho mobile (vòng 13) vì padding gốc mới đã đủ cao hơn giá trị override đó.
 
 ### Cấu trúc Footer (5 cột: logo/mô tả + 4 cột nav)
 
@@ -164,8 +185,9 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 - ✅ Vòng sửa 16: tăng nhẹ khu vực thẻ sản phẩm (`.device-display` height 174→186px, `.product-thumb` padding tăng nhẹ, tên sản phẩm 15→16px, giá 17→18px, giá gạch 13→14px, badge 10→10.5px kèm tăng top/left 8→9px tương ứng để giữ khoảng cách). Tăng cỡ chữ đoạn khuyến mãi (`.hero-promo-text` 17→18.5px). Khôi phục lại cột logo/mô tả thương hiệu (`.footer-brand`) đã bị xoá nhầm ở vòng 14 — xem mục "Cấu trúc Footer" bên dưới.
 - ✅ Vòng sửa 17: tăng lại độ đậm chữ thương hiệu "Swiftstreet" (`.brand` font-weight 500→600) theo ảnh logo mẫu khách gửi, yêu cầu "đậm nhẹ 1 tí, đừng quá đậm" — CHỈ áp dụng cho `.brand`, không đổi `.main-nav a` (vẫn 500).
 - ✅ Vòng sửa 18: sửa lỗi `.hero-shop-grid` xếp dọc quá sớm (breakpoint cũ 1500px khiến laptop thường 1440-1512px hiển thị sai, xếp dọc thay vì 2 cột như hình mẫu khách gửi) — hạ breakpoint xuống 1300px sau khi test bằng ảnh chụp zoom cận cảnh (phát hiện mini-dashboard ô "Dung lượng 256,8GB" bị cắt chữ dưới ~1280px, đã giảm nhẹ đệm/gap `.dash-stat` để có biên an toàn — xem mục riêng bên dưới). Thêm `max-width: 340px` cho `.product-card` (áp dụng mọi lưới sản phẩm) để sửa lỗi thẻ bị kéo dãn quá to/nút trông nhỏ dẹt trên `san-pham.html` (container rộng không bị hero chia cột) — trước đó thẻ có thể rộng tới ~440px không giới hạn.
+- ✅ Vòng sửa 19: theo ảnh trang sản phẩm của đối thủ (Optimate) khách gửi làm chuẩn — tăng đáng kể chiều cao/cỡ chữ nút Thêm giỏ hàng/Mua ngay (xem mục riêng ở trên, đảo ngược xu hướng thu nhỏ nhiều vòng trước). Xây **giỏ hàng thật bằng localStorage** (thêm/xoá sản phẩm, badge số lượng ở icon header, modal hiển thị danh sách kèm icon/tên/giá + tổng tiền — xem mục "Giỏ hàng (localStorage)"). Thêm **trạng thái active cho menu header** — mục tương ứng in đậm khi đang ở đúng trang, trang chủ không đậm mục nào (xem mục riêng).
 - ❌ Chưa có nội dung chi tiết thật (mô tả sản phẩm, FAQ, tính năng... hiện đang là placeholder).
-- ❌ Nút "Mua ngay"/"Thêm giỏ hàng" chưa có logic giỏ hàng thật (giỏ hàng trong modal là dữ liệu mẫu cố định).
+- ❌ Giỏ hàng đã lưu thật bằng localStorage (xem vòng 19) nhưng CHƯA có trang/luồng thanh toán thật — nút "Tiến hành thanh toán" trong modal mới chỉ là UI.
 - ❌ Trang "Khuyến mãi" và "Kiếm Tiền" chỉ là placeholder, chưa có nội dung.
 - ❌ Chưa kết nối Firebase, chưa xử lý thanh toán thật.
 - ❌ Chưa có trang admin, chưa có trang CTV.
@@ -175,7 +197,7 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
 
 1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ).
 2. Nhân bản `products/swiftcopy-drive.html` cho các sản phẩm còn lại trong `data/products.js`.
-3. Xây logic giỏ hàng thật (hiện "Thêm giỏ hàng" chỉ mở modal mẫu tĩnh) + trang thanh toán.
+3. Giỏ hàng đã lưu thật bằng localStorage (vòng 19) — còn thiếu trang/luồng thanh toán thật cho nút "Tiến hành thanh toán".
 4. Viết nội dung thật cho trang "Khuyến mãi" và "Kiếm Tiền".
 5. Kết nối Firebase Firestore để lưu đơn hàng.
 6. Xây trang admin duyệt đơn + gửi email giao file.

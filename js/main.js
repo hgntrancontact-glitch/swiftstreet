@@ -10,6 +10,16 @@ const DASH_ICONS = {
   cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M2.5 3h2l2.3 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H5.5"/></svg>',
 };
 
+/** Ánh xạ field `type` của sản phẩm (data/products.js) sang icon tương ứng trong DASH_ICONS. */
+const PRODUCT_TYPE_ICON = {
+  drive: "folder",
+  wedding: "heart",
+  finance: "trend",
+  content: "calendar",
+  hr: "users",
+  order: "cart",
+};
+
 /** Trả về HTML mini-dashboard mô phỏng theo loại sản phẩm (dữ liệu mẫu, không phải số liệu thật). */
 function renderDashboard(type) {
   switch (type) {
@@ -136,11 +146,137 @@ function renderProductGrid() {
         </div>
       </a>
       <div class="product-card-actions">
-        <button type="button" class="btn btn-outline btn-sm" data-modal="cart">Thêm giỏ hàng</button>
+        <button type="button" class="btn btn-outline btn-sm" data-add-to-cart="${p.slug}">Thêm giỏ hàng</button>
         <a class="btn btn-dark btn-sm" href="products/${p.slug}.html">Mua ngay</a>
       </div>
     </div>
   `).join("");
+}
+
+/**
+ * Giỏ hàng dùng localStorage — lưu tạm trên máy khách, không cần đăng nhập/backend.
+ * Mỗi phần tử: { slug, name, price (số), type (để chọn icon), qty }.
+ */
+const CART_STORAGE_KEY = "swiftstreet_cart";
+
+function parsePriceVN(str) {
+  return parseInt(String(str).replace(/[^\d]/g, ""), 10) || 0;
+}
+
+function formatPriceVN(num) {
+  return num.toLocaleString("vi-VN") + "đ";
+}
+
+function getCart() {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    const cart = raw ? JSON.parse(raw) : [];
+    return Array.isArray(cart) ? cart : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function setCart(cart) {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  syncCartUI();
+}
+
+function addToCart(product) {
+  const cart = getCart();
+  const existing = cart.find((item) => item.slug === product.slug);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      slug: product.slug,
+      name: product.name,
+      price: parsePriceVN(product.priceCurrent),
+      type: product.type,
+      qty: 1,
+    });
+  }
+  setCart(cart);
+}
+
+function removeFromCart(slug) {
+  setCart(getCart().filter((item) => item.slug !== slug));
+}
+
+function updateCartBadge(cart) {
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.querySelectorAll(".icon-btn .icon-dot").forEach((dot) => {
+    if (count > 0) {
+      dot.textContent = count > 9 ? "9+" : String(count);
+      dot.classList.add("show");
+    } else {
+      dot.textContent = "";
+      dot.classList.remove("show");
+    }
+  });
+}
+
+function buildCartModalHTML(cart) {
+  const head = `
+    <div class="modal-head">
+      <h3>Giỏ hàng</h3>
+      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
+    </div>`;
+
+  if (!cart.length) {
+    return `${head}<p class="modal-empty">Giỏ hàng của bạn đang trống.</p>`;
+  }
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const itemsHTML = cart.map((item) => `
+    <div class="modal-cart-item">
+      <div class="modal-cart-thumb">${DASH_ICONS[PRODUCT_TYPE_ICON[item.type]] || DASH_ICONS.cart}</div>
+      <div class="modal-cart-info">
+        <b>${item.name}</b>
+        <span>${formatPriceVN(item.price)}${item.qty > 1 ? ` × ${item.qty}` : ""}</span>
+      </div>
+      <button class="modal-cart-remove" data-remove-slug="${item.slug}" aria-label="Xoá">×</button>
+    </div>
+  `).join("");
+
+  return `
+    ${head}
+    ${itemsHTML}
+    <div class="modal-cart-total">
+      <span>Tổng cộng</span>
+      <span>${formatPriceVN(total)}</span>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;">Tiến hành thanh toán</button>`;
+}
+
+/** Đồng bộ badge số lượng ở icon giỏ hàng header + nội dung modal giỏ hàng theo localStorage hiện tại. */
+function syncCartUI() {
+  const cart = getCart();
+  updateCartBadge(cart);
+  const modalEl = document.getElementById("modal-cart");
+  if (modalEl) modalEl.innerHTML = buildCartModalHTML(cart);
+}
+
+/** Gắn sự kiện cho nút "Thêm giỏ hàng" (thêm vào localStorage rồi mở modal giỏ hàng). */
+function setupCartActions() {
+  document.body.addEventListener("click", (e) => {
+    const addBtn = e.target.closest("[data-add-to-cart]");
+    if (addBtn) {
+      e.preventDefault();
+      const slug = addBtn.dataset.addToCart;
+      const product = typeof PRODUCTS !== "undefined" ? PRODUCTS.find((p) => p.slug === slug) : null;
+      if (product) {
+        addToCart(product);
+        openModal("cart");
+      }
+      return;
+    }
+
+    const removeBtn = e.target.closest("[data-remove-slug]");
+    if (removeBtn) {
+      removeFromCart(removeBtn.dataset.removeSlug);
+    }
+  });
 }
 
 // Bật/tắt menu mobile
@@ -174,30 +310,7 @@ const MODAL_CONTENT = {
       <span>3 ngày trước</span>
     </div>`,
 
-  cart: `
-    <div class="modal-head">
-      <h3>Giỏ hàng</h3>
-      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
-    </div>
-    <div class="modal-cart-item">
-      <div>
-        <b>SwiftCopy.Drive</b>
-        <span>199.000đ</span>
-      </div>
-      <button class="modal-cart-remove" aria-label="Xoá">×</button>
-    </div>
-    <div class="modal-cart-item">
-      <div>
-        <b>SwiftPlanner Wedding</b>
-        <span>149.000đ</span>
-      </div>
-      <button class="modal-cart-remove" aria-label="Xoá">×</button>
-    </div>
-    <div class="modal-cart-total">
-      <span>Tổng cộng</span>
-      <span>348.000đ</span>
-    </div>
-    <button class="btn btn-primary btn-block" style="margin-top:16px;">Tiến hành thanh toán</button>`,
+  cart: buildCartModalHTML(getCart()),
 
   support: `
     <div class="modal-head">
@@ -265,4 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProductGrid();
   setupNavToggle();
   setupModals();
+  setupCartActions();
+  syncCartUI();
 });
