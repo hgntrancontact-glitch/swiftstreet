@@ -1,3 +1,9 @@
+/** Dấu tích SVG dùng chung cho mọi ô tích chọn (giỏ hàng/trang thanh toán) — vòng 27. */
+const CHECK_ICON_SVG = '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+
+/** Ảnh thu nhỏ mô phỏng "file sheet" cho mỗi sản phẩm trong danh sách thanh toán (vòng 27, mô phỏng bằng code, không phải ảnh thật). */
+const THUMB_SHEET_HTML = '<div class="thumb-sheet"><span></span><span></span><span></span><span></span><span></span><span></span></div>';
+
 /**
  * Icon SVG dùng cho mini-dashboard mô phỏng trong thẻ sản phẩm (không phải ảnh chụp thật).
  */
@@ -197,13 +203,13 @@ function setCart(cart) {
 
 /**
  * Thêm sản phẩm vào giỏ. Nếu sản phẩm đã có sẵn, KHÔNG tăng số lượng (mỗi sản
- * phẩm luôn chỉ có đúng 1 dòng trong giỏ) — chỉ báo lại bằng bảng trượt trái.
+ * phẩm luôn chỉ có đúng 1 dòng trong giỏ) — chỉ báo lại bằng bảng trượt phải.
  */
 function addToCart(product) {
   const cart = getCart();
   const existing = cart.find((item) => item.slug === product.slug);
   if (existing) {
-    showSlideToast("Sản phẩm này đã có trong giỏ hàng");
+    showSlideToast("Sản phẩm này đã có trong giỏ hàng", "duplicate");
     return;
   }
   cart.push({
@@ -217,7 +223,7 @@ function addToCart(product) {
     selected: true,
   });
   setCart(cart);
-  showSlideToast(`Đã thêm "${product.name}" vào giỏ hàng`);
+  showSlideToast(`Đã thêm "${product.name}" vào giỏ hàng`, "added");
 }
 
 function removeFromCart(slug) {
@@ -266,6 +272,13 @@ function setupCartActions() {
       const product = typeof PRODUCTS !== "undefined" ? PRODUCTS.find((p) => p.slug === slug) : null;
       if (product) addToCart(product);
       return;
+    }
+
+    // Icon mạng xã hội chưa có link thật (Instagram/Threads/YouTube) — báo đang phát triển (vòng 27).
+    const devBtn = e.target.closest("[data-platform-dev]");
+    if (devBtn) {
+      e.preventDefault();
+      showToast(`Nền tảng ${devBtn.dataset.platformDev} hiện đang trong quá trình phát triển.`);
     }
   });
 }
@@ -474,7 +487,7 @@ function setupModals() {
 }
 
 /** Bảng nhỏ trượt từ mép trái, tự ẩn sau 2 giây — dùng cho xác nhận "Thêm giỏ hàng". */
-function showSlideToast(message) {
+function showSlideToast(message, variant = "added") {
   let toast = document.getElementById("swiftstreet-slide-toast");
   if (!toast) {
     toast = document.createElement("div");
@@ -482,10 +495,13 @@ function showSlideToast(message) {
     toast.className = "cart-slide-toast";
     document.body.appendChild(toast);
   }
-  toast.textContent = message;
+  toast.classList.toggle("is-duplicate", variant === "duplicate");
+  toast.innerHTML = variant === "duplicate"
+    ? `<svg class="toast-x-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span>${message}</span>`
+    : `<span>${message}</span>`;
   toast.classList.add("show");
   clearTimeout(toast._hideTimer);
-  toast._hideTimer = setTimeout(() => toast.classList.remove("show"), 2000);
+  toast._hideTimer = setTimeout(() => toast.classList.remove("show"), 4000);
 }
 
 /** Toast nhỏ tự ẩn sau vài giây (dùng cho "Báo lỗi"). */
@@ -619,10 +635,12 @@ function setupCheckoutPage() {
   const selectAllCircle = document.getElementById("checkout-select-all-circle");
   if (selectAllRow) selectAllRow.style.display = isSingleSlug ? "none" : "flex";
 
-  function render() {
-    // Chế độ nhiều sản phẩm: hiển thị TOÀN BỘ giỏ hàng (kể cả sản phẩm đang bỏ
-    // chọn) để khách vẫn thấy và có thể tick lại — chỉ sản phẩm được chọn mới
-    // tính vào "Cần thanh toán". Chế độ 1 sản phẩm dùng getCheckoutItems() như cũ.
+  // Vòng 27: tách riêng "vẽ lại toàn bộ danh sách" (renderList — chỉ gọi khi
+  // tải trang/thêm/xoá sản phẩm) khỏi "cập nhật tổng tiền" (updateTotals —
+  // gọi mỗi khi tick chọn). Trước đó MỌI lần tick đều render lại toàn bộ HTML
+  // danh sách khiến thao tác tick cảm giác lag/chậm — giờ tick chỉ cần đổi 1
+  // class + tính lại số tiền, không đụng tới DOM danh sách.
+  function renderList() {
     const items = isSingleSlug ? getCheckoutItems() : getCart();
     const mainEl = document.getElementById("checkout-main");
     const emptyEl = document.getElementById("checkout-empty");
@@ -635,8 +653,6 @@ function setupCheckoutPage() {
     if (mainEl) mainEl.style.display = "";
     if (emptyEl) emptyEl.style.display = "none";
 
-    if (selectAllCircle) selectAllCircle.classList.toggle("checked", items.every((item) => item.selected));
-
     // Vòng 26: 1 HÀNG NGANG duy nhất (checkbox — ảnh sản phẩm — tên/mô tả —
     // giá — icon xoá), không còn làm mờ sản phẩm bị bỏ chọn.
     list.innerHTML = items.map((item) => {
@@ -645,8 +661,8 @@ function setupCheckoutPage() {
         : `<b class="checkout-item-name">${item.name}</b>`;
       return `
       <div class="checkout-item-row">
-        ${isSingleSlug ? "" : `<button class="cart-item-select${item.selected ? " checked" : ""}" data-checkout-toggle-select="${item.slug}" aria-label="Chọn sản phẩm"></button>`}
-        <div class="checkout-item-thumb">${DASH_ICONS[PRODUCT_TYPE_ICON[item.type]] || DASH_ICONS.cart}</div>
+        ${isSingleSlug ? "" : `<button class="cart-item-select${item.selected ? " checked" : ""}" data-checkout-toggle-select="${item.slug}" aria-label="Chọn sản phẩm">${CHECK_ICON_SVG}</button>`}
+        <div class="checkout-item-thumb">${THUMB_SHEET_HTML}</div>
         <div class="checkout-item-content">
           <div class="checkout-item-name-row">${nameHTML}</div>
           ${item.shortDesc ? `<p class="cart-item-desc">${item.shortDesc}</p>` : ""}
@@ -661,6 +677,13 @@ function setupCheckoutPage() {
           </button>`}
       </div>`;
     }).join("");
+
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const items = isSingleSlug ? getCheckoutItems() : getCart();
+    if (selectAllCircle) selectAllCircle.classList.toggle("checked", items.length > 0 && items.every((item) => item.selected));
 
     const calcItems = items.filter((item) => item.selected);
     const subtotalOld = calcItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
@@ -678,26 +701,39 @@ function setupCheckoutPage() {
     if (totalEl) totalEl.textContent = formatPriceVN(total);
   }
 
-  render();
+  renderList();
 
   list.addEventListener("click", (e) => {
     const removeBtn = e.target.closest("[data-checkout-remove]");
     if (removeBtn) {
       removeFromCart(removeBtn.dataset.checkoutRemove);
-      render();
+      const row = removeBtn.closest(".checkout-item-row");
+      const remaining = isSingleSlug ? getCheckoutItems() : getCart();
+      if (!remaining.length) {
+        renderList();
+      } else {
+        if (row) row.remove();
+        updateTotals();
+      }
       return;
     }
     const selectBtn = e.target.closest("[data-checkout-toggle-select]");
     if (selectBtn) {
       toggleCartItemSelected(selectBtn.dataset.checkoutToggleSelect);
-      render();
+      selectBtn.classList.toggle("checked");
+      updateTotals();
     }
   });
 
   if (selectAllRow) {
     selectAllRow.addEventListener("click", () => {
       toggleSelectAllCart();
-      render();
+      const cart = getCart();
+      list.querySelectorAll("[data-checkout-toggle-select]").forEach((btn) => {
+        const item = cart.find((i) => i.slug === btn.dataset.checkoutToggleSelect);
+        btn.classList.toggle("checked", !!(item && item.selected));
+      });
+      updateTotals();
     });
   }
 

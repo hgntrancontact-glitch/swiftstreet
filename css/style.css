@@ -264,13 +264,14 @@ p {
   margin-left: auto;
 }
 
+/* Vòng 27: tăng nhẹ size icon chuông/giỏ hàng ở header (21→23px, nút 42→44px). */
 .icon-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -284,8 +285,8 @@ p {
 }
 
 .icon-btn svg {
-  width: 21px;
-  height: 21px;
+  width: 23px;
+  height: 23px;
 }
 
 .icon-btn .icon-dot {
@@ -609,13 +610,19 @@ p {
   transform: translate(-50%, 0);
 }
 
-/* Bảng nhỏ trượt từ mép trái — xác nhận "Thêm giỏ hàng" (vòng sửa V2, mục A). */
+/* Bảng nhỏ trượt từ mép PHẢI (vòng 27 — trước đó trượt từ trái, khách đổi ý
+   muốn trượt từ phải hướng vào giữa) — xác nhận "Thêm giỏ hàng", nằm dưới
+   header. Biến thể `.is-duplicate` (sản phẩm đã có sẵn trong giỏ) đổi sang
+   tông xám + icon X thay vì viền cam. */
 .cart-slide-toast {
   position: fixed;
-  top: 110px;
-  left: 20px;
+  top: 96px;
+  right: 20px;
   min-width: 220px;
-  max-width: 300px;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: var(--color-white);
   border: 1px solid var(--border-color);
   border-left: 4px solid var(--color-orange);
@@ -627,12 +634,24 @@ p {
   color: var(--text-main);
   line-height: 1.4;
   z-index: 500;
-  transform: translateX(-140%);
+  transform: translateX(140%);
   transition: transform 0.3s ease;
 }
 
 .cart-slide-toast.show {
   transform: translateX(0);
+}
+
+.cart-slide-toast.is-duplicate {
+  border-left-color: var(--text-muted);
+  color: var(--text-muted);
+}
+
+.cart-slide-toast .toast-x-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-muted);
 }
 
 @media (max-width: 480px) {
@@ -1271,8 +1290,9 @@ p {
    Trang chi tiết sản phẩm
    =========================================================== */
 
+/* Vòng 27: tăng nhẹ cỡ chữ breadcrumb (13→14px, "chỉ 1 tí thôi" theo yêu cầu). */
 .breadcrumb {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   padding: 20px 0;
 }
@@ -1786,12 +1806,10 @@ p {
   margin-bottom: 12px;
 }
 
-/* Tối đa 5 sản phẩm hiện cùng lúc, quá 5 thì cuộn riêng danh sách (mục D). */
+/* Vòng 27: bỏ giới hạn 5 dòng + cuộn riêng (yêu cầu vòng 25/26) — khách đổi ý,
+   giờ muốn hiện HẾT toàn bộ sản phẩm trong giỏ, không cuộn danh sách nữa. */
 .checkout-product-list {
-  max-height: 636px;
-  overflow-y: auto;
   margin-bottom: 18px;
-  padding-right: 2px;
 }
 
 /* Mỗi sản phẩm gói gọn trong 1 khung riêng (mục D). Vòng 26: sắp lại thành 1
@@ -1826,9 +1844,27 @@ p {
   flex-shrink: 0;
 }
 
-.checkout-item-thumb svg {
-  width: 22px;
-  height: 22px;
+/* Ảnh minh hoạ sản phẩm mô phỏng dạng "file sheet" nhỏ (vòng 27, mô phỏng
+   bằng code — hàng trên màu cam là "tiêu đề", hàng dưới trắng là "ô dữ liệu"). */
+.thumb-sheet {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2px;
+  width: 24px;
+  height: 18px;
+}
+
+.thumb-sheet span {
+  border-radius: 1px;
+}
+
+.thumb-sheet span:nth-child(-n+3) {
+  background: var(--color-orange);
+}
+
+.thumb-sheet span:nth-child(n+4) {
+  background: var(--color-white);
 }
 
 .checkout-item-content {
@@ -1865,11 +1901,19 @@ p {
   text-align: right;
 }
 
+/* Vòng 27: bọc khung viền mỏng cho khu vực "Điền thông tin của bạn" — trước đó
+   không có khung bao, trông lỏng lẻo/nhiều khoảng trống thừa. */
+.checkout-input-form-wrap {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
 .checkout-input-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 12px;
 }
 
 .checkout-input-form label {
@@ -1934,6 +1978,17 @@ p {
   color: var(--text-main);
 }
 
+/* Vòng 27: "Tổng tiền" và "Khuyến mãi" cần sát nhau hơn (tham khảo cách trình
+   bày của ChatGPT) — bọc riêng, giảm khoảng cách giữa 2 dòng này xuống 4px
+   thay vì 9px như các dòng khác. */
+.summary-group .summary-row {
+  padding: 4px 0;
+}
+
+.summary-group .summary-row:first-child {
+  padding-top: 0;
+}
+
 /* Khuyến mãi: chữ số KHÔNG đậm/không màu đỏ nữa (vòng 26, yêu cầu tường minh
    của khách) — chỉ còn 1 dòng phụ nhỏ "đã giảm X%" bên dưới nhãn để giải thích. */
 .summary-discount-label {
@@ -1948,8 +2003,10 @@ p {
   color: var(--text-muted);
 }
 
+/* Vòng 27: đổi lại thành đỏ nhẹ (không quá đậm/nổi bật) — vòng 26 từng đổi
+   sang đen, khách đổi ý muốn có màu đỏ nhưng dịu, không in đậm. */
 .summary-row .discount-value {
-  color: var(--text-main);
+  color: var(--color-error);
   font-weight: 400;
 }
 
@@ -2012,18 +2069,22 @@ p {
 /* "Cần thanh toán": đổi từ cam sang XANH LÁ ĐẬM (vòng 26, khách chủ động cho
    phép lệch quy tắc màu thương hiệu riêng cho số tiền này — dùng lại biến màu
    success `#2e7d52` có sẵn, không tạo mã màu mới). */
+/* Vòng 27: đổi lại thành ĐEN — vòng 26 từng đổi sang xanh lá theo gợi ý khách,
+   nay khách đổi ý muốn màu đen. */
 .summary-total-row .total-amount {
-  color: var(--color-success);
+  color: var(--color-black);
   font-weight: 800;
   font-size: 18px;
 }
 
 /* Nút "Thanh toán" dạng viên thuốc bo tròn hoàn toàn (vòng 26, tham khảo nút
    "Đăng ký" của ChatGPT — trước đó đổi tên từ "Tôi đã chuyển khoản"). */
+/* Vòng 27: rộng thêm một chút (240→300px) cho cân đối hơn với nút "Đăng ký"
+   của ChatGPT — khách nhấn mạnh chỉ rộng thêm 1 chút, không kéo full-width. */
 .checkout-paid-btn {
   display: block;
   width: 100%;
-  max-width: 240px;
+  max-width: 300px;
   margin: 16px auto 0;
   padding: 13px 20px;
   font-size: 14px;
@@ -2187,19 +2248,20 @@ p {
   text-decoration: line-through;
 }
 
-/* Ô tích dạng VUÔNG bo góc nhẹ (vòng 26 — trước đó là hình tròn, khách yêu cầu
-   đổi sang vuông bo 4 góc kiểu FPT Shop, dấu tích cơ bản không uốn lượn). */
+/* Ô tích dạng VUÔNG bo góc nhẹ, thu nhỏ + dấu tích SVG rõ nét (vòng 27, tham
+   khảo đúng dấu tick của ChatGPT) — thay cho ký tự "✓" bằng font chữ (render
+   không nhất quán giữa các trình duyệt/hệ điều hành). */
 .cart-item-select,
 .cart-select-all-circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
-  border: 2px solid var(--border-color);
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-color);
   background: var(--color-white);
   flex-shrink: 0;
   cursor: pointer;
   position: relative;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.1s ease, border-color 0.1s ease;
 }
 
 .cart-item-select.checked,
@@ -2208,24 +2270,29 @@ p {
   background: var(--color-orange);
 }
 
-.cart-item-select.checked::after,
-.cart-select-all-circle.checked::after {
-  content: "✓";
+.cart-item-select .check-icon,
+.cart-select-all-circle .check-icon {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  inset: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
   color: var(--color-black);
-  font-size: 12px;
-  font-weight: 700;
+  opacity: 0;
 }
 
+.cart-item-select.checked .check-icon,
+.cart-select-all-circle.checked .check-icon {
+  opacity: 1;
+}
+
+/* Vòng 27: thêm padding-left 12px để ô tích "Chọn tất cả" thẳng hàng với ô
+   tích từng sản phẩm bên dưới (`.checkout-item-row` có padding 12px quanh, nên
+   checkbox của từng dòng lùi vào 12px so với mép trái cột). */
 .cart-select-all {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 0 4px;
+  padding: 14px 0 4px 12px;
 }
 
 .cart-select-all span {
@@ -2522,6 +2589,15 @@ p {
   .hero-intro h1 {
     font-size: 26px;
     line-height: 1.32;
+  }
+
+  /* Vòng 27: đồng bộ size nút Thêm giỏ hàng/Mua ngay ở trang chủ với trang Sản
+     phẩm — nhưng CHỈ trên mobile thật (≤720px), khách xác nhận size ở trang
+     Sản phẩm đã ổn trên điện thoại. KHÔNG đụng desktop — 2 trang này vẫn cố ý
+     khác nhau ở màn hình rộng như đã chốt từ vòng 20. */
+  .hero-products .btn-sm {
+    padding: 13px 6px;
+    font-size: 12px;
   }
 
   .main-nav,
