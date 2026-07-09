@@ -500,9 +500,18 @@ p {
 }
 
 /* ---------- Product grid ---------- */
+/* minmax(0, 340px) thay vì 1fr — nếu dùng 1fr, mỗi cột lưới sẽ giãn hết cỡ
+   theo container (vd container 1480px → mỗi cột ~450px) trong khi thẻ bị giới
+   hạn max-width:340px và tự canh giữa bằng margin:auto, tạo ra khoảng trắng
+   THỪA rất lớn ở 2 bên mỗi thẻ (khách chụp ảnh khoanh đỏ chỉ ra lỗi này) —
+   cộng với `gap` sẽ thành khoảng cách giữa 2 thẻ to gấp nhiều lần giá trị gap
+   thật sự. minmax(0,340px) giới hạn TRẦN mỗi cột đúng bằng max-width của thẻ,
+   `justify-content:center` dồn phần thừa ra 2 bên RÌA của cả lưới (không phải
+   giữa từng thẻ) — khoảng cách giữa các thẻ lúc này đúng bằng giá trị `gap`. */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 340px));
+  justify-content: center;
   gap: 28px;
 }
 
@@ -1484,7 +1493,7 @@ p {
   }
 
   .hero-products .product-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 340px));
   }
 }
 
@@ -1539,7 +1548,7 @@ p {
      xuống 2 cột ở dải này — nút Thêm giỏ hàng/Mua ngay cỡ to (đã tăng riêng
      cho trang này ở vòng 19) sẽ tràn chữ nếu vẫn giữ 3 cột lúc thẻ bị bóp hẹp. */
   .product-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 340px));
   }
 }
 
