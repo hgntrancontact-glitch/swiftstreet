@@ -503,6 +503,14 @@ p {
 .product-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+/* Lưới sản phẩm ở trang chủ (.hero-products, bị chia sẻ chỗ với cột hero bên
+   cạnh) vẫn giữ khoảng cách hẹp như cũ — chỉ trang "Sản phẩm" (san-pham.html,
+   nhiều chỗ trống hơn) mới nới rộng khoảng cách giữa các thẻ theo phản hồi
+   "khoảng cách giữa các thẻ chưa tốt" (so với thiết kế của đối thủ). */
+.hero-products .product-grid {
   gap: 14px;
 }
 
