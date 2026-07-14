@@ -715,6 +715,21 @@ p {
   gap: 14px;
 }
 
+/* Vòng 33: khi lưới CHỈ CÓ ĐÚNG 1 sản phẩm (hiện tại chỉ SwiftCopy.Drive), các
+   breakpoint cột cố định bên dưới (repeat(3,...)/repeat(2,...)) vẫn reserve
+   NHIỀU cột dù chỉ 1 thẻ có nội dung — 2-3 cột trống còn lại vẫn được tính vào
+   `justify-content:center`, khiến cả khối nhiều cột được canh giữa nhưng thẻ
+   duy nhất lại nằm ở cột ĐẦU TIÊN của khối đó, tức dồn về bên trái thay vì
+   nằm giữa toàn bộ vùng lưới (khách chụp ảnh khoanh đỏ chỉ ra lỗi này).
+   `:has(> .product-card:only-child)` phát hiện đúng trường hợp 1 thẻ duy nhất
+   và ép về đúng 1 cột 340px — nhờ specificity (0,3,0) cao hơn mọi rule
+   `repeat(N,...)` trong các @media bên dưới (đều chỉ (0,1,0)/(0,2,0)) nên tự
+   động thắng ở MỌI breakpoint mà không cần !important, và không đụng gì tới
+   layout nhiều cột khi có từ 2 sản phẩm trở lên trong tương lai. */
+.product-grid:has(> .product-card:only-child) {
+  grid-template-columns: minmax(0, 340px);
+}
+
 .product-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
