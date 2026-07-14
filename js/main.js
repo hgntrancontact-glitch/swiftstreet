@@ -590,15 +590,65 @@ function generateOrderCode() {
 }
 
 /**
+ * Bảng giá riêng cho SwiftCopy.Drive (vòng 36) — gói Basic/Premium, chế độ Cá
+ * nhân/Team (5-10 người). Dùng CHUNG giữa trang
+ * `products/swiftcopy-drive-bang-gia.html` (setupPricingPage(), hiển thị + tính
+ * giá theo slider) VÀ `thanh-toan.html` (getCheckoutItems(), đọc lại đúng công
+ * thức này qua query string `?plan=&mode=&members=` để tự điền đúng giá) — để
+ * 2 nơi không bao giờ lệch số nhau do sửa 1 chỗ quên sửa chỗ kia.
+ * Giá Team nội suy TUYẾN TÍNH giữa mốc 5 người (min) và 10 người (max).
+ */
+const SWIFTCOPY_PRICING = {
+  personal: {
+    basic: { price: 490000, desc: "Sao chép Drive" },
+    premium: { price: 998888, desc: "Sao chép & Tải Drive về máy" },
+  },
+  team: {
+    basic: { min: 1998000, max: 3996888, desc: "Sao chép Drive cho cả nhóm" },
+    premium: { min: 4078888, max: 8148888, desc: "Sao chép & Tải về máy cho cả nhóm" },
+  },
+};
+
+function interpolateTeamPrice(min, max, members) {
+  const n = Math.min(10, Math.max(5, members || 5));
+  return Math.round(min + (max - min) * (n - 5) / 5);
+}
+
+/**
  * Danh sách sản phẩm cần thanh toán trên thanh-toan.html:
  * - Có `?slug=` trên URL → mua 1 sản phẩm cụ thể (không qua giỏ hàng, không đổi giỏ hàng thật).
  * - Không có `?slug=` → lấy các sản phẩm đang được TICK CHỌN trong giỏ hàng.
  */
 function getCheckoutItems() {
-  const slug = new URLSearchParams(location.search).get("slug");
+  const params = new URLSearchParams(location.search);
+  const slug = params.get("slug");
   if (slug) {
     const product = typeof PRODUCTS !== "undefined" ? PRODUCTS.find((p) => p.slug === slug) : null;
     if (!product) return [];
+
+    // Vòng 36: link "Mua ngay" từ trang Bảng giá kèm ?plan=basic|premium (và
+    // ?mode=team&members=5..10 nếu là gói Team) — ghi đè giá/tên/mô tả mặc
+    // định của sản phẩm bằng đúng gói khách đã chọn.
+    const plan = params.get("plan");
+    if (slug === "swiftcopy-drive" && (plan === "basic" || plan === "premium")) {
+      const mode = params.get("mode") === "team" ? "team" : "personal";
+      const members = parseInt(params.get("members"), 10) || 5;
+      const tier = SWIFTCOPY_PRICING[mode][plan];
+      const price = mode === "team" ? interpolateTeamPrice(tier.min, tier.max, members) : tier.price;
+      const planLabel = plan === "basic" ? "Basic" : "Premium";
+      const modeLabel = mode === "team" ? ` Team (${members} người)` : "";
+      return [{
+        slug: product.slug,
+        name: `${product.name} — ${planLabel}${modeLabel}`,
+        price,
+        priceOld: 0,
+        shortDesc: tier.desc,
+        type: product.type,
+        qty: 1,
+        selected: true,
+      }];
+    }
+
     return [{
       slug: product.slug,
       name: product.name,
@@ -771,6 +821,113 @@ function setupCheckoutPage() {
   }
 }
 
+/** Nội dung 4 dòng tính năng của mỗi gói, đổi theo Cá nhân/Team (vòng 36). */
+const PRICING_FEATURES = {
+  personal: {
+    basic: [
+      "Sao chép file &amp; thư mục Google Drive không giới hạn dung lượng",
+      "Sao chép video không giới hạn",
+      "Kiểm tra quyền truy cập trước khi sao chép",
+      "Tự động tiếp tục nếu mất kết nối",
+    ],
+    premium: [
+      "Toàn bộ tính năng gói Basic",
+      "Tải thư mục đã sao chép thẳng về máy tính",
+      "Ưu tiên hỗ trợ kỹ thuật",
+      "Cập nhật miễn phí các bản nâng cấp sau này",
+    ],
+  },
+  team: {
+    basic: [
+      "Toàn bộ tính năng Basic cá nhân",
+      "Áp dụng cho 5–10 thành viên",
+      "Quản lý danh sách thành viên tập trung",
+      "Giá tốt hơn mua lẻ từng người",
+    ],
+    premium: [
+      "Toàn bộ tính năng Basic Team",
+      "Tải thư mục đã sao chép thẳng về máy tính cho cả nhóm",
+      "Ưu tiên hỗ trợ kỹ thuật",
+      "Cập nhật miễn phí các bản nâng cấp sau này",
+    ],
+  },
+};
+
+/** Render trang products/swiftcopy-drive-bang-gia.html (chỉ chạy nếu trang hiện tại có #pricing-basic-price). */
+function setupPricingPage() {
+  const basicPriceEl = document.getElementById("pricing-basic-price");
+  if (!basicPriceEl) return;
+
+  const toggleBtns = document.querySelectorAll("[data-pricing-mode]");
+  const teamControls = document.getElementById("pricing-team-controls");
+  const slider = document.getElementById("pricing-team-slider");
+  const teamCountEl = document.getElementById("pricing-team-count");
+
+  const basicLabelEl = document.getElementById("pricing-basic-label");
+  const basicDescEl = document.getElementById("pricing-basic-desc");
+  const basicBuyEl = document.getElementById("pricing-basic-buy");
+  const basicFeaturesEl = document.getElementById("pricing-basic-features");
+
+  const premiumLabelEl = document.getElementById("pricing-premium-label");
+  const premiumPriceEl = document.getElementById("pricing-premium-price");
+  const premiumDescEl = document.getElementById("pricing-premium-desc");
+  const premiumBuyEl = document.getElementById("pricing-premium-buy");
+  const premiumFeaturesEl = document.getElementById("pricing-premium-features");
+
+  let mode = "personal";
+
+  function render() {
+    const members = parseInt(slider.value, 10) || 5;
+    if (teamControls) teamControls.classList.toggle("show", mode === "team");
+    if (teamCountEl) teamCountEl.textContent = String(members);
+
+    basicLabelEl.textContent = mode === "team" ? "BASIC TEAM" : "BASIC";
+    premiumLabelEl.textContent = mode === "team" ? "PREMIUM TEAM" : "PREMIUM";
+
+    if (mode === "team") {
+      const basicTier = SWIFTCOPY_PRICING.team.basic;
+      const premiumTier = SWIFTCOPY_PRICING.team.premium;
+      basicPriceEl.textContent = formatPriceVN(interpolateTeamPrice(basicTier.min, basicTier.max, members));
+      premiumPriceEl.textContent = formatPriceVN(interpolateTeamPrice(premiumTier.min, premiumTier.max, members));
+      basicDescEl.textContent = basicTier.desc;
+      premiumDescEl.textContent = premiumTier.desc;
+    } else {
+      basicPriceEl.textContent = formatPriceVN(SWIFTCOPY_PRICING.personal.basic.price);
+      premiumPriceEl.textContent = formatPriceVN(SWIFTCOPY_PRICING.personal.premium.price);
+      basicDescEl.textContent = SWIFTCOPY_PRICING.personal.basic.desc;
+      premiumDescEl.textContent = SWIFTCOPY_PRICING.personal.premium.desc;
+    }
+
+    basicFeaturesEl.innerHTML = PRICING_FEATURES[mode].basic.map((f) => `<li>${f}</li>`).join("");
+    premiumFeaturesEl.innerHTML = PRICING_FEATURES[mode].premium.map((f) => `<li>${f}</li>`).join("");
+
+    const rootPrefix = getRootPrefix();
+    const basicParams = new URLSearchParams({ slug: "swiftcopy-drive", plan: "basic" });
+    const premiumParams = new URLSearchParams({ slug: "swiftcopy-drive", plan: "premium" });
+    if (mode === "team") {
+      basicParams.set("mode", "team");
+      basicParams.set("members", String(members));
+      premiumParams.set("mode", "team");
+      premiumParams.set("members", String(members));
+    }
+    basicBuyEl.href = `${rootPrefix}thanh-toan.html?${basicParams.toString()}`;
+    premiumBuyEl.href = `${rootPrefix}thanh-toan.html?${premiumParams.toString()}`;
+  }
+
+  toggleBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.pricingMode === mode) return;
+      mode = btn.dataset.pricingMode;
+      toggleBtns.forEach((b) => b.classList.toggle("active", b === btn));
+      render();
+    });
+  });
+
+  if (slider) slider.addEventListener("input", render);
+
+  render();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderProductGrid();
   setupNavToggle();
@@ -781,4 +938,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setupNotifyDropdown();
   setupRateModalActions();
   setupCheckoutPage();
+  setupPricingPage();
 });
