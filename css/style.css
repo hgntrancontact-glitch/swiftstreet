@@ -722,12 +722,26 @@ p {
    duy nhất lại nằm ở cột ĐẦU TIÊN của khối đó, tức dồn về bên trái thay vì
    nằm giữa toàn bộ vùng lưới (khách chụp ảnh khoanh đỏ chỉ ra lỗi này).
    `:has(> .product-card:only-child)` phát hiện đúng trường hợp 1 thẻ duy nhất
-   và ép về đúng 1 cột 340px — nhờ specificity (0,3,0) cao hơn mọi rule
-   `repeat(N,...)` trong các @media bên dưới (đều chỉ (0,1,0)/(0,2,0)) nên tự
-   động thắng ở MỌI breakpoint mà không cần !important, và không đụng gì tới
-   layout nhiều cột khi có từ 2 sản phẩm trở lên trong tương lai. */
-.product-grid:has(> .product-card:only-child) {
-  grid-template-columns: minmax(0, 340px);
+   và ép về đúng 1 cột — nhờ specificity (0,3,0) cao hơn mọi rule `repeat(N,...)`
+   trong các @media bên dưới (đều chỉ (0,1,0)/(0,2,0)) nên tự động thắng ở MỌI
+   breakpoint mà không cần !important, và không đụng gì tới layout nhiều cột
+   khi có từ 2 sản phẩm trở lên trong tương lai (lúc đó :only-child không khớp
+   nữa, rule cũ tiếp tục áp dụng bình thường).
+   Vòng 34: khách xem bản canh giữa xong, muốn thẻ duy nhất này to hơn 1 chút
+   cho đỡ trống trải — tăng từ 340px (giới hạn mặc định dùng chung mọi lưới)
+   lên 420px CHỈ trong trường hợp 1 thẻ này (cột lưới + max-width của chính thẻ
+   `.product-card`, xem rule ngay dưới `.product-card` gốc). Nội dung bên trong
+   thẻ (`.device-screen`/`.device-display`/tên/giá) đều dùng chiều rộng % theo
+   cha nên tự giãn theo, không cần chỉnh riêng từng phần tử con.
+   Bọc trong `min-width:721px`: các @media mobile bên dưới (≤720px) đổi cột
+   lưới về `1fr` VÀ `.product-card` về `max-width:none` để thẻ full-width thật
+   sự trên màn hình hẹp — nếu không giới hạn theo min-width, rule (0,3,0) này
+   sẽ thắng cả `1fr` của mobile bất kể thứ tự file, ép cột về tối đa 420px
+   thay vì full-width, phá hành vi mobile cố ý. */
+@media (min-width: 721px) {
+  .product-grid:has(> .product-card:only-child) {
+    grid-template-columns: minmax(0, 420px);
+  }
 }
 
 .product-card {
@@ -742,6 +756,20 @@ p {
   width: 100%;
   max-width: 340px;
   margin: 0 auto;
+}
+
+/* Vòng 34: khớp với cột lưới 420px ở trên — chỉ áp dụng khi thẻ này là con
+   DUY NHẤT của lưới (:only-child), không đụng tới max-width:340px mặc định
+   dùng chung cho mọi trường hợp còn lại (2 sản phẩm trở lên).
+   Bọc trong `min-width:721px`: vì selector này có specificity (0,3,0) cao hơn
+   `.product-card { max-width: none }` ở mobile (@media max-width:720px, xem
+   dưới, specificity chỉ (0,1,0)) — nếu không giới hạn theo min-width, rule
+   420px này sẽ THẮNG cả trên mobile bất kể thứ tự file, phá mất hành vi
+   full-width cố ý của thẻ sản phẩm trên màn hình hẹp. */
+@media (min-width: 721px) {
+  .product-grid > .product-card:only-child {
+    max-width: 420px;
+  }
 }
 
 .product-card:hover {
