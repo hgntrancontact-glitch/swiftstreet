@@ -442,6 +442,25 @@ p {
   font-weight: 800;
 }
 
+/* Vòng 35: tách "Code: SSGIFT28" ra khỏi đoạn khuyến mãi, ghép chung 1 hàng
+   với nút "Đánh giá Swiftstreet" — tạo thành hàng cuối cùng của khối văn bản
+   bên trái, thay vì 2 dòng xếp chồng như trước. */
+.hero-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-code {
+  font-size: 18.5px;
+  color: var(--text-main);
+}
+
+.hero-code strong {
+  font-weight: 800;
+}
+
 .hero-rate-btn {
   position: relative;
   background: linear-gradient(90deg, #ffbb2e 0%, #fa9a05 100%);
@@ -1178,6 +1197,124 @@ p {
   font-size: 14px;
   color: var(--text-muted);
   text-decoration: line-through;
+}
+
+/* Vòng 35: khi lưới chỉ có 1 sản phẩm, phóng to khung "ảnh mô phỏng Dashboard"
+   + tên/giá thành khối showcase nổi bật (chiều cao >> chiều rộng, diện tích
+   ảnh mô phỏng tăng hơn gấp đôi so với bản trước) — dùng lại pattern
+   `:has(> .product-card:only-child)` đã lập ở vòng 33/34 nên CHỈ áp dụng khi
+   có đúng 1 thẻ trong lưới, không đụng gì tới kích thước mặc định khi có từ 2
+   sản phẩm trở lên (san-pham.html, hoặc hero khi có nhiều sản phẩm thật trong
+   tương lai). Mọi con số bên trong mini-dashboard (chữ, đệm, donut...) đều
+   tăng theo cùng tỉ lệ để trông thật sự "to hơn" chứ không chỉ thêm khoảng
+   trắng thừa xung quanh 1 dashboard vẫn nhỏ như cũ. Không cần bọc @media như
+   2 rule :has() ở vòng 33/34 vì không có rule mobile nào khác đụng tới cùng
+   thuộc tính (height/padding/font-size của các phần tử .dash-*) — an toàn ở
+   mọi độ rộng. */
+.product-grid:has(> .product-card:only-child) .product-thumb {
+  padding: 40px 22px 20px;
+}
+
+.product-grid:has(> .product-card:only-child) .product-thumb .badge {
+  font-size: 13px;
+  padding: 5px 13px;
+  top: 13px;
+  left: 13px;
+}
+
+.product-grid:has(> .product-card:only-child) .device-screen {
+  padding: 7px 7px 10px;
+}
+
+.product-grid:has(> .product-card:only-child) .device-display {
+  height: 600px;
+  padding: 22px;
+  gap: 12px;
+}
+
+.product-grid:has(> .product-card:only-child) .device-base {
+  height: 9px;
+  margin: 0 16px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-title {
+  font-size: 16px;
+  gap: 10px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-title svg {
+  width: 17px;
+  height: 17px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-stats {
+  gap: 9px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-stat {
+  padding: 13px 9px;
+  border-radius: 10px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-stat b {
+  font-size: 16px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-stat span {
+  font-size: 11.5px;
+  margin-bottom: 3px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-stat em {
+  font-size: 11.5px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-row {
+  gap: 16px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-donut {
+  width: 78px;
+  height: 78px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-donut::after {
+  inset: 12px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-donut span {
+  font-size: 13px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-list {
+  gap: 10px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-list li {
+  font-size: 12.5px;
+  padding: 10px 16px;
+  border-radius: 9px;
+}
+
+.product-grid:has(> .product-card:only-child) .dash-list li b {
+  font-size: 13.5px;
+}
+
+.product-grid:has(> .product-card:only-child) .product-body {
+  padding: 16px 18px 6px;
+  gap: 8px;
+}
+
+.product-grid:has(> .product-card:only-child) .product-body h3 {
+  font-size: 23px;
+}
+
+.product-grid:has(> .product-card:only-child) .price-current {
+  font-size: 27px;
+}
+
+.product-grid:has(> .product-card:only-child) .price-old {
+  font-size: 19px;
 }
 
 /* ---------- How it works ---------- */
@@ -2618,6 +2755,10 @@ p {
     font-size: 15px;
   }
 
+  .hero-code {
+    font-size: 15px;
+  }
+
   .hero-products .product-grid {
     grid-template-columns: 1fr;
   }
@@ -2653,6 +2794,10 @@ p {
   }
 
   .hero-promo-text {
+    font-size: 18.5px;
+  }
+
+  .hero-code {
     font-size: 18.5px;
   }
 
