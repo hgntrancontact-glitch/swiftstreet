@@ -762,10 +762,31 @@ p {
    lưới về `1fr` VÀ `.product-card` về `max-width:none` để thẻ full-width thật
    sự trên màn hình hẹp — nếu không giới hạn theo min-width, rule (0,3,0) này
    sẽ thắng cả `1fr` của mobile bất kể thứ tự file, ép cột về tối đa 420px
-   thay vì full-width, phá hành vi mobile cố ý. */
+   thay vì full-width, phá hành vi mobile cố ý.
+   Vòng 35 rồi 37/38 từng thử phóng to thẻ này thành khối showcase dọc 600px
+   RIÊNG cho hero (khác hẳn san-pham.html), rồi bỏ hẳn badge+mockup thay bằng
+   ảnh placeholder trơn — khách xem thử và yêu cầu HUỶ TOÀN BỘ hướng đi đó ở
+   vòng 39: khôi phục nguyên vẹn badge "CÔNG CỤ" + mockup "Drive Overview" đầy
+   đủ (số liệu/donut/danh sách file) + khung "laptop" (bezel đen+chân đế) —
+   ĐÚNG NHƯ THIẾT KẾ GỐC trước vòng 35, và bắt ĐỒNG BỘ 1 kích thước DUY NHẤT
+   giữa hero VÀ san-pham.html (không còn phân nhánh `.hero-products` riêng).
+   Cách đáp ứng yêu cầu "khối to/ngang hơn" của khách mà KHÔNG cần đụng gì tới
+   nội dung mockup: chỉ tăng giới hạn chiều rộng CHUNG này từ 420px lên 700px
+   — thẻ vẫn y hệt thiết kế cũ (186px cao, đầy đủ nội dung), chỉ RỘNG hơn hẳn
+   nên tỉ lệ tự nhiên ngả sang NGANG rõ rệt, đồng thời tổng chiều cao thẻ
+   không đổi (~380px) nên vẫn vừa màn hình đầu tiên cùng "Xem thêm" mà không
+   cần chỉnh riêng cho hero nữa. 700px chọn vì nhỏ hơn bề rộng cột
+   `.hero-products` ở breakpoint desktop mặc định (≥1301px, cột rộng ~730px)
+   — nghĩa là ở đúng breakpoint đó, thẻ bị giới hạn bởi CHÍNH con số 700px này
+   trên CẢ 2 trang, cho ra kích thước bằng nhau tuyệt đối (đồng bộ thật, không
+   chỉ đồng bộ code). Ở các breakpoint hẹp hơn (721-1300px), cột hero-products
+   có thể hẹp hơn 700px do phải chia chỗ với `.hero-intro` — lúc đó thẻ hero
+   sẽ hẹp hơn thẻ san-pham.html (vốn không bị hero-intro cạnh tranh không
+   gian) — đây là giới hạn vật lý không tránh được khi 2 trang có bố cục khác
+   nhau, không phải lỗi. */
 @media (min-width: 721px) {
   .product-grid:has(> .product-card:only-child) {
-    grid-template-columns: minmax(0, 420px);
+    grid-template-columns: minmax(0, 700px);
   }
 }
 
@@ -783,17 +804,19 @@ p {
   margin: 0 auto;
 }
 
-/* Vòng 34: khớp với cột lưới 420px ở trên — chỉ áp dụng khi thẻ này là con
-   DUY NHẤT của lưới (:only-child), không đụng tới max-width:340px mặc định
-   dùng chung cho mọi trường hợp còn lại (2 sản phẩm trở lên).
+/* Vòng 34: khớp với cột lưới ở trên — chỉ áp dụng khi thẻ này là con DUY NHẤT
+   của lưới (:only-child), không đụng tới max-width:340px mặc định dùng chung
+   cho mọi trường hợp còn lại (2 sản phẩm trở lên).
    Bọc trong `min-width:721px`: vì selector này có specificity (0,3,0) cao hơn
    `.product-card { max-width: none }` ở mobile (@media max-width:720px, xem
    dưới, specificity chỉ (0,1,0)) — nếu không giới hạn theo min-width, rule
-   420px này sẽ THẮNG cả trên mobile bất kể thứ tự file, phá mất hành vi
-   full-width cố ý của thẻ sản phẩm trên màn hình hẹp. */
+   này sẽ THẮNG cả trên mobile bất kể thứ tự file, phá mất hành vi full-width
+   cố ý của thẻ sản phẩm trên màn hình hẹp.
+   Vòng 39: tăng 420px→700px đồng thời với rule `grid-template-columns` ở trên
+   (xem ghi chú đầy đủ ở đó) — 2 con số này LUÔN phải khớp nhau. */
 @media (min-width: 721px) {
   .product-grid > .product-card:only-child {
-    max-width: 420px;
+    max-width: 700px;
   }
 }
 
@@ -1205,229 +1228,20 @@ p {
   text-decoration: line-through;
 }
 
-/* Vòng 35: khi lưới chỉ có 1 sản phẩm, phóng to khung "ảnh mô phỏng Dashboard"
-   + tên/giá thành khối showcase nổi bật (chiều cao >> chiều rộng, diện tích
-   ảnh mô phỏng tăng hơn gấp đôi so với bản trước) — dùng lại pattern
-   `:has(> .product-card:only-child)` đã lập ở vòng 33/34 nên CHỈ áp dụng khi
-   có đúng 1 thẻ trong lưới, không đụng gì tới kích thước mặc định khi có từ 2
-   sản phẩm trở lên (san-pham.html, hoặc hero khi có nhiều sản phẩm thật trong
-   tương lai). Mọi con số bên trong mini-dashboard (chữ, đệm, donut...) đều
-   tăng theo cùng tỉ lệ để trông thật sự "to hơn" chứ không chỉ thêm khoảng
-   trắng thừa xung quanh 1 dashboard vẫn nhỏ như cũ. Không cần bọc @media như
-   2 rule :has() ở vòng 33/34 vì không có rule mobile nào khác đụng tới cùng
-   thuộc tính (height/padding/font-size của các phần tử .dash-*) — an toàn ở
-   mọi độ rộng. */
-.product-grid:has(> .product-card:only-child) .product-thumb {
-  padding: 40px 22px 20px;
-}
-
-.product-grid:has(> .product-card:only-child) .product-thumb .badge {
-  font-size: 13px;
-  padding: 5px 13px;
-  top: 13px;
-  left: 13px;
-}
-
-.product-grid:has(> .product-card:only-child) .device-screen {
-  padding: 7px 7px 10px;
-}
-
-.product-grid:has(> .product-card:only-child) .device-display {
-  height: 600px;
-  padding: 22px;
-  gap: 12px;
-}
-
-.product-grid:has(> .product-card:only-child) .device-base {
-  height: 9px;
-  margin: 0 16px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-title {
-  font-size: 16px;
-  gap: 10px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-title svg {
-  width: 17px;
-  height: 17px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-stats {
-  gap: 9px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-stat {
-  padding: 13px 9px;
-  border-radius: 10px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-stat b {
-  font-size: 16px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-stat span {
-  font-size: 11.5px;
-  margin-bottom: 3px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-stat em {
-  font-size: 11.5px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-row {
-  gap: 16px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-donut {
-  width: 78px;
-  height: 78px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-donut::after {
-  inset: 12px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-donut span {
-  font-size: 13px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-list {
-  gap: 10px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-list li {
-  font-size: 12.5px;
-  padding: 10px 16px;
-  border-radius: 9px;
-}
-
-.product-grid:has(> .product-card:only-child) .dash-list li b {
-  font-size: 13.5px;
-}
-
-.product-grid:has(> .product-card:only-child) .product-body {
-  padding: 16px 18px 6px;
-  gap: 8px;
-}
-
-.product-grid:has(> .product-card:only-child) .product-body h3 {
-  font-size: 23px;
-}
-
-.product-grid:has(> .product-card:only-child) .price-current {
-  font-size: 27px;
-}
-
-.product-grid:has(> .product-card:only-child) .price-old {
-  font-size: 19px;
-}
-
-/* Vòng 37: khách chụp ảnh chỉ ra khối sản phẩm phóng to ở vòng 35 (dashboard
-   dọc 600px) làm hero trang chủ bị quá cao, phải cuộn mới thấy hết "Xem thêm".
-   Yêu cầu riêng cho HERO (trang chủ) — KHÔNG đụng tới san-pham.html: bỏ hẳn
-   badge "CÔNG CỤ" + toàn bộ nội dung mini-dashboard (tiêu đề/3 ô số liệu/donut
-   +danh sách file), thay bằng 1 khối ảnh placeholder đơn giản tỉ lệ NGANG
-   (aspect-ratio 2/1, chặn thêm `max-height:300px` để an toàn), rộng full theo
-   cột `.hero-products` (không còn giới hạn
-   420px + canh giữa như vòng 34) để mép phải khớp lề phải container/icon giỏ
-   hàng ở header, và tên/giá thu nhỏ lại về đúng cỡ mặc định (bỏ phần phóng to
-   ở vòng 35) để cả khối gọn lại, vừa màn hình đầu tiên cùng nút "Xem thêm".
-   Mọi rule dưới đây dùng selector `.hero-products .product-grid:has(...)` —
-   nhiều hơn 1 class so với các rule chung `.product-grid:has(...)` ở vòng
-   33-35 (specificity cao hơn) nên tự động THẮNG chỉ trong phạm vi hero, còn
-   san-pham.html (không có `.hero-products` bao ngoài) vẫn giữ nguyên dashboard
-   dọc 600px như vòng 35 — đây là khác biệt CHỦ Ý, chưa được khách yêu cầu đổi
-   cho trang Sản phẩm, không phải thiếu đồng bộ. */
-@media (min-width: 721px) {
-  .hero-products .product-grid:has(> .product-card:only-child) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .hero-products .product-grid > .product-card:only-child {
-    max-width: none;
-  }
-}
-
-/* Căn mép trên khối ảnh ngang với mép trên tiêu đề H1 bên cột trái — H1 nằm
-   NGAY SAU `.hero-eyebrow` ("Chào mừng,"), nên cần đẩy khối sản phẩm xuống
-   đúng bằng chiều cao dòng eyebrow: font-size 17px × line-height 1.6 (biến
-   toàn site) ≈ 27px + margin-bottom 12px ≈ 39px, làm tròn 40px. Đây là số ước
-   lượng bằng tính toán CSS, CHƯA đo bằng ảnh chụp/getBoundingClientRect thật —
-   nếu lệch, đo lại con số này trước (xem ghi chú ở vòng 35/36 về hạn chế môi
-   trường không chụp ảnh kiểm tra được). */
-.hero-products .product-grid:has(> .product-card:only-child) {
-  margin-top: 40px;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .product-thumb {
-  padding: 0;
-  background: transparent;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .product-thumb .badge {
-  display: none;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .device-screen {
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .device-base {
-  display: none;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .dash-title,
-.hero-products .product-grid:has(> .product-card:only-child) .dash-stats,
-.hero-products .product-grid:has(> .product-card:only-child) .dash-row {
-  display: none;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .device-display {
-  height: auto;
-  aspect-ratio: 2 / 1;
-  max-height: 300px;
-  padding: 0;
-  gap: 0;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-section);
-  border-radius: 0;
-  /* `max-height:300px` là mốc AN TOÀN cố định để bảo đảm cả khối (ảnh + tên/
-     giá + nút + "Xem thêm") luôn vừa màn hình đầu tiên ngay cả ở màn hình
-     laptop phổ biến thấp hơn (~768px cao) — không chỉ dựa vào aspect-ratio
-     một mình (ratio một mình vẫn có thể ra chiều cao quá lớn nếu cột
-     `.hero-products` rất rộng ở màn hình 4K/ultra-wide).
-     Không tự vẽ viền/bo góc riêng — `.product-card` bên ngoài đã có sẵn
-     `border` + `border-radius:10px` + `overflow:hidden`, tự động bo tròn và
-     viền quanh khối placeholder này, tránh hiệu ứng viền lồng viền. */
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .device-display::before {
-  content: "Ảnh sản phẩm (placeholder)";
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .product-body {
-  padding: 10px 13px 4px;
-  gap: 5px;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .product-body h3 {
-  font-size: 16px;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .price-current {
-  font-size: 18px;
-}
-
-.hero-products .product-grid:has(> .product-card:only-child) .price-old {
-  font-size: 14px;
-}
+/* Vòng 39: TOÀN BỘ CSS phóng to riêng cho hero (vòng 35 — dashboard dọc 600px
+   + phóng to chữ/đệm) và CSS thay bằng ảnh placeholder trơn (vòng 37/38) đã bị
+   XOÁ HẲN khỏi đây theo yêu cầu khách — khôi phục nguyên vẹn thiết kế GỐC:
+   badge "CÔNG CỤ", mockup "Drive Overview" đầy đủ (tiêu đề/3 ô số liệu/donut/
+   danh sách file), khung "laptop" (bezel đen + chân đế), tên/giá cỡ chữ mặc
+   định — tất cả đều KHÔNG còn override nào, tự rơi về đúng rule gốc phía trên
+   (`.product-thumb`, `.device-screen`, `.device-display` height:186px,
+   `.dash-*`, `.product-body h3`, `.price-current/.price-old`...). Duy nhất
+   thay đổi còn giữ lại: giới hạn chiều rộng thẻ tăng 420px→700px (xem comment
+   đầy đủ ở khối `@media (min-width:721px)` phía trên, ngay sau rule vòng
+   33/34) — ĐÂY LÀ CÁCH DUY NHẤT đáp ứng yêu cầu "khối to/ngang hơn" mà không
+   cần đụng lại bất kỳ nội dung mockup nào, đồng thời ÁP DỤNG CHUNG cho cả
+   hero VÀ san-pham.html (không còn phân nhánh `.hero-products` riêng như vòng
+   37/38) để 2 nơi luôn đồng bộ 1 kích thước. */
 
 /* ---------- How it works ---------- */
 .steps {
