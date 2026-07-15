@@ -234,18 +234,19 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — vòng 63 SỬA LỖI (thay thế vòng 57-61): khách xác nhận rõ badge
-   phải nằm HẲN BÊN TRONG khung mockup đen (không đè/tràn qua viền như vòng
-   57-61 làm), bo góc khớp ĐỘ CONG CỦA CHÍNH khung đen (`.device-screen`,
-   8px) chứ không phải độ cong `.product-card` (10px). `.device-screen` giờ
-   có padding-top 30px (bezel dày hơn, xem phía trên) — `.device-screen` bắt
-   đầu ở y≈30px (product-thumb padding-top không đổi) nên badge đặt ở
-   `top:34px` (cách mép trên khung mockup 4px, nằm gọn trong bezel) và
-   `left:20px` (cách mép trái khung mockup 4px, do khung mockup bắt đầu ở
-   x≈16px). */
+/* "Bán chạy" — vòng 64 (thay thế vòng 57-63): khách bác bỏ việc mở rộng bezel
+   khung mockup (vòng 63) — "không cần kéo khung trên màn hình lên như vậy".
+   Đồng thời khách làm rõ: "Bán chạy" KHÔNG cần nằm cùng hàng với nhãn danh
+   mục nữa (2 nhãn tách biệt hoàn toàn) — vì "Bán chạy" giờ nằm HẲN vào bên
+   trong màn hình (đè lên chính nội dung mini-dashboard, không phải 1 bezel
+   riêng). `.device-screen` bezel giữ nguyên 4px (mỏng như gốc) nên
+   `.device-display` bắt đầu ngay ở y≈34px — đặt badge ở `top:36px` (2px vào
+   bên trong device-display) để nó nằm chồng lên chính nội dung màn hình,
+   không phải bezel đen mỏng phía trên. `left:20px` giữ nguyên (4px từ mép
+   trái khung mockup). Border-radius giữ 8px (khớp `.device-screen`). */
 .badge-bestseller {
   position: absolute;
-  top: 34px;
+  top: 36px;
   left: 20px;
   border-radius: 8px 0 0 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
@@ -944,13 +945,15 @@ p {
    Vòng 61: đổi `gap:4px→0` — khách yêu cầu "Cập nhật" nằm SÁT nhãn danh mục
    (không có khoảng cách), 2 nhãn ghép liền thành 1 khối — xem cách bo góc
    MIRROR (trên/dưới) đã đổi tương ứng ở `.badge-update`.
-   Vòng 63: đổi `top:18px→34px`, `right:16px→20px` — khớp đúng vị trí "Bán
-   chạy" mới, để cả nhãn danh mục lẫn "Cập nhật" nằm HẲN bên trong bezel đen
-   của khung mockup (không đè/tràn qua viền như thiết kế vòng 57-61). */
+   Vòng 64 — HUỶ vòng 63: khách xác nhận rõ nhãn danh mục KHÔNG cần cùng hàng
+   với "Bán chạy" nữa (2 nhãn tách biệt hoàn toàn — "Bán chạy" đã chuyển sang
+   đè lên nội dung mini-dashboard, xem `.badge-bestseller`). Nhãn danh mục
+   quay lại vị trí đơn giản, an toàn trong vùng đệm NGOÀI khung mockup (không
+   overlap gì cả) — `top:34px→9px`, `right:20px→9px`. */
 .product-badges-right {
   position: absolute;
-  top: 34px;
-  right: 20px;
+  top: 9px;
+  right: 9px;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -973,17 +976,16 @@ p {
    stretch, đảm bảo nhãn danh mục luôn thẳng 1 đường ngang trên toàn lưới. */
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */
-/* Vòng 63: khách xác nhận LẠI rõ ràng (sau khi bác bỏ bản thực thi ở vòng 62)
-   rằng Ý ĐỊNH "badge nằm HẲN bên trong khung mockup, bo góc khớp độ cong
-   khung đen" là ĐÚNG — chỉ là cách làm ở vòng 62 (tăng padding-top lên 34px
-   + giảm `.product-thumb` xuống 10px) chưa ổn. Lần này tăng padding-top vừa
-   phải hơn (4px→30px, GIỮ NGUYÊN `.product-thumb` ở 30px như cũ, không giảm)
-   — tạo đủ chỗ cho badge nằm trong bezel đen mà không đổi quá nhiều tỷ lệ
-   tổng thể của thẻ so với thiết kế gốc. */
+/* Vòng 64 — HUỶ vòng 63: khách yêu cầu rõ "không cần kéo khung trên màn hình
+   lên như vậy" — bỏ hẳn việc tăng padding-top của khung mockup (từng
+   4px→30px ở vòng 63) để tạo bezel chứa badge. Trở lại padding gốc — "Bán
+   chạy" giờ nằm "vào trong màn hình" bằng cách khác (đè trực tiếp lên nội
+   dung mini-dashboard, xem `.badge-bestseller` bên dưới), không cần đổi tỷ lệ
+   khung mockup nữa. */
 .device-screen {
   background: #3b3b3d;
   border-radius: 8px 8px 3px 3px;
-  padding: 30px 4px 6px;
+  padding: 4px 4px 6px;
   box-shadow: 0 8px 16px rgba(20, 20, 20, 0.1);
 }
 
