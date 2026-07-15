@@ -2326,14 +2326,12 @@ p {
   border-radius: 999px;
 }
 
-/* Vòng 46: chặn thanh toán khi giỏ hàng còn sản phẩm nhiều gói CHƯA chọn gói
-   (xem `updateTotals()` trong js/main.js) — chỉ mờ đi bằng CSS, việc chặn
-   THẬT SỰ nằm ở JS (kiểm tra class này trước khi xử lý click). */
-.checkout-paid-btn.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Vòng 46: chặn thanh toán khi còn sản phẩm nhiều gói CHƯA chọn gói HOẶC chưa
+   điền đủ "Điền thông tin của bạn" (thêm ở vòng 50) — khách yêu cầu KHÔNG cần
+   làm mờ nút, chỉ cần bấm vào không chạy + hiện chữ đỏ báo lỗi (phần tử này),
+   nên nút Thanh toán luôn giữ nguyên hình thức bình thường, không có class
+   .is-disabled/opacity nào áp dụng — việc chặn nằm hoàn toàn ở JS (xem click
+   handler trong `setupCheckoutPage()`). */
 .checkout-block-note {
   display: none;
   font-size: 12.5px;
@@ -2517,6 +2515,17 @@ p {
   text-transform: uppercase;
   padding: 5px 14px;
   border-radius: 999px;
+}
+
+/* Vòng 50: badge "PHỔ BIẾN NHẤT" đổi màu theo mode đang chọn — khách yêu cầu
+   luôn TƯƠNG PHẢN với màu toggle đang active, không dùng cố định 1 màu. Toggle
+   "Cá nhân" đang active (nền vàng cam) → badge giữ mặc định đen nền/trắng chữ.
+   Toggle "Nhóm" đang active (nền đen) → badge ĐẢO sang vàng cam nền/đen chữ.
+   Áp dụng đồng bộ ở CẢ trang Bảng giá (`setupPricingPage()`) lẫn modal "Chọn
+   gói" trong giỏ hàng (`openPlanPicker()`) — xem js/main.js. */
+.pricing-badge-popular.is-team-mode {
+  background: var(--color-orange);
+  color: var(--color-black);
 }
 
 .pricing-card-label {

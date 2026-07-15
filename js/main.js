@@ -247,6 +247,20 @@ function addToCart(product) {
   const cart = getCart();
   const existing = cart.find((item) => item.slug === product.slug);
   if (existing) {
+    // Vòng 50: sản phẩm nhiều gói (PLAN_REQUIRED_SLUGS) — nếu ĐÃ có trong giỏ
+    // nhưng CHƯA thanh toán, bấm "Thêm giỏ hàng" LẠI phải reset về trạng thái
+    // "chưa chọn gói" (hiện lại "Yêu cầu chọn gói"), KHÔNG được nhớ lựa chọn
+    // gói đã chọn ở lần trước — khách yêu cầu rõ, tránh trường hợp khách lỡ
+    // tưởng đã chọn xong gói từ trước rồi bỏ qua bước chọn lại.
+    if (PLAN_REQUIRED_SLUGS.includes(product.slug)) {
+      existing.name = product.name;
+      existing.price = parsePriceVN(product.priceCurrent);
+      existing.priceOld = parsePriceVN(product.priceOld);
+      existing.shortDesc = product.shortDesc || "";
+      existing.plan = null;
+      delete existing.planMode;
+      setCart(cart);
+    }
     showSlideToast("Sản phẩm này đã có trong giỏ hàng", "duplicate");
     return;
   }
@@ -838,7 +852,7 @@ function openPlanPicker(slug) {
           <ul class="pricing-feature-list">${renderFeatureList(PRICING_FEATURES[mode].basic)}</ul>
         </div>
         <div class="pricing-card pricing-card-premium">
-          <span class="pricing-badge-popular">PHỔ BIẾN NHẤT</span>
+          <span class="pricing-badge-popular${mode === "team" ? " is-team-mode" : ""}">PHỔ BIẾN NHẤT</span>
           <span class="pricing-card-label">${premiumLabel}</span>
           <div class="pricing-card-price">${formatPriceVN(premiumPrice)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
           <div class="pricing-old-row">
@@ -916,6 +930,10 @@ function setupCheckoutPage() {
   const orderCode = generateOrderCode();
   const orderCodeEl = document.getElementById("checkout-order-code");
   if (orderCodeEl) orderCodeEl.textContent = orderCode;
+
+  // Vòng 50: cờ theo dõi trạng thái "còn sản phẩm chưa chọn gói" — cập nhật
+  // trong updateTotals(), đọc lại khi bấm nút Thanh toán (xem cuối hàm này).
+  let planBlocked = false;
 
   // Tiêu đề đổi theo ngữ cảnh vào (vòng 26): mua thẳng 1 sản phẩm vẫn là "Hoàn
   // tất đơn hàng"; vào từ icon giỏ hàng (nhiều sản phẩm) đổi thành "Hoàn tất giỏ hàng".
@@ -1009,7 +1027,7 @@ function setupCheckoutPage() {
     // quy ước field `plan` dùng riêng cho giỏ hàng) nên trước đây bị
     // `productNeedsPlan()` hiểu NHẦM là "chưa chọn gói", làm tổng tiền về 0đ
     // và khoá cứng nút Thanh toán dù khách đã chọn gói xong xuôi ở bước trước.
-    const blocked = !isSingleSlug && calcItems.some((item) => productNeedsPlan(item));
+    planBlocked = !isSingleSlug && calcItems.some((item) => productNeedsPlan(item));
     const priceableItems = isSingleSlug ? calcItems : calcItems.filter((item) => !productNeedsPlan(item));
     const subtotalOld = priceableItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
     const total = priceableItems.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -1024,11 +1042,6 @@ function setupCheckoutPage() {
     if (discountEl) discountEl.textContent = "-" + formatPriceVN(discount);
     if (discountPercentEl) discountPercentEl.textContent = `đã giảm ${discountPercent}%`;
     if (totalEl) totalEl.textContent = formatPriceVN(total);
-
-    const paidBtn = document.getElementById("checkout-paid-btn");
-    const blockNoteEl = document.getElementById("checkout-block-note");
-    if (paidBtn) paidBtn.classList.toggle("is-disabled", blocked);
-    if (blockNoteEl) blockNoteEl.style.display = blocked ? "block" : "none";
   }
 
   renderList();
@@ -1098,13 +1111,38 @@ function setupCheckoutPage() {
     });
   });
 
+  // Vòng 50: khách yêu cầu KHÔNG cần làm mờ nút Thanh toán — chỉ cần khi bấm
+  // vào mà chưa đủ điều kiện thì không cho chạy tiếp + hiện chữ đỏ báo lỗi
+  // (`#checkout-block-note`, tái dùng nguyên phần tử đã có từ vòng 46, giờ
+  // chuyển sang cơ chế PHẢN ỨNG theo lần bấm thay vì hiện sẵn liên tục). Áp
+  // dụng CẢ 2 điều kiện: (1) còn sản phẩm nhiều gói chưa chọn gói (`planBlocked`,
+  // chỉ xảy ra ở chế độ giỏ hàng nhiều sản phẩm), (2) CHƯA điền đủ 3 ô "Điền
+  // thông tin của bạn" (Họ tên/SĐT/Email) — áp dụng cho CẢ 2 luồng (mua thẳng
+  // lẫn giỏ hàng nhiều sản phẩm), vì form này luôn có mặt ở cả 2 luồng.
   const paidBtn = document.getElementById("checkout-paid-btn");
+  const blockNoteEl = document.getElementById("checkout-block-note");
+  const nameInput = document.getElementById("checkout-name");
+  const phoneInput = document.getElementById("checkout-phone");
+  const emailInput = document.getElementById("checkout-email");
+
+  function showBlockNote(message) {
+    if (!blockNoteEl) return;
+    blockNoteEl.textContent = message;
+    blockNoteEl.style.display = "block";
+  }
+
   if (paidBtn) {
     paidBtn.addEventListener("click", () => {
-      if (paidBtn.classList.contains("is-disabled")) {
-        showToast("Vui lòng chọn gói cho sản phẩm có nhiều gói trước khi thanh toán.");
+      if (planBlocked) {
+        showBlockNote("Vui lòng chọn gói cho sản phẩm có nhiều gói trước khi thanh toán.");
         return;
       }
+      const infoMissing = [nameInput, phoneInput, emailInput].some((input) => !input || !input.value.trim());
+      if (infoMissing) {
+        showBlockNote("Vui lòng điền đầy đủ thông tin của bạn (Họ tên/SĐT/Email) trước khi thanh toán.");
+        return;
+      }
+      if (blockNoteEl) blockNoteEl.style.display = "none";
       showToast("Đã ghi nhận! Đơn hàng đang chờ admin xác nhận qua email.");
     });
   }
@@ -1125,8 +1163,7 @@ const PRICING_FEATURES = {
     basic: [
       "Sao chép Google Drive không giới hạn dung lượng (Gb)",
       "Sao chép folder, file, video về đúng cấu trúc",
-      "Xem được (Gb) dung lượng tổng của Drive",
-      "Kiểm tra trước quyền khi sao chép",
+      "Xem dung lượng tổng & kiểm tra quyền trước khi sao chép",
       "Tự động sao chép tiếp tục nếu mất kết nối",
       "Sao chép được các file không bật nút tải về",
       "Tick chọn mục muốn sao chép tự do",
@@ -1201,6 +1238,7 @@ function setupPricingPage() {
   const premiumFeaturesEl = document.getElementById("pricing-premium-features");
   const premiumOldEl = document.getElementById("pricing-premium-old");
   const premiumDiscountEl = document.getElementById("pricing-premium-discount");
+  const popularBadgeEl = document.querySelector(".pricing-badge-popular");
 
   let mode = "personal";
 
@@ -1216,6 +1254,7 @@ function setupPricingPage() {
     const members = parseInt(slider.value, 10) || 5;
     if (teamControls) teamControls.classList.toggle("show", mode === "team");
     if (teamCountEl) teamCountEl.textContent = String(members);
+    if (popularBadgeEl) popularBadgeEl.classList.toggle("is-team-mode", mode === "team");
 
     basicLabelEl.textContent = mode === "team" ? "BASIC NHÓM" : "BASIC";
     premiumLabelEl.textContent = mode === "team" ? "PREMIUM NHÓM" : "PREMIUM";
