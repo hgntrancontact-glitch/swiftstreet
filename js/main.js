@@ -161,26 +161,30 @@ function renderProductGrid() {
     // 5 sản phẩm chưa có trang chi tiết tạm thời vẫn đi thẳng checkout như cũ.
     const buyHref = CHECKOUT_LINKABLE_SLUGS.includes(p.slug) ? `products/${p.slug}.html` : `thanh-toan.html?slug=${p.slug}`;
     // Vòng 52: 2 badge trang trí MỚI, KHÔNG thay thế badge vàng "loại sản phẩm"
-    // có sẵn (chỉ đổi vị trí sang góc phải) — `bestSeller` (đỏ) và `updated`
-    // (xanh lá) — xem field tương ứng trong `data/products.js`.
+    // có sẵn — `bestSeller` (đỏ, góc trên-trái) và `updated` (xanh lá) — xem
+    // field tương ứng trong `data/products.js`.
     // Vòng 53: đổi icon 🔥 emoji sang SVG "Minimalist Outline" (khách yêu cầu) —
     // hình lửa đơn giản, chỉ có đường viền (stroke), không tô đặc.
-    // Vòng 55 — SỬA LỖI: `updated` từng xếp CHỒNG dưới badge vàng ở góc phải
-    // (vòng 52-54) khiến nó nằm THẤP HƠN hẳn badge "Bán chạy" (vốn đứng riêng
-    // ở góc trái) khi so 2 thẻ cạnh nhau trong lưới — khách phản hồi "sai vị
-    // trí". Vì 2 field `bestSeller`/`updated` KHÔNG BAO GIỜ cùng xuất hiện trên
-    // 1 sản phẩm (dữ liệu hiện tại: chỉ SwiftCopy.Drive có bestSeller, chỉ
-    // Wedding/Content Planner có updated), chuyển `updated` sang dùng CHUNG
-    // đúng 1 "vị trí" góc trái với `bestSeller` — giờ 2 badge này luôn nằm
-    // cùng độ cao trên mọi thẻ, không còn lệch tầng nữa.
+    // Vòng 57 — THIẾT KẾ LẠI THEO ĐÚNG YÊU CẦU CUỐI CÙNG (bỏ hẳn shape ruy
+    // băng chéo góc `rotate(-45deg)` của vòng 56 — khách xác nhận SAI): "Cập
+    // nhật" quay LẠI xếp CHỒNG ngay dưới badge danh mục ở góc PHẢI (giống cấu
+    // trúc vòng 52-54, nhưng shape/màu khác — xem CSS `.badge-update`) — badge
+    // danh mục LUÔN là phần tử ĐẦU TIÊN trong `.product-badges-right` nên vị
+    // trí của nó không phụ thuộc "Cập nhật" có tồn tại hay không (đảm bảo yêu
+    // cầu "độ cao cố định trên mọi card"). "Bán chạy" đứng riêng ở góc trên-
+    // trái, flush đúng góc (`top:0;left:0`) để border-radius của nó khớp liền
+    // mạch với border-radius của `.product-card`.
     const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C8 8 6 11 6 14a6 6 0 0 0 12 0c0-3-2-6-6-11Z"/></svg>Bán chạy</span>` : "";
     const updatedHTML = p.updated ? `<span class="badge badge-update">Cập nhật</span>` : "";
     return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
-          ${bestSellerHTML}${updatedHTML}
-          <span class="badge badge-orange product-badge-category">${p.badge}</span>
+          ${bestSellerHTML}
+          <div class="product-badges-right">
+            <span class="badge badge-orange">${p.badge}</span>
+            ${updatedHTML}
+          </div>
           <div class="device-screen">
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>
