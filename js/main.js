@@ -140,12 +140,22 @@ function renderDashboard(type) {
   }
 }
 
+/** % giảm tự tính từ priceCurrent/priceOld (vòng 42) — dùng chung cho hàng giá thứ 2 trong thẻ sản phẩm. */
+function computeDiscountPercent(priceCurrentStr, priceOldStr) {
+  const current = parsePriceVN(priceCurrentStr);
+  const old = parsePriceVN(priceOldStr);
+  if (!old || old <= current) return 0;
+  return Math.round(((old - current) / old) * 100);
+}
+
 // Render lưới sản phẩm từ data/products.js — mỗi thẻ mô phỏng preview kiểu khung laptop
 function renderProductGrid() {
   const grid = document.getElementById("product-grid");
   if (!grid || typeof PRODUCTS === "undefined") return;
 
-  grid.innerHTML = PRODUCTS.map((p) => `
+  grid.innerHTML = PRODUCTS.map((p) => {
+    const discountPercent = computeDiscountPercent(p.priceCurrent, p.priceOld);
+    return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
@@ -158,8 +168,15 @@ function renderProductGrid() {
         <div class="product-body">
           <h3>${p.name}</h3>
           <div class="product-price">
-            <span class="price-current">${p.priceCurrent}</span>
-            <span class="price-old">${p.priceOld}</span>
+            <div class="price-row price-row-current">
+              <span class="price-current">${p.priceCurrent}</span>
+              ${p.priceNote ? `<span class="price-note">(${p.priceNote})</span>` : ""}
+            </div>
+            ${p.priceOld ? `
+            <div class="price-row price-row-old">
+              <span class="price-old">${p.priceOld}</span>
+              ${discountPercent ? `<span class="price-discount">-${discountPercent}%</span>` : ""}
+            </div>` : ""}
           </div>
         </div>
       </a>
@@ -168,7 +185,8 @@ function renderProductGrid() {
         <a class="btn btn-dark btn-sm" href="thanh-toan.html?slug=${p.slug}">Mua ngay</a>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 /**

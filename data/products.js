@@ -10,6 +10,15 @@
  * "swiftcopy-drive" có trang chi tiết thật, 5 sản phẩm còn lại CHƯA có (bấm
  * vào ảnh/tên sẽ 404, giống hệt tình trạng trước vòng 32).
  * type: quyết định mini-dashboard mô phỏng nào được vẽ trong js/main.js.
+ *
+ * Vòng 42: tách phần chữ chú thích trong ngoặc (trước đây viết dính vào
+ * priceCurrent, vd "490.000đ (nhiều gói)") ra field riêng `priceNote` — để
+ * renderProductGrid() dựng đúng cấu trúc giá 2 HÀNG (hàng 1: giá hiện tại +
+ * chú thích, hàng 2: giá gạch ngang + % giảm tự tính từ priceCurrent/priceOld
+ * qua computeDiscountPercent() trong js/main.js). SwiftCopy.Drive dùng
+ * "tuỳ gói" (có nhiều gói Basic/Premium, xem trang Bảng giá); 5 sản phẩm còn
+ * lại dùng "sắp ra mắt" (CHƯA thật sự bán được — chỉ SwiftCopy.Drive có luồng
+ * mua hàng + trang chi tiết thật, đúng thực tế kinh doanh hiện tại).
  */
 const PRODUCTS = [
   {
@@ -18,8 +27,9 @@ const PRODUCTS = [
     type: "drive",
     name: "SwiftCopy.Drive",
     shortDesc: "Công cụ sao chép Google Drive & tải về máy tính tốc độ nhanh chóng",
-    priceCurrent: "490.000đ (nhiều gói)",
-    priceOld: "",
+    priceCurrent: "490.000đ",
+    priceNote: "tuỳ gói",
+    priceOld: "620.000đ",
   },
   {
     slug: "swift-wedding-planner",
@@ -28,6 +38,7 @@ const PRODUCTS = [
     name: "Swift Wedding Planner",
     shortDesc: "Tự lên kế hoạch đám cưới: Đơn giản, tiện lợi, mọi lúc trên mọi thiết bị",
     priceCurrent: "149.000đ",
+    priceNote: "sắp ra mắt",
     priceOld: "220.000đ",
   },
   {
@@ -37,6 +48,7 @@ const PRODUCTS = [
     name: "Swift Content Planner",
     shortDesc: "Công cụ lập kế hoạch nội dung, chiến dịch marketing và lịch đăng bài chuyên nghiệp.",
     priceCurrent: "90.000đ",
+    priceNote: "sắp ra mắt",
     priceOld: "200.000đ",
   },
   {
@@ -46,6 +58,7 @@ const PRODUCTS = [
     name: "Swift Travel Planner",
     shortDesc: "Lưu trữ địa điểm và lên kế hoạch du lịch thông minh, tiện lợi.",
     priceCurrent: "79.000đ",
+    priceNote: "sắp ra mắt",
     priceOld: "150.000đ",
   },
   {
@@ -55,6 +68,7 @@ const PRODUCTS = [
     name: "Swift Shop Admin",
     shortDesc: "Giải pháp bán hàng tinh gọn: Quản lý đơn, kho, doanh thu và nhân sự",
     priceCurrent: "129.000đ",
+    priceNote: "sắp ra mắt",
     priceOld: "220.000đ",
   },
   {
@@ -64,6 +78,7 @@ const PRODUCTS = [
     name: "Swift Hotel & Homestay Manager",
     shortDesc: "Quản lý vận hành homestay/khách sạn: Từ đặt phòng, thông tin khách đến vệ sinh và thanh toán.",
     priceCurrent: "159.000đ",
+    priceNote: "sắp ra mắt",
     priceOld: "250.000đ",
   },
 ];
