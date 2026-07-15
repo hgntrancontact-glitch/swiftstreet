@@ -623,6 +623,8 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - Tăng cache-bust `css/style.css?v=61→62`, `js/main.js?v=61→62`, `data/products.js?v=61→62` trên toàn bộ 16 trang HTML.
   - **Chưa kiểm chứng bằng ảnh chụp thật** — cần khách xác nhận: (a) "Bán chạy" đã hết tràn qua viền trái chưa; (b) kích thước mới đã đủ nhỏ/cân đối với khung mockup chưa; (c) "Cập nhật" đã ghép sát + bo đúng góc dưới với nhãn danh mục chưa.
 
+- ❌ Vòng sửa 62 (ĐÃ BỊ HUỶ NGAY SAU KHI PUSH — khách phản hồi "Trở về như cũ đi. Sai rồi"): thử đổi cơ chế cốt lõi — thay vì đè lên viền khung mockup (vòng 57-61), cho 3 nhãn nằm HẲN vào bên trong khung mockup bằng cách tăng `.device-screen{padding-top:4px→34px}` (tạo vùng "title bar") + giảm `.product-thumb{padding-top:30px→10px}`, đổi border-radius badge từ 10px (khớp `.product-card`) sang 8px (khớp `.device-screen`). **Khách bác bỏ NGAY LẬP TỨC, yêu cầu revert** — đã `git revert` sạch commit này (`7140f57`), toàn bộ CSS/JS/CLAUDE.md quay về ĐÚNG trạng thái vòng 61 (bản đang mô tả ở mục "Nhãn (badge) trên thẻ sản phẩm" phía trên vẫn là vòng 61, không đổi). Tăng cache-bust thêm 1 nấc nữa (`v=62→64`, NHẢY QUA v=63 vì đó là số đã dùng cho bản lỗi vòng 62 — nếu dùng lại đúng số đó, trình duyệt đã cache bản lỗi sẽ không tự fetch lại bản đã revert). **GHI NHỚ: không thử lại hướng "đưa badge vào hẳn bên trong khung mockup bằng cách tăng padding-top của `.device-screen`" trong tương lai trừ khi khách yêu cầu lại rõ ràng — đã bị bác bỏ.**
+
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
 1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.
