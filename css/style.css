@@ -205,6 +205,20 @@ p {
   color: var(--color-info);
 }
 
+/* Vòng 52: 2 biến thể badge MỚI cho thẻ sản phẩm — nền ĐẶC (không phải bản
+   nhạt như `.badge-success`/`.badge-error` dùng cho trạng thái), tái dùng
+   ĐÚNG 2 mã màu thương hiệu sẵn có (`--color-error`/`--color-success`) làm
+   NỀN thay vì chữ, để không phải bịa thêm mã màu mới. */
+.badge-bestseller {
+  background: var(--color-error);
+  color: var(--color-white);
+}
+
+.badge-update {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
 /* ---------- Header ---------- */
 .site-header {
   position: sticky;
@@ -840,13 +854,41 @@ p {
   padding: 30px 16px 15px;
 }
 
+/* Vòng 52: badge vàng "loại sản phẩm" chuyển từ góc TRÁI sang góc PHẢI (theo
+   mockup khách gửi) để nhường chỗ góc trái cho badge "Bán chạy" mới — sizing
+   dùng chung cho MỌI badge trong `.product-thumb` (kể cả 2 badge mới), vị trí
+   tách riêng theo từng loại ngay bên dưới. */
 .product-thumb .badge {
-  position: absolute;
-  top: 9px;
-  left: 9px;
   z-index: 2;
   font-size: 10.5px;
   padding: 3px 9px;
+}
+
+.product-thumb .badge-bestseller {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+}
+
+/* Bọc badge vàng + badge "Cập nhật" (nếu có) thành 1 cột canh phải, để 2 badge
+   tự xếp CHỒNG đúng khoảng cách mà không cần tính tay từng mốc top cụ thể. */
+.product-badges-right {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+/* Card có badge "Cập nhật" xếp chồng dưới badge vàng (2 tầng, cao hơn 1 badge
+   thường) — tăng padding-top CHỈ cho card đó để không đè lên tiêu đề mini-
+   dashboard bên dưới (cùng nguyên lý lỗi đã ghi ở mục "Lưu ý về kích thước thẻ
+   sản phẩm" trong CLAUDE.md — badge cao hơn phải có padding-top tương ứng). */
+.product-thumb:has(.badge-update) {
+  padding-top: 56px;
 }
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */

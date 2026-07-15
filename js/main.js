@@ -160,11 +160,22 @@ function renderProductGrid() {
     // slug đã có trang thật (`CHECKOUT_LINKABLE_SLUGS`) mới trỏ được, kẻo 404.
     // 5 sản phẩm chưa có trang chi tiết tạm thời vẫn đi thẳng checkout như cũ.
     const buyHref = CHECKOUT_LINKABLE_SLUGS.includes(p.slug) ? `products/${p.slug}.html` : `thanh-toan.html?slug=${p.slug}`;
+    // Vòng 52: 2 badge trang trí MỚI, KHÔNG thay thế badge vàng "loại sản phẩm"
+    // có sẵn (chỉ đổi vị trí sang góc phải) — `bestSeller` (đỏ, góc trái, chỉ
+    // SwiftCopy.Drive) và `updated` (xanh lá, xếp CHỒNG ngay dưới badge vàng ở
+    // góc phải, hiện Swift Wedding Planner + Swift Content Planner) — xem field
+    // tương ứng trong `data/products.js`.
+    const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller">🔥 Bán chạy</span>` : "";
+    const updatedHTML = p.updated ? `<span class="badge badge-update">Cập nhật</span>` : "";
     return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
-          <span class="badge badge-orange">${p.badge}</span>
+          ${bestSellerHTML}
+          <div class="product-badges-right">
+            <span class="badge badge-orange">${p.badge}</span>
+            ${updatedHTML}
+          </div>
           <div class="device-screen">
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>

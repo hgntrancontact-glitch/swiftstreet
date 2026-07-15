@@ -19,11 +19,29 @@
  * "tuỳ gói" (có nhiều gói Basic/Premium, xem trang Bảng giá); 5 sản phẩm còn
  * lại dùng "sắp ra mắt" (CHƯA thật sự bán được — chỉ SwiftCopy.Drive có luồng
  * mua hàng + trang chi tiết thật, đúng thực tế kinh doanh hiện tại).
+ *
+ * Vòng 52: `badge` (góc phải ảnh thẻ, vàng cam) đổi từ lặp lại "Google Sheets"
+ * cho 4 sản phẩm sang phân loại RIÊNG theo bản chất từng sản phẩm — 3 nhóm
+ * dùng chung theo ví dụ khách cho: "Web App Script" (SwiftCopy.Drive — 1 công
+ * cụ/script chạy thật, khác hẳn 1 file mẫu tĩnh), "File kế hoạch" (Wedding/
+ * Content/Travel Planner — file lập kế hoạch cá nhân), "Công cụ hỗ trợ" (Shop
+ * Admin/Hotel & Homestay Manager — giải pháp quản lý vận hành). Thêm 2 field
+ * boolean MỚI, cả 2 đều tuỳ chọn (`undefined` = không hiện badge tương ứng):
+ * `bestSeller` (huy hiệu đỏ "🔥 Bán chạy", góc trái) — hiện CHỈ ở SwiftCopy.
+ * Drive; `updated` (huy hiệu xanh lá "Cập nhật", xếp CHỒNG ngay dưới badge
+ * vàng ở góc phải) — hiện ở Swift Wedding Planner + Swift Content Planner,
+ * theo đúng bản mockup khách gửi (ảnh mockup đầu tiên có gắn nhầm "Cập nhật"
+ * vào Content Planner dù chữ mô tả ghi Wedding Planner — bản mockup THỨ HAI
+ * khách tự sửa vị trí xác nhận rõ CẢ 2 sản phẩm đều có, không phải lỗi đọc
+ * nhầm của Claude). Xem `renderProductGrid()` trong js/main.js để biết cách
+ * 2 field này dựng HTML, và mục "Thẻ sản phẩm" trong CLAUDE.md để biết vị trí/
+ * màu sắc CSS tương ứng.
  */
 const PRODUCTS = [
   {
     slug: "swiftcopy-drive",
-    badge: "Công cụ",
+    badge: "Web App Script",
+    bestSeller: true,
     type: "drive",
     name: "SwiftCopy.Drive",
     shortDesc: "Công cụ sao chép Google Drive & tải về máy tính tốc độ nhanh chóng",
@@ -34,6 +52,7 @@ const PRODUCTS = [
   {
     slug: "swift-wedding-planner",
     badge: "File kế hoạch",
+    updated: true,
     type: "wedding",
     name: "Swift Wedding Planner",
     shortDesc: "Tự lên kế hoạch đám cưới: Đơn giản, tiện lợi, mọi lúc trên mọi thiết bị",
@@ -43,7 +62,8 @@ const PRODUCTS = [
   },
   {
     slug: "swift-content-planner",
-    badge: "Google Sheets",
+    badge: "File kế hoạch",
+    updated: true,
     type: "content",
     name: "Swift Content Planner",
     shortDesc: "Công cụ lập kế hoạch nội dung, chiến dịch marketing và lịch đăng bài chuyên nghiệp.",
@@ -53,7 +73,7 @@ const PRODUCTS = [
   },
   {
     slug: "swift-travel-planner",
-    badge: "Google Sheets",
+    badge: "File kế hoạch",
     type: "travel",
     name: "Swift Travel Planner",
     shortDesc: "Lưu trữ địa điểm và lên kế hoạch du lịch thông minh, tiện lợi.",
@@ -63,7 +83,7 @@ const PRODUCTS = [
   },
   {
     slug: "swift-shop-admin",
-    badge: "Google Sheets",
+    badge: "Công cụ hỗ trợ",
     type: "shop",
     name: "Swift Shop Admin",
     shortDesc: "Giải pháp bán hàng tinh gọn: Quản lý đơn, kho, doanh thu và nhân sự",
@@ -73,7 +93,7 @@ const PRODUCTS = [
   },
   {
     slug: "swift-hotel-homestay-manager",
-    badge: "Google Sheets",
+    badge: "Công cụ hỗ trợ",
     type: "hotel",
     name: "Swift Hotel & Homestay Manager",
     shortDesc: "Quản lý vận hành homestay/khách sạn: Từ đặt phòng, thông tin khách đến vệ sinh và thanh toán.",
