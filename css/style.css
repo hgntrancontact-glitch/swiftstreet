@@ -2600,6 +2600,20 @@ p {
   background: #e6e9ec;
 }
 
+/* Vòng 51: khách yêu cầu riêng cho BẢNG CÁ NHÂN — nút "Mua ngay"/"Chọn gói
+   này" của thẻ Basic đổi sang nền vàng cam thương hiệu/chữ đen (thay vì xám
+   trung tính mặc định) khi đang ở mode Cá nhân — toggle bằng JS trong
+   `setupPricingPage()`/`openPlanPicker()` (`mode === "personal"`). Mode Nhóm
+   KHÔNG được yêu cầu đổi, giữ nguyên nền xám mặc định ở trên. */
+.pricing-buy-basic.is-personal-mode {
+  background: var(--color-orange);
+  color: var(--color-black);
+}
+
+.pricing-buy-basic.is-personal-mode:hover {
+  background: var(--color-orange-dark);
+}
+
 .pricing-buy-premium {
   background: var(--color-black);
   color: var(--color-white);
@@ -2651,9 +2665,12 @@ p {
   color: var(--color-error);
 }
 
-.pricing-feature-list li.is-negative span {
-  color: var(--text-muted);
-}
+/* Vòng 51: khách yêu cầu rõ dòng "Không hỗ trợ tải Drive về máy tính cá nhân"
+   (và mọi dòng .is-negative khác) giữ chữ ĐEN BÌNH THƯỜNG, KHÔNG được làm mờ
+   — trước đó lỡ đổi màu chữ này sang `--text-muted` (xám) cùng lúc với việc
+   đổi icon sang đỏ ở vòng 46, chỉ icon X mới cần đỏ, chữ vẫn phải rõ như các
+   dòng bình thường khác (đã kế thừa `color: var(--text-main)` từ `.pricing-
+   feature-list li` phía trên, không cần khai báo lại — bỏ hẳn rule ghi đè). */
 
 /* Chỉ ép "không xuống hàng" từ 600px trở lên — dưới mốc này thẻ co lại rất
    hẹp (đặc biệt mobile 1 cột nhưng màn hình <600px), ép nowrap sẽ làm chữ

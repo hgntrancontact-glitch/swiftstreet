@@ -848,7 +848,7 @@ function openPlanPicker(slug) {
             <span class="pricing-price-discount">-${basicDiscountPercent}%</span>
           </div>
           <p class="pricing-card-desc">${basicDesc}</p>
-          <button type="button" class="btn pricing-buy-btn pricing-buy-basic" data-choose-plan="basic">Chọn gói này</button>
+          <button type="button" class="btn pricing-buy-btn pricing-buy-basic${mode === "personal" ? " is-personal-mode" : ""}" data-choose-plan="basic">Chọn gói này</button>
           <ul class="pricing-feature-list">${renderFeatureList(PRICING_FEATURES[mode].basic)}</ul>
         </div>
         <div class="pricing-card pricing-card-premium">
@@ -1255,6 +1255,7 @@ function setupPricingPage() {
     if (teamControls) teamControls.classList.toggle("show", mode === "team");
     if (teamCountEl) teamCountEl.textContent = String(members);
     if (popularBadgeEl) popularBadgeEl.classList.toggle("is-team-mode", mode === "team");
+    if (basicBuyEl) basicBuyEl.classList.toggle("is-personal-mode", mode === "personal");
 
     basicLabelEl.textContent = mode === "team" ? "BASIC NHÓM" : "BASIC";
     premiumLabelEl.textContent = mode === "team" ? "PREMIUM NHÓM" : "PREMIUM";
