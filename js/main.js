@@ -456,12 +456,15 @@ function setupRateModalActions() {
 }
 
 /**
- * Modal "Chọn gói" (vòng 46) — mở từ nút "Yêu cầu chọn gói" trong giỏ hàng
- * (`thanh-toan.html`, chế độ nhiều sản phẩm) khi trong giỏ có sản phẩm nhiều
- * gói (`PLAN_REQUIRED_SLUGS`) mà chưa chọn gói. Nội dung 2 thẻ Basic/Premium
- * được BỎ TRỐNG ở đây, chỉ dựng khung — `openPlanPicker()` sẽ đổ dữ liệu giá
- * (CHỈ theo giá Cá nhân, không có toggle Team/slider trong modal này để giữ
- * đơn giản — muốn xem đủ gói Team, khách vẫn cần vào hẳn trang Bảng giá).
+ * Modal "Chọn gói" (vòng 46, nâng cấp đầy đủ ở vòng 47) — mở từ nút "Yêu cầu
+ * chọn gói" trong giỏ hàng (`thanh-toan.html`, chế độ nhiều sản phẩm) khi
+ * trong giỏ có sản phẩm nhiều gói (`PLAN_REQUIRED_SLUGS`) mà chưa chọn gói.
+ * Khách xác nhận rõ: modal này PHẢI đi ĐỦ theo đúng bảng giá thật của sản
+ * phẩm đó — nếu sản phẩm có cả Cá nhân lẫn Nhóm thì modal cũng phải có ĐỦ cả
+ * 2 (toggle + slider số thành viên), KHÔNG được rút gọn chỉ còn giá Cá nhân
+ * như bản đầu tiên ở vòng 46. Toàn bộ nội dung bên trong `#plan-picker-body`
+ * được dựng lại HOÀN TOÀN mỗi lần mở (`openPlanPicker()`) để luôn bắt đầu ở
+ * trạng thái "Cá nhân" mặc định, không giữ state cũ từ lần mở trước.
  */
 function buildPlanPickerModalHTML() {
   return `
@@ -469,7 +472,7 @@ function buildPlanPickerModalHTML() {
       <h3>Chọn gói</h3>
       <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
     </div>
-    <div class="pricing-cards" id="plan-picker-cards"></div>
+    <div id="plan-picker-body"></div>
   `;
 }
 
@@ -725,55 +728,137 @@ function getCheckoutItems() {
 const CHECKOUT_LINKABLE_SLUGS = ["swiftcopy-drive"];
 
 /**
- * Đổ dữ liệu 2 thẻ Basic/Premium (giá Cá nhân) vào modal "Chọn gói" rồi mở
- * modal — gọi khi bấm nút "Yêu cầu chọn gói" trên 1 dòng sản phẩm trong giỏ
- * hàng (vòng 46). Hiện chỉ hỗ trợ slug có trong `SWIFTCOPY_PRICING`.
+ * Giá gạch ngang "giả định" (vòng 47, khách xác nhận chấp nhận số ước lượng)
+ * cho các mức giá CHƯA từng có giá gốc chính thức ở bất kỳ đâu trên site
+ * (Premium cá nhân, cả 2 gói ở chế độ Nhóm) — chỉ Basic cá nhân có số THẬT
+ * (620.000đ, đã dùng ở thẻ sản phẩm trang chủ/Sản phẩm). Suy ra bằng cách áp
+ * dụng ĐÚNG tỉ lệ giảm giá thật duy nhất đã biết (490.000/620.000 ≈ 79,03%)
+ * lên các mức giá còn lại, làm tròn tới hàng nghìn cho gọn số — không bịa
+ * ngẫu nhiên. Nếu sau này khách cho số gốc thật, thay trực tiếp ở đây.
+ */
+const ASSUMED_DISCOUNT_RATIO = 490000 / 620000;
+function assumedOldPrice(currentPrice) {
+  return Math.round(currentPrice / ASSUMED_DISCOUNT_RATIO / 1000) * 1000;
+}
+
+/**
+ * Đổ ĐẦY ĐỦ bảng giá thật của sản phẩm (toggle Cá nhân/Nhóm + slider số
+ * thành viên + 2 thẻ Basic/Premium, y hệt trang Bảng giá riêng) vào modal
+ * "Chọn gói" rồi mở modal — gọi khi bấm nút "Yêu cầu chọn gói" trên 1 dòng
+ * sản phẩm trong giỏ hàng. Khách xác nhận rõ ở vòng 47: PHẢI đủ cả Cá nhân
+ * lẫn Nhóm, không được rút gọn. Toàn bộ state (mode/members) là biến cục bộ
+ * trong closure, dựng lại từ đầu mỗi lần mở modal.
  */
 function openPlanPicker(slug) {
-  const container = document.getElementById("plan-picker-cards");
-  if (!container || !SWIFTCOPY_PRICING.personal) return;
-  const basic = SWIFTCOPY_PRICING.personal.basic;
-  const premium = SWIFTCOPY_PRICING.personal.premium;
-  container.dataset.slug = slug;
-  container.innerHTML = `
-    <div class="pricing-card">
-      <span class="pricing-card-label">BASIC</span>
-      <div class="pricing-card-price">${formatPriceVN(basic.price)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
-      <p class="pricing-card-desc">${basic.desc}</p>
-      <button type="button" class="btn pricing-buy-btn pricing-buy-basic" data-choose-plan="basic">Chọn gói này</button>
-    </div>
-    <div class="pricing-card pricing-card-premium">
-      <span class="pricing-badge-popular">PHỔ BIẾN NHẤT</span>
-      <span class="pricing-card-label">PREMIUM</span>
-      <div class="pricing-card-price">${formatPriceVN(premium.price)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
-      <p class="pricing-card-desc">${premium.desc}</p>
-      <button type="button" class="btn pricing-buy-btn pricing-buy-premium" data-choose-plan="premium">Chọn gói này</button>
-    </div>
-  `;
+  const bodyEl = document.getElementById("plan-picker-body");
+  if (!bodyEl || !SWIFTCOPY_PRICING.personal) return;
+
+  let mode = "personal";
+  let members = 5;
+
+  function render() {
+    const basicLabel = mode === "team" ? "BASIC NHÓM" : "BASIC";
+    const premiumLabel = mode === "team" ? "PREMIUM NHÓM" : "PREMIUM";
+    let basicPrice, premiumPrice, basicDesc, premiumDesc;
+    if (mode === "team") {
+      const bt = SWIFTCOPY_PRICING.team.basic;
+      const pt = SWIFTCOPY_PRICING.team.premium;
+      basicPrice = interpolateTeamPrice(bt.min, bt.max, members);
+      premiumPrice = interpolateTeamPrice(pt.min, pt.max, members);
+      basicDesc = bt.desc;
+      premiumDesc = pt.desc;
+    } else {
+      basicPrice = SWIFTCOPY_PRICING.personal.basic.price;
+      premiumPrice = SWIFTCOPY_PRICING.personal.premium.price;
+      basicDesc = SWIFTCOPY_PRICING.personal.basic.desc;
+      premiumDesc = SWIFTCOPY_PRICING.personal.premium.desc;
+    }
+
+    bodyEl.innerHTML = `
+      <div class="pricing-toggle-wrap">
+        <div class="pricing-toggle">
+          <button type="button" class="pricing-toggle-btn${mode === "personal" ? " active" : ""}" data-plan-modal-mode="personal">Cá nhân</button>
+          <button type="button" class="pricing-toggle-btn${mode === "team" ? " active" : ""}" data-plan-modal-mode="team">Nhóm</button>
+        </div>
+      </div>
+      <div class="pricing-team-controls${mode === "team" ? " show" : ""}">
+        <div class="pricing-slider-row">
+          <span class="pricing-slider-label">Số thành viên: <strong>${members}</strong> người</span>
+          <input type="range" min="5" max="10" step="1" value="${members}" class="pricing-slider" id="plan-picker-team-slider" aria-label="Số thành viên" />
+        </div>
+        <span class="badge badge-success">Tiết kiệm 18,45%</span>
+      </div>
+      <div class="pricing-cards">
+        <div class="pricing-card">
+          <span class="pricing-card-label">${basicLabel}</span>
+          <div class="pricing-card-price">${formatPriceVN(basicPrice)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
+          <p class="pricing-card-desc">${basicDesc}</p>
+          <button type="button" class="btn pricing-buy-btn pricing-buy-basic" data-choose-plan="basic">Chọn gói này</button>
+          <ul class="pricing-feature-list">${renderFeatureList(PRICING_FEATURES[mode].basic)}</ul>
+        </div>
+        <div class="pricing-card pricing-card-premium">
+          <span class="pricing-badge-popular">PHỔ BIẾN NHẤT</span>
+          <span class="pricing-card-label">${premiumLabel}</span>
+          <div class="pricing-card-price">${formatPriceVN(premiumPrice)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
+          <p class="pricing-card-desc">${premiumDesc}</p>
+          <button type="button" class="btn pricing-buy-btn pricing-buy-premium" data-choose-plan="premium">Chọn gói này</button>
+          <ul class="pricing-feature-list">${renderFeatureList(PRICING_FEATURES[mode].premium)}</ul>
+        </div>
+      </div>
+    `;
+
+    bodyEl.querySelectorAll("[data-plan-modal-mode]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.planModalMode === mode) return;
+        mode = btn.dataset.planModalMode;
+        render();
+      });
+    });
+    const sliderEl = bodyEl.querySelector("#plan-picker-team-slider");
+    if (sliderEl) {
+      sliderEl.addEventListener("input", () => {
+        members = parseInt(sliderEl.value, 10) || 5;
+        render();
+      });
+    }
+    bodyEl.querySelectorAll("[data-choose-plan]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        resolvePlanPickForCart(slug, btn.dataset.choosePlan, mode, members);
+        closeModals();
+        document.dispatchEvent(new CustomEvent("swiftstreet:plan-picked"));
+      });
+    });
+  }
+
+  render();
   openModal("planpicker");
 }
 
 /**
- * Ghi gói đã chọn vào ĐÚNG dòng giỏ hàng (localStorage) — gọi khi bấm "Chọn
- * gói này" trong modal. Basic tái dùng giá gạch ngang 620.000đ đã có sẵn của
- * SwiftCopy.Drive (đúng tỉ lệ giảm giá đã công bố); Premium chưa có giá gạch
- * ngang chính thức ở bất kỳ đâu trên site (trang Bảng giá cũng hiện Premium
- * dạng giá phẳng, không gạch ngang) nên KHÔNG tự bịa ra 1 con số — giữ
- * `priceOld:0` cho Premium, giống hệt cách `getCheckoutItems()` xử lý khi
- * mua qua trang Bảng giá.
+ * Ghi gói đã chọn (kèm chế độ Cá nhân/Nhóm + số thành viên nếu có) vào ĐÚNG
+ * dòng giỏ hàng (localStorage) — gọi khi bấm "Chọn gói này" trong modal.
+ * Basic cá nhân dùng giá gạch ngang THẬT (620.000đ, đã công bố ở thẻ sản
+ * phẩm) — 3 trường hợp còn lại (Premium cá nhân, Basic/Premium Nhóm) dùng
+ * `assumedOldPrice()` (số giả định, khách đã xác nhận chấp nhận ở vòng 47).
  */
-function resolvePlanPickForCart(slug, plan) {
-  const tier = SWIFTCOPY_PRICING.personal[plan];
+function resolvePlanPickForCart(slug, plan, mode, members) {
+  const tier = SWIFTCOPY_PRICING[mode][plan];
   if (!tier) return;
   const cart = getCart();
   const item = cart.find((i) => i.slug === slug);
   if (!item) return;
+
+  const price = mode === "team" ? interpolateTeamPrice(tier.min, tier.max, members) : tier.price;
+  const priceOld = mode === "personal" && plan === "basic" ? 620000 : assumedOldPrice(price);
+
   item.plan = plan;
-  item.price = tier.price;
-  item.priceOld = plan === "basic" ? 620000 : 0;
+  item.planMode = mode;
+  item.price = price;
+  item.priceOld = priceOld;
   item.shortDesc = tier.desc;
   const planLabel = plan === "basic" ? "Basic" : "Premium";
-  item.name = item.name.replace(/ — (Basic|Premium)$/, "") + ` — ${planLabel}`;
+  const modeLabel = mode === "team" ? ` Nhóm (${members} người)` : "";
+  item.name = item.name.replace(/ — (Basic|Premium)( Nhóm \(\d+ người\))?$/, "") + ` — ${planLabel}${modeLabel}`;
   setCart(cart);
 }
 
@@ -913,19 +998,10 @@ function setupCheckoutPage() {
     }
   });
 
-  // Vòng 46: nút "Chọn gói này" nằm TRONG modal #modal-planpicker, được
-  // `setupModals()` chèn vào cuối `<body>` — KHÔNG phải con của `list`, nên
-  // phải lắng nghe trên `document.body` thay vì `list`.
-  document.body.addEventListener("click", (e) => {
-    const chooseBtn = e.target.closest("[data-choose-plan]");
-    if (!chooseBtn) return;
-    const container = document.getElementById("plan-picker-cards");
-    const slug = container?.dataset.slug;
-    if (!slug) return;
-    resolvePlanPickForCart(slug, chooseBtn.dataset.choosePlan);
-    closeModals();
-    renderList();
-  });
+  // Vòng 47: `openPlanPicker()` tự gắn sự kiện + gọi `resolvePlanPickForCart()`
+  // ngay trên nút "Chọn gói này" (xem hàm đó) rồi bắn CustomEvent báo hiệu —
+  // ở đây chỉ cần lắng nghe để vẽ lại danh sách giỏ hàng với giá vừa xác định.
+  document.addEventListener("swiftstreet:plan-picked", renderList);
 
   if (selectAllRow) {
     selectAllRow.addEventListener("click", () => {
