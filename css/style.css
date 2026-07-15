@@ -230,13 +230,16 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — flush ĐÚNG góc trên-trái của `.product-thumb` (`top:0;
-   left:0`, KHÔNG lệch/tràn ra ngoài như vòng 56) để đường bo góc `10px` của
-   nó nối liền mạch với đường bo góc thật của `.product-card` ngay phía dưới
-   (chỉ lệch 1px do `.product-card` có border 1px, không đáng kể). */
+/* "Bán chạy" — vòng 60 SỬA LỖI VỊ TRÍ: trước đó `top:0` khiến badge nằm gọn
+   trong vùng đệm trắng phía TRÊN khung mockup đen (`.device-screen`, bắt đầu
+   ở y≈30px do `.product-thumb` có padding-top:30px) — khách chỉ rõ SAI, badge
+   PHẢI đè lên viền trên của khung đen, không được nổi lơ lửng phía trên nó.
+   Đổi `top:0→18px` để phần dưới badge tràn xuống chồng lên khung đen (badge
+   cao ~24px, span y:18-42, chồng lên khung đen ~12px). `left:0` giữ nguyên
+   (badge vẫn tràn nhẹ ra ngoài mép trái thẻ, không đổi). */
 .badge-bestseller {
   position: absolute;
-  top: 0;
+  top: 18px;
   left: 0;
   border-radius: 10px 0 0 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
@@ -917,15 +920,20 @@ p {
    wrapper) không phụ thuộc "Cập nhật" có tồn tại hay không, đáp ứng đúng yêu
    cầu "độ cao cố định trên mọi card". "Cập nhật" (nếu có) tự nhiên xếp NGAY
    DƯỚI nhờ flex-column + gap, không cần tính tay toạ độ riêng.
-   Vòng 58 — SỬA LỖI VỊ TRÍ: `top` trước đó là 9px trong khi "Bán chạy" lại
-   `top:0` (flush đúng góc) — 2 nhãn KHÔNG cùng hàng dù rule 2 yêu cầu chúng
-   phải ngang nhau khi cùng xuất hiện (vd SwiftCopy.Drive). Đổi `top` wrapper
-   này về 0 để khớp đúng "Bán chạy", `right` giữ nguyên 9px (pill không cần
-   flush sát mép như shape góc-bo của "Bán chạy"). */
+   Vòng 60 — SỬA LỖI VỊ TRÍ (thay thế vòng 58): khách chỉ rõ nhãn danh mục
+   ("File kế hoạch"/"Web app script"...) PHẢI đè lên viền trên của khung
+   mockup đen (giống "Bán chạy"), KHÔNG được nổi trong vùng đệm trắng phía
+   trên nó. Đổi `top:0→18px` để khớp đúng độ cao mới của "Bán chạy" (cùng
+   hàng — cả 2 đều tràn xuống chồng lên khung đen 1 khoảng tương đương).
+   Đổi `right:9px→16px` để khớp ĐÚNG mép phải thật của `.device-screen`
+   (device-screen cách mép `.product-thumb` đúng 16px do padding-right:16px
+   của product-thumb) — đảm bảo "Cập nhật" (xếp ngay dưới) không tràn vượt ra
+   ngoài viền phải của khung mockup, đúng yêu cầu "không vượt ra viền khung
+   máy tính". */
 .product-badges-right {
   position: absolute;
-  top: 0;
-  right: 9px;
+  top: 18px;
+  right: 16px;
   z-index: 2;
   display: flex;
   flex-direction: column;
