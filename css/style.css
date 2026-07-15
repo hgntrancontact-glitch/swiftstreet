@@ -1323,6 +1323,112 @@ p {
   font-size: 19px;
 }
 
+/* Vòng 37: khách chụp ảnh chỉ ra khối sản phẩm phóng to ở vòng 35 (dashboard
+   dọc 600px) làm hero trang chủ bị quá cao, phải cuộn mới thấy hết "Xem thêm".
+   Yêu cầu riêng cho HERO (trang chủ) — KHÔNG đụng tới san-pham.html: bỏ hẳn
+   badge "CÔNG CỤ" + toàn bộ nội dung mini-dashboard (tiêu đề/3 ô số liệu/donut
+   +danh sách file), thay bằng 1 khối ảnh placeholder đơn giản tỉ lệ NGANG
+   (aspect-ratio 2/1, chặn thêm `max-height:300px` để an toàn), rộng full theo
+   cột `.hero-products` (không còn giới hạn
+   420px + canh giữa như vòng 34) để mép phải khớp lề phải container/icon giỏ
+   hàng ở header, và tên/giá thu nhỏ lại về đúng cỡ mặc định (bỏ phần phóng to
+   ở vòng 35) để cả khối gọn lại, vừa màn hình đầu tiên cùng nút "Xem thêm".
+   Mọi rule dưới đây dùng selector `.hero-products .product-grid:has(...)` —
+   nhiều hơn 1 class so với các rule chung `.product-grid:has(...)` ở vòng
+   33-35 (specificity cao hơn) nên tự động THẮNG chỉ trong phạm vi hero, còn
+   san-pham.html (không có `.hero-products` bao ngoài) vẫn giữ nguyên dashboard
+   dọc 600px như vòng 35 — đây là khác biệt CHỦ Ý, chưa được khách yêu cầu đổi
+   cho trang Sản phẩm, không phải thiếu đồng bộ. */
+@media (min-width: 721px) {
+  .hero-products .product-grid:has(> .product-card:only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-products .product-grid > .product-card:only-child {
+    max-width: none;
+  }
+}
+
+/* Căn mép trên khối ảnh ngang với mép trên tiêu đề H1 bên cột trái — H1 nằm
+   NGAY SAU `.hero-eyebrow` ("Chào mừng,"), nên cần đẩy khối sản phẩm xuống
+   đúng bằng chiều cao dòng eyebrow: font-size 17px × line-height 1.6 (biến
+   toàn site) ≈ 27px + margin-bottom 12px ≈ 39px, làm tròn 40px. Đây là số ước
+   lượng bằng tính toán CSS, CHƯA đo bằng ảnh chụp/getBoundingClientRect thật —
+   nếu lệch, đo lại con số này trước (xem ghi chú ở vòng 35/36 về hạn chế môi
+   trường không chụp ảnh kiểm tra được). */
+.hero-products .product-grid:has(> .product-card:only-child) {
+  margin-top: 40px;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .product-thumb {
+  padding: 0;
+  background: transparent;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .product-thumb .badge {
+  display: none;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .device-screen {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .device-base {
+  display: none;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .dash-title,
+.hero-products .product-grid:has(> .product-card:only-child) .dash-stats,
+.hero-products .product-grid:has(> .product-card:only-child) .dash-row {
+  display: none;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .device-display {
+  height: auto;
+  aspect-ratio: 2 / 1;
+  max-height: 300px;
+  padding: 0;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-section);
+  border-radius: 0;
+  /* `max-height:300px` là mốc AN TOÀN cố định để bảo đảm cả khối (ảnh + tên/
+     giá + nút + "Xem thêm") luôn vừa màn hình đầu tiên ngay cả ở màn hình
+     laptop phổ biến thấp hơn (~768px cao) — không chỉ dựa vào aspect-ratio
+     một mình (ratio một mình vẫn có thể ra chiều cao quá lớn nếu cột
+     `.hero-products` rất rộng ở màn hình 4K/ultra-wide).
+     Không tự vẽ viền/bo góc riêng — `.product-card` bên ngoài đã có sẵn
+     `border` + `border-radius:10px` + `overflow:hidden`, tự động bo tròn và
+     viền quanh khối placeholder này, tránh hiệu ứng viền lồng viền. */
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .device-display::before {
+  content: "Ảnh sản phẩm (placeholder)";
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .product-body {
+  padding: 10px 13px 4px;
+  gap: 5px;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .product-body h3 {
+  font-size: 16px;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .price-current {
+  font-size: 18px;
+}
+
+.hero-products .product-grid:has(> .product-card:only-child) .price-old {
+  font-size: 14px;
+}
+
 /* ---------- How it works ---------- */
 .steps {
   display: grid;
