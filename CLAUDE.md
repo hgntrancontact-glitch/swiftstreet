@@ -452,6 +452,10 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - Tăng cache-bust `css/style.css?v=43→44`.
   - **Lưu ý cho tương lai**: nếu sau này thêm sản phẩm thứ 7+ khiến hero cần hiện nhiều hơn 2 cột, PHẢI cân nhắc lại — hoặc tăng `--container-width`/giảm `--hero-intro` max-width (rủi ro vỡ dòng H1, xem mục "Tiêu đề Hero"), hoặc chấp nhận hero chỉ preview tối đa 2 sản phẩm (đã có "Xem thêm" dẫn sang san-pham.html xem đủ 3 cột thật).
 
+- ✅ Vòng sửa 45: khách bác bỏ hướng đi của vòng 44 ("KHÔNG ĐƯỢC") — khẳng định rõ **PHẢI giữ đúng 3 sản phẩm/hàng, 2 hàng** (đúng thiết kế gốc trước vòng 44), không chấp nhận đổi sang 2 cột dù lý do là tránh bị ép hẹp. Đã **HUỶ HẲN vòng 44**: `.hero-products .product-grid` quay lại kế thừa `repeat(3, minmax(0,370px))` từ `.product-grid` gốc (bỏ dòng ghi đè 2 cột). Vì gốc rễ không đổi (hero-products không bao giờ đủ ~1166px cho 3 cột chạm mốc 370px, xem lý do đầy đủ ở vòng 44 — chỉ có ~852px do container 1480px + hero-intro tới 600px+28px gap), đã chuyển hướng xử lý triệu chứng "nút bị hẹp" theo cách KHÁC không cần đổi số cột: **khôi phục lại nút Thêm giỏ hàng/Mua ngay cỡ NHỎ RIÊNG cho hero ở desktop** (`padding:9px 4px; font-size:10px`, bọc trong `@media min-width:721px`) — đây CHÍNH XÁC là cách đã dùng ổn định suốt vòng 20 → 39, chỉ bị gỡ nhầm ở vòng 40 khi đồng bộ kích thước nút với san-pham.html. Mobile (≤720px) vẫn giữ nguyên cỡ đồng bộ với san-pham.html như vòng 40 (không bị ảnh hưởng, vì mobile 1 cột full-width không bị ép hẹp).
+  - Tăng cache-bust `css/style.css?v=44→45`.
+  - **Bài học rút ra, ghi nhớ cho các vòng sau**: đừng đổi SỐ CỘT để né tránh vấn đề "card bị ép hẹp" khi khách đã chốt rõ số cột mong muốn (3×2) — thay vào đó điều chỉnh KÍCH THƯỚC NỘI DUNG BÊN TRONG (ở đây là nút) cho vừa với không gian thực tế có sẵn. Đây là góc nhìn ngược lại hoàn toàn với vòng 44 — nếu sau này khách phản hồi nút hero "vẫn còn hẹp" dù đã dùng cỡ nhỏ 9px/10px, cân nhắc giảm thêm cỡ chữ/đệm thay vì đụng lại số cột.
+
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
 1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.

@@ -742,19 +742,30 @@ p {
    cạnh) vẫn giữ khoảng cách hẹp như cũ — chỉ trang "Sản phẩm" (san-pham.html,
    nhiều chỗ trống hơn) mới nới rộng khoảng cách giữa các thẻ theo phản hồi
    "khoảng cách giữa các thẻ chưa tốt" (so với thiết kế của đối thủ).
-   Vòng 44: hero-products LUÔN TỐI ĐA 2 CỘT (không kế thừa 3 cột từ
-   `.product-grid` gốc nữa) — khách chụp ảnh so sánh phóng to (3 cột, nút bị
-   hẹp) vs thu nhỏ (2 cột, tỉ lệ đúng ý). Gốc rễ: `--container-width` chỉ
-   1480px và `.hero-intro` chiếm tới 600px + gap 28px, nên `.hero-products`
-   KHÔNG BAO GIỜ vượt quá ~852px dù màn hình rộng cỡ nào — 3 cột × 370px cap
-   + 2 gap cần 1166px, KHÔNG BAO GIỜ đủ chỗ nên luôn bị ép hẹp hơn 370px (chỉ
-   còn ~250-265px/thẻ). Ngược lại 2 cột chỉ cần 754px, đã đủ chỗ để tiệm cận
-   hoặc chạm hẳn mức 370px — đúng tỉ lệ khách xác nhận là đẹp. San-pham.html
-   KHÔNG bị ảnh hưởng (không có `.hero-products` bao ngoài, vẫn giữ 3 cột vì
-   không phải chia chỗ với cột trái). */
+   Vòng 44 từng đổi hero sang LUÔN 2 cột để tránh bị ép hẹp — vòng 45 khách
+   yêu cầu HUỶ, PHẢI giữ đúng 3 cột x 2 hàng (6 sản phẩm) như thiết kế gốc.
+   Quay lại kế thừa `repeat(3, minmax(0,370px))` từ `.product-grid` gốc (bỏ
+   hẳn dòng ghi đè 2 cột của vòng 44). Vì `.hero-products` vẫn KHÔNG BAO GIỜ
+   đủ 1166px cho 3 cột chạm mốc 370px (xem lý do ở vòng 44, container 1480px
+   + hero-intro tới 600px+28px gap chỉ chừa ~852px) — bù lại bằng cách thu
+   nhỏ RIÊNG kích thước nút Thêm giỏ hàng/Mua ngay cho hero (xem rule
+   `.hero-products .btn-sm` ngay dưới), giống đúng cách đã làm ở vòng 20-39
+   trước khi bị gỡ ở vòng 40. */
 .hero-products .product-grid {
   gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 370px));
+}
+
+/* Vòng 45: khôi phục nút nhỏ riêng cho hero ở DESKTOP (đã gỡ nhầm ở vòng 40
+   khi đồng bộ với san-pham.html) — vì hero giữ nguyên 3 cột (theo yêu cầu
+   khách) nên mỗi thẻ vẫn hẹp hơn hẳn san-pham.html (~260-280px so với gần
+   370px), nút cỡ lớn 11px/12px không đủ chỗ nên bị ép nhìn "hẹp". Chỉ áp
+   dụng từ `min-width:721px` — mobile (≤720px) vẫn 1 cột full-width, không bị
+   ép nên giữ nguyên cỡ nút đồng bộ với san-pham.html như vòng 40. */
+@media (min-width: 721px) {
+  .hero-products .btn-sm {
+    padding: 9px 4px;
+    font-size: 10px;
+  }
 }
 
 /* Vòng 33: khi lưới CHỈ CÓ ĐÚNG 1 sản phẩm (hiện tại chỉ SwiftCopy.Drive), các
@@ -2922,9 +2933,6 @@ p {
     font-size: clamp(26px, 3vw, 32px);
   }
 
-  /* Từ vòng 44, `.hero-products .product-grid` đã mặc định 2 cột ở MỌI độ
-     rộng (xem rule gốc, ngay sau vòng 33/34) — dòng dưới đây giờ TRÙNG giá
-     trị, giữ lại chỉ để tài liệu hoá rõ ý định 2 cột vẫn áp dụng ở dải này. */
   .hero-products .product-grid {
     grid-template-columns: repeat(2, minmax(0, 370px));
   }
