@@ -1558,20 +1558,6 @@ p {
   flex-wrap: wrap;
 }
 
-/* Vòng 36: link sang trang Bảng giá riêng (gói Basic/Premium, Cá nhân/Team). */
-.buy-box-pricing-link {
-  display: block;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-orange-dark);
-  margin-top: 14px;
-}
-
-.buy-box-pricing-link:hover {
-  text-decoration: underline;
-}
-
 .trust-list {
   margin-top: 20px;
   display: flex;
@@ -2116,6 +2102,25 @@ p {
   text-align: right;
 }
 
+/* Vòng 46: nút "Yêu cầu chọn gói" thay chỗ giá khi sản phẩm nhiều gói trong
+   giỏ hàng CHƯA được chọn gói (xem `productNeedsPlan()`/`openPlanPicker()`
+   trong js/main.js). */
+.cart-need-plan-btn {
+  background: var(--bg-section);
+  border: 1px solid var(--border-color);
+  color: var(--color-black);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cart-need-plan-btn:hover {
+  background: var(--border-color);
+}
+
 /* Vòng 27: bọc khung viền mỏng cho khu vực "Điền thông tin của bạn" — trước đó
    không có khung bao, trông lỏng lẻo/nhiều khoảng trống thừa. */
 /* Vòng 28: không còn khung viền riêng cho khu vực form — giờ nằm chung 1 thẻ
@@ -2321,6 +2326,23 @@ p {
   border-radius: 999px;
 }
 
+/* Vòng 46: chặn thanh toán khi giỏ hàng còn sản phẩm nhiều gói CHƯA chọn gói
+   (xem `updateTotals()` trong js/main.js) — chỉ mờ đi bằng CSS, việc chặn
+   THẬT SỰ nằm ở JS (kiểm tra class này trước khi xử lý click). */
+.checkout-paid-btn.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkout-block-note {
+  display: none;
+  font-size: 12.5px;
+  color: var(--color-error);
+  text-align: center;
+  margin: 8px auto 0;
+  max-width: 300px;
+}
+
 .checkout-final-note {
   font-size: 12px;
   color: var(--text-muted);
@@ -2397,9 +2419,18 @@ p {
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.pricing-toggle-btn.active {
+/* Vòng 46: 2 nút toggle KHÔNG còn dùng chung 1 kiểu active — khách yêu cầu
+   "Cá nhân" phải khác hẳn "Nhóm" để không nhầm 2 trạng thái. "Nhóm" giữ tông
+   đậm hơn (nền đen/chữ trắng, vì đây là gói lớn hơn/nhiều tiền hơn); "Cá
+   nhân" dùng tông nhẹ/đơn giản hơn (nền xám nhạt/chữ đen). */
+.pricing-toggle-btn[data-pricing-mode="personal"].active {
+  background: var(--bg-section);
+  color: var(--color-black);
+}
+
+.pricing-toggle-btn[data-pricing-mode="team"].active {
   background: var(--color-black);
-  color: var(--color-gold-text);
+  color: var(--color-white);
 }
 
 .pricing-team-controls {
@@ -2487,6 +2518,12 @@ p {
   margin: 10px 0 4px;
 }
 
+.pricing-price-suffix {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
 .pricing-card-desc {
   font-size: 14px;
   color: var(--text-muted);
@@ -2529,21 +2566,33 @@ p {
   gap: 11px;
 }
 
+/* Vòng 46: đổi bullet ✓ dạng ký tự sang icon SVG "Minimalist Outline" thật —
+   cho phép có thêm biến thể X đỏ (`.is-negative`) cho các dòng tính năng
+   KHÔNG hỗ trợ (vd "Không hỗ trợ tải Drive về máy tính cá nhân"), thứ mà
+   ký tự "✓" cố định trước đây không thể hiện được. */
 .pricing-feature-list li {
-  position: relative;
-  padding-left: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
   font-size: 13.5px;
   line-height: 1.5;
   color: var(--text-main);
 }
 
-.pricing-feature-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  top: 0;
+.pricing-feature-list li .feature-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
   color: #3b6d11;
-  font-weight: 700;
+}
+
+.pricing-feature-list li.is-negative .feature-icon {
+  color: var(--color-error);
+}
+
+.pricing-feature-list li.is-negative span {
+  color: var(--text-muted);
 }
 
 @media (max-width: 720px) {
@@ -2763,6 +2812,22 @@ p {
 #modal-rate {
   width: min(500px, calc(100vw - 40px));
   max-height: min(680px, calc(100vh - 48px));
+}
+
+/* ---------- Modal "Chọn gói" (vòng 46) — tái dùng nguyên .pricing-cards ---------- */
+#modal-planpicker {
+  width: min(760px, calc(100vw - 40px));
+  max-height: min(640px, calc(100vh - 48px));
+}
+
+#modal-planpicker .pricing-cards {
+  max-width: none;
+}
+
+@media (max-width: 640px) {
+  #modal-planpicker .pricing-cards {
+    grid-template-columns: 1fr;
+  }
 }
 
 .review-list {

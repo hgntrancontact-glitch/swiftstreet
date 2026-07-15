@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bảng giá SwiftCopy.Drive — Swiftstreet</title>
-  <meta name="description" content="Bảng giá SwiftCopy.Drive — chọn gói Basic/Premium cho cá nhân hoặc Team, mua 1 lần dùng trọn đời." />
+  <meta name="description" content="Bảng giá SwiftCopy.Drive — chọn gói Basic/Premium cho cá nhân hoặc Nhóm, mua 1 lần dùng trọn đời." />
 
   <link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/favicon-32x32.png" />
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../css/style.css?v=45" />
+  <link rel="stylesheet" href="../css/style.css?v=46" />
 </head>
 <body>
 
@@ -63,13 +63,13 @@
     <div class="container">
       <div class="pricing-heading">
         <h1>Bảng giá SwiftCopy.Drive</h1>
-        <p>Chọn gói phù hợp — mua 1 lần, dùng trọn đời</p>
+        <p>Chọn gói phù hợp - Mua một lần, dùng trọn đời, cập nhật miễn phí.</p>
       </div>
 
       <div class="pricing-toggle-wrap">
         <div class="pricing-toggle">
           <button type="button" class="pricing-toggle-btn active" data-pricing-mode="personal">Cá nhân</button>
-          <button type="button" class="pricing-toggle-btn" data-pricing-mode="team">Team</button>
+          <button type="button" class="pricing-toggle-btn" data-pricing-mode="team">Nhóm</button>
         </div>
       </div>
 
@@ -84,29 +84,19 @@
       <div class="pricing-cards">
         <div class="pricing-card">
           <span class="pricing-card-label" id="pricing-basic-label">BASIC</span>
-          <div class="pricing-card-price" id="pricing-basic-price">490.000đ</div>
-          <p class="pricing-card-desc" id="pricing-basic-desc">Sao chép Drive</p>
+          <div class="pricing-card-price"><span id="pricing-basic-price">490.000đ</span><span class="pricing-price-suffix"> / Trọn đời</span></div>
+          <p class="pricing-card-desc" id="pricing-basic-desc">Sao chép dữ liệu Google Drive</p>
           <a href="#" class="btn pricing-buy-btn pricing-buy-basic" id="pricing-basic-buy">Mua ngay</a>
-          <ul class="pricing-feature-list" id="pricing-basic-features">
-            <li>Sao chép file &amp; thư mục Google Drive không giới hạn dung lượng</li>
-            <li>Sao chép video không giới hạn</li>
-            <li>Kiểm tra quyền truy cập trước khi sao chép</li>
-            <li>Tự động tiếp tục nếu mất kết nối</li>
-          </ul>
+          <ul class="pricing-feature-list" id="pricing-basic-features"></ul>
         </div>
 
         <div class="pricing-card pricing-card-premium">
           <span class="pricing-badge-popular">PHỔ BIẾN NHẤT</span>
           <span class="pricing-card-label" id="pricing-premium-label">PREMIUM</span>
-          <div class="pricing-card-price" id="pricing-premium-price">998.888đ</div>
-          <p class="pricing-card-desc" id="pricing-premium-desc">Sao chép &amp; Tải Drive về máy</p>
+          <div class="pricing-card-price"><span id="pricing-premium-price">998.888đ</span><span class="pricing-price-suffix"> / Trọn đời</span></div>
+          <p class="pricing-card-desc" id="pricing-premium-desc">Tải về máy và sao chép dữ liệu Google Drive</p>
           <a href="#" class="btn pricing-buy-btn pricing-buy-premium" id="pricing-premium-buy">Mua ngay</a>
-          <ul class="pricing-feature-list" id="pricing-premium-features">
-            <li>Toàn bộ tính năng gói Basic</li>
-            <li>Tải thư mục đã sao chép thẳng về máy tính</li>
-            <li>Ưu tiên hỗ trợ kỹ thuật</li>
-            <li>Cập nhật miễn phí các bản nâng cấp sau này</li>
-          </ul>
+          <ul class="pricing-feature-list" id="pricing-premium-features"></ul>
         </div>
       </div>
     </div>

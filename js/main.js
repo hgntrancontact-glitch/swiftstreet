@@ -155,6 +155,11 @@ function renderProductGrid() {
 
   grid.innerHTML = PRODUCTS.map((p) => {
     const discountPercent = computeDiscountPercent(p.priceCurrent, p.priceOld);
+    // Vòng 46: "Mua ngay" đổi sang trỏ TRANG CHI TIẾT sản phẩm (không còn đi
+    // thẳng checkout nữa) — áp dụng chung cho mọi sản phẩm SAU NÀY, nhưng chỉ
+    // slug đã có trang thật (`CHECKOUT_LINKABLE_SLUGS`) mới trỏ được, kẻo 404.
+    // 5 sản phẩm chưa có trang chi tiết tạm thời vẫn đi thẳng checkout như cũ.
+    const buyHref = CHECKOUT_LINKABLE_SLUGS.includes(p.slug) ? `products/${p.slug}.html` : `thanh-toan.html?slug=${p.slug}`;
     return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
@@ -182,7 +187,7 @@ function renderProductGrid() {
       </a>
       <div class="product-card-actions">
         <button type="button" class="btn btn-outline btn-sm" data-add-to-cart="${p.slug}">Thêm giỏ hàng</button>
-        <a class="btn btn-dark btn-sm" href="thanh-toan.html?slug=${p.slug}">Mua ngay</a>
+        <a class="btn btn-dark btn-sm" href="${buyHref}">Mua ngay</a>
       </div>
     </div>
   `;
@@ -222,6 +227,19 @@ function setCart(cart) {
 }
 
 /**
+ * Slug của các sản phẩm có NHIỀU gói giá (vòng 46) — khi thêm vào giỏ, chưa
+ * biết chọn gói nào nên `plan` để `null`, và trang thanh toán phải chặn
+ * thanh toán + hiện nút "Yêu cầu chọn gói" thay vì giá, cho tới khi khách
+ * chọn gói qua modal (xem `openPlanPicker()`/`resolvePlanPickForCart()`).
+ */
+const PLAN_REQUIRED_SLUGS = ["swiftcopy-drive"];
+
+/** true nếu item này CẦN chọn gói mà CHƯA chọn (giá hiện tại chưa xác định). */
+function productNeedsPlan(item) {
+  return PLAN_REQUIRED_SLUGS.includes(item.slug) && !item.plan;
+}
+
+/**
  * Thêm sản phẩm vào giỏ. Nếu sản phẩm đã có sẵn, KHÔNG tăng số lượng (mỗi sản
  * phẩm luôn chỉ có đúng 1 dòng trong giỏ) — chỉ báo lại bằng bảng trượt phải.
  */
@@ -241,6 +259,7 @@ function addToCart(product) {
     type: product.type,
     qty: 1,
     selected: true,
+    plan: PLAN_REQUIRED_SLUGS.includes(product.slug) ? null : undefined,
   });
   setCart(cart);
   showSlideToast(`Đã thêm "${product.name}" vào giỏ hàng`, "added");
@@ -436,11 +455,30 @@ function setupRateModalActions() {
   });
 }
 
-/** Nội dung modal: hỗ trợ, FAQ rút gọn, đánh giá Swiftstreet. */
+/**
+ * Modal "Chọn gói" (vòng 46) — mở từ nút "Yêu cầu chọn gói" trong giỏ hàng
+ * (`thanh-toan.html`, chế độ nhiều sản phẩm) khi trong giỏ có sản phẩm nhiều
+ * gói (`PLAN_REQUIRED_SLUGS`) mà chưa chọn gói. Nội dung 2 thẻ Basic/Premium
+ * được BỎ TRỐNG ở đây, chỉ dựng khung — `openPlanPicker()` sẽ đổ dữ liệu giá
+ * (CHỈ theo giá Cá nhân, không có toggle Team/slider trong modal này để giữ
+ * đơn giản — muốn xem đủ gói Team, khách vẫn cần vào hẳn trang Bảng giá).
+ */
+function buildPlanPickerModalHTML() {
+  return `
+    <div class="modal-head">
+      <h3>Chọn gói</h3>
+      <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
+    </div>
+    <div class="pricing-cards" id="plan-picker-cards"></div>
+  `;
+}
+
+/** Nội dung modal: hỗ trợ, FAQ rút gọn, đánh giá Swiftstreet, chọn gói (giỏ hàng). */
 const MODAL_CONTENT = {
   support: buildSupportModalHTML(),
   faq: buildFaqModalHTML(),
   rate: buildRateModalHTML(),
+  planpicker: buildPlanPickerModalHTML(),
 };
 
 let modalOverlayEl = null;
@@ -656,7 +694,7 @@ function getCheckoutItems() {
       const tier = SWIFTCOPY_PRICING[mode][plan];
       const price = mode === "team" ? interpolateTeamPrice(tier.min, tier.max, members) : tier.price;
       const planLabel = plan === "basic" ? "Basic" : "Premium";
-      const modeLabel = mode === "team" ? ` Team (${members} người)` : "";
+      const modeLabel = mode === "team" ? ` Nhóm (${members} người)` : "";
       return [{
         slug: product.slug,
         name: `${product.name} — ${planLabel}${modeLabel}`,
@@ -685,6 +723,59 @@ function getCheckoutItems() {
 
 /** Chỉ SwiftCopy.Drive đã có trang chi tiết thật — các sản phẩm khác chưa link được. */
 const CHECKOUT_LINKABLE_SLUGS = ["swiftcopy-drive"];
+
+/**
+ * Đổ dữ liệu 2 thẻ Basic/Premium (giá Cá nhân) vào modal "Chọn gói" rồi mở
+ * modal — gọi khi bấm nút "Yêu cầu chọn gói" trên 1 dòng sản phẩm trong giỏ
+ * hàng (vòng 46). Hiện chỉ hỗ trợ slug có trong `SWIFTCOPY_PRICING`.
+ */
+function openPlanPicker(slug) {
+  const container = document.getElementById("plan-picker-cards");
+  if (!container || !SWIFTCOPY_PRICING.personal) return;
+  const basic = SWIFTCOPY_PRICING.personal.basic;
+  const premium = SWIFTCOPY_PRICING.personal.premium;
+  container.dataset.slug = slug;
+  container.innerHTML = `
+    <div class="pricing-card">
+      <span class="pricing-card-label">BASIC</span>
+      <div class="pricing-card-price">${formatPriceVN(basic.price)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
+      <p class="pricing-card-desc">${basic.desc}</p>
+      <button type="button" class="btn pricing-buy-btn pricing-buy-basic" data-choose-plan="basic">Chọn gói này</button>
+    </div>
+    <div class="pricing-card pricing-card-premium">
+      <span class="pricing-badge-popular">PHỔ BIẾN NHẤT</span>
+      <span class="pricing-card-label">PREMIUM</span>
+      <div class="pricing-card-price">${formatPriceVN(premium.price)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
+      <p class="pricing-card-desc">${premium.desc}</p>
+      <button type="button" class="btn pricing-buy-btn pricing-buy-premium" data-choose-plan="premium">Chọn gói này</button>
+    </div>
+  `;
+  openModal("planpicker");
+}
+
+/**
+ * Ghi gói đã chọn vào ĐÚNG dòng giỏ hàng (localStorage) — gọi khi bấm "Chọn
+ * gói này" trong modal. Basic tái dùng giá gạch ngang 620.000đ đã có sẵn của
+ * SwiftCopy.Drive (đúng tỉ lệ giảm giá đã công bố); Premium chưa có giá gạch
+ * ngang chính thức ở bất kỳ đâu trên site (trang Bảng giá cũng hiện Premium
+ * dạng giá phẳng, không gạch ngang) nên KHÔNG tự bịa ra 1 con số — giữ
+ * `priceOld:0` cho Premium, giống hệt cách `getCheckoutItems()` xử lý khi
+ * mua qua trang Bảng giá.
+ */
+function resolvePlanPickForCart(slug, plan) {
+  const tier = SWIFTCOPY_PRICING.personal[plan];
+  if (!tier) return;
+  const cart = getCart();
+  const item = cart.find((i) => i.slug === slug);
+  if (!item) return;
+  item.plan = plan;
+  item.price = tier.price;
+  item.priceOld = plan === "basic" ? 620000 : 0;
+  item.shortDesc = tier.desc;
+  const planLabel = plan === "basic" ? "Basic" : "Premium";
+  item.name = item.name.replace(/ — (Basic|Premium)$/, "") + ` — ${planLabel}`;
+  setCart(cart);
+}
 
 /** Render trang thanh-toan.html (chỉ chạy nếu trang hiện tại có #checkout-product-list). */
 function setupCheckoutPage() {
@@ -734,6 +825,16 @@ function setupCheckoutPage() {
       const nameHTML = CHECKOUT_LINKABLE_SLUGS.includes(item.slug)
         ? `<a href="${getRootPrefix()}products/${item.slug}.html" class="checkout-item-name-link">${item.name}</a>`
         : `<b class="checkout-item-name">${item.name}</b>`;
+      // Vòng 46: sản phẩm nhiều gói (PLAN_REQUIRED_SLUGS) chưa chọn gói thì
+      // hiện nút "Yêu cầu chọn gói" thay cho giá — chỉ áp dụng ở chế độ giỏ
+      // hàng nhiều sản phẩm (isSingleSlug=false); mua thẳng qua `?slug=` thì
+      // KHÔNG bao giờ rơi vào tình trạng này (getCheckoutItems() luôn trả về
+      // giá đã xác định, xem mục "?plan=" ở đó).
+      const priceHTML = !isSingleSlug && productNeedsPlan(item)
+        ? `<button type="button" class="cart-need-plan-btn" data-need-plan="${item.slug}">Yêu cầu chọn gói</button>`
+        : `
+          <span class="cart-price-current">${formatPriceVN(item.price)}</span>
+          ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}`;
       return `
       <div class="checkout-item-row">
         ${isSingleSlug ? "" : `<button class="cart-item-select${item.selected ? " checked" : ""}" data-checkout-toggle-select="${item.slug}" aria-label="Chọn sản phẩm">${CHECK_ICON_SVG}</button>`}
@@ -742,10 +843,7 @@ function setupCheckoutPage() {
           <div class="checkout-item-name-row">${nameHTML}</div>
           ${item.shortDesc ? `<p class="cart-item-desc">${item.shortDesc}</p>` : ""}
         </div>
-        <div class="item-price-stack">
-          <span class="cart-price-current">${formatPriceVN(item.price)}</span>
-          ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}
-        </div>
+        <div class="item-price-stack">${priceHTML}</div>
         ${isSingleSlug ? "" : `
           <button class="cart-item-delete" data-checkout-remove="${item.slug}" aria-label="Xoá">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7"/></svg>
@@ -761,8 +859,13 @@ function setupCheckoutPage() {
     if (selectAllCircle) selectAllCircle.classList.toggle("checked", items.length > 0 && items.every((item) => item.selected));
 
     const calcItems = items.filter((item) => item.selected);
-    const subtotalOld = calcItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
-    const total = calcItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    // Vòng 46: sản phẩm nhiều gói CHƯA chọn gói bị loại khỏi phép tính tổng
+    // tiền (giá chưa xác định) — đồng thời nếu nó đang ĐƯỢC CHỌN, chặn hẳn
+    // nút thanh toán cho tới khi khách bấm "Yêu cầu chọn gói" để resolve.
+    const blocked = calcItems.some((item) => productNeedsPlan(item));
+    const priceableItems = calcItems.filter((item) => !productNeedsPlan(item));
+    const subtotalOld = priceableItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
+    const total = priceableItems.reduce((sum, item) => sum + item.price * item.qty, 0);
     const discount = subtotalOld - total;
     const discountPercent = subtotalOld > 0 ? Math.round((discount / subtotalOld) * 100) : 0;
 
@@ -774,6 +877,11 @@ function setupCheckoutPage() {
     if (discountEl) discountEl.textContent = "-" + formatPriceVN(discount);
     if (discountPercentEl) discountPercentEl.textContent = `đã giảm ${discountPercent}%`;
     if (totalEl) totalEl.textContent = formatPriceVN(total);
+
+    const paidBtn = document.getElementById("checkout-paid-btn");
+    const blockNoteEl = document.getElementById("checkout-block-note");
+    if (paidBtn) paidBtn.classList.toggle("is-disabled", blocked);
+    if (blockNoteEl) blockNoteEl.style.display = blocked ? "block" : "none";
   }
 
   renderList();
@@ -797,7 +905,26 @@ function setupCheckoutPage() {
       toggleCartItemSelected(selectBtn.dataset.checkoutToggleSelect);
       selectBtn.classList.toggle("checked");
       updateTotals();
+      return;
     }
+    const needPlanBtn = e.target.closest("[data-need-plan]");
+    if (needPlanBtn) {
+      openPlanPicker(needPlanBtn.dataset.needPlan);
+    }
+  });
+
+  // Vòng 46: nút "Chọn gói này" nằm TRONG modal #modal-planpicker, được
+  // `setupModals()` chèn vào cuối `<body>` — KHÔNG phải con của `list`, nên
+  // phải lắng nghe trên `document.body` thay vì `list`.
+  document.body.addEventListener("click", (e) => {
+    const chooseBtn = e.target.closest("[data-choose-plan]");
+    if (!chooseBtn) return;
+    const container = document.getElementById("plan-picker-cards");
+    const slug = container?.dataset.slug;
+    if (!slug) return;
+    resolvePlanPickForCart(slug, chooseBtn.dataset.choosePlan);
+    closeModals();
+    renderList();
   });
 
   if (selectAllRow) {
@@ -836,42 +963,81 @@ function setupCheckoutPage() {
   const paidBtn = document.getElementById("checkout-paid-btn");
   if (paidBtn) {
     paidBtn.addEventListener("click", () => {
+      if (paidBtn.classList.contains("is-disabled")) {
+        showToast("Vui lòng chọn gói cho sản phẩm có nhiều gói trước khi thanh toán.");
+        return;
+      }
       showToast("Đã ghi nhận! Đơn hàng đang chờ admin xác nhận qua email.");
     });
   }
 }
 
-/** Nội dung 4 dòng tính năng của mỗi gói, đổi theo Cá nhân/Team (vòng 36). */
+/** Icon "Minimalist Outline" dùng cho danh sách tính năng trang Bảng giá (vòng 46) — check xanh / X đỏ. */
+const PRICING_CHECK_ICON = '<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+const PRICING_X_ICON = '<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+
+/**
+ * Nội dung tính năng của mỗi gói, đổi theo Cá nhân/Nhóm (vòng 36, nội dung
+ * cập nhật lại ở vòng 46 theo đúng bản khách gửi). Mỗi dòng là 1 chuỗi text
+ * bình thường (check xanh) HOẶC 1 object `{ text, negative: true }` (X đỏ) —
+ * xem `renderFeatureList()`.
+ */
 const PRICING_FEATURES = {
   personal: {
     basic: [
-      "Sao chép file &amp; thư mục Google Drive không giới hạn dung lượng",
-      "Sao chép video không giới hạn",
-      "Kiểm tra quyền truy cập trước khi sao chép",
-      "Tự động tiếp tục nếu mất kết nối",
+      "Sao chép Google Drive không giới hạn dung lượng (Gb)",
+      "Sao chép folder, file, video về đúng cấu trúc",
+      "Xem được (Gb) dung lượng tổng của Drive",
+      "Kiểm tra trước quyền khi sao chép",
+      "Tự động sao chép tiếp tục nếu mất kết nối",
+      "Sao chép được các file không bật nút tải về",
+      "Tick chọn mục muốn sao chép tự do",
+      "Theo dõi tiến trình sao chép và báo cáo khi hoàn tất",
+      { text: "Không hỗ trợ tải Drive về máy tính cá nhân", negative: true },
     ],
     premium: [
-      "Toàn bộ tính năng gói Basic",
-      "Tải thư mục đã sao chép thẳng về máy tính",
-      "Ưu tiên hỗ trợ kỹ thuật",
-      "Cập nhật miễn phí các bản nâng cấp sau này",
+      "Tất cả tính năng cao cấp từ gói Basic",
+      "Tải trực tiếp trọn bộ thư mục về máy tính cá nhân",
+      "Hỗ trợ sao chép và tải về dữ liệu tốc độ cao",
+      "Đường truyền riêng cho tác vụ tải về phức tạp",
+      "Không cần update gói mới trong tương lai",
+      "Miễn phí cập nhật tính năng cho các phiên bản mới",
+      "Sẵn sàng tính năng tải dữ liệu về máy mọi lúc",
+      "Tối ưu hoá trải nghiệm sao chép & tải về toàn diện",
     ],
   },
   team: {
     basic: [
-      "Toàn bộ tính năng Basic cá nhân",
-      "Áp dụng cho 5–10 thành viên",
-      "Quản lý danh sách thành viên tập trung",
-      "Giá tốt hơn mua lẻ từng người",
+      "Sao chép Google Drive không giới hạn dung lượng (Gb)",
+      "Sắp xếp file & folder về đúng cấu trúc gốc",
+      "Xem dung lượng tổng & kiểm tra quyền trước khi sao chép",
+      "Tự động sao chép tiếp tục nếu mất kết nối",
+      "Sao chép được các file không bật nút tải về",
+      "Tick chọn mục sao chép & theo dõi tiến độ khi sao chép",
+      "Giá ưu đãi khi mua gói team 5 - 10 người",
+      { text: "Không hỗ trợ tải Drive về máy tính cá nhân", negative: true },
     ],
     premium: [
-      "Toàn bộ tính năng Basic Team",
-      "Tải thư mục đã sao chép thẳng về máy tính cho cả nhóm",
-      "Ưu tiên hỗ trợ kỹ thuật",
-      "Cập nhật miễn phí các bản nâng cấp sau này",
+      "Tất cả tính năng cao cấp từ gói Basic",
+      "Tải trực tiếp trọn bộ Google Drive về máy tính cá nhân",
+      "Hỗ trợ tải về và sao chép dữ liệu tốc độ cao",
+      "Đường truyền riêng cho tác vụ tải về phức tạp",
+      "Không cần update gói mới trong tương lai",
+      "Miễn phí cập nhật tính năng cho các phiên bản mới",
+      "Giá ưu đãi khi mua gói team 5 - 10 người",
+      "Hỗ trợ tải về máy tính & sao chép Drive toàn diện",
     ],
   },
 };
+
+/** Dựng HTML danh sách tính năng — chuỗi thường = check xanh, `{negative:true}` = X đỏ. */
+function renderFeatureList(items) {
+  return items.map((item) => {
+    const isNegative = typeof item === "object" && item.negative;
+    const text = typeof item === "object" ? item.text : item;
+    return `<li class="${isNegative ? "is-negative" : ""}">${isNegative ? PRICING_X_ICON : PRICING_CHECK_ICON}<span>${text}</span></li>`;
+  }).join("");
+}
 
 /** Render trang products/swiftcopy-drive-bang-gia.html (chỉ chạy nếu trang hiện tại có #pricing-basic-price). */
 function setupPricingPage() {
@@ -901,8 +1067,8 @@ function setupPricingPage() {
     if (teamControls) teamControls.classList.toggle("show", mode === "team");
     if (teamCountEl) teamCountEl.textContent = String(members);
 
-    basicLabelEl.textContent = mode === "team" ? "BASIC TEAM" : "BASIC";
-    premiumLabelEl.textContent = mode === "team" ? "PREMIUM TEAM" : "PREMIUM";
+    basicLabelEl.textContent = mode === "team" ? "BASIC NHÓM" : "BASIC";
+    premiumLabelEl.textContent = mode === "team" ? "PREMIUM NHÓM" : "PREMIUM";
 
     if (mode === "team") {
       const basicTier = SWIFTCOPY_PRICING.team.basic;
@@ -918,8 +1084,8 @@ function setupPricingPage() {
       premiumDescEl.textContent = SWIFTCOPY_PRICING.personal.premium.desc;
     }
 
-    basicFeaturesEl.innerHTML = PRICING_FEATURES[mode].basic.map((f) => `<li>${f}</li>`).join("");
-    premiumFeaturesEl.innerHTML = PRICING_FEATURES[mode].premium.map((f) => `<li>${f}</li>`).join("");
+    basicFeaturesEl.innerHTML = renderFeatureList(PRICING_FEATURES[mode].basic);
+    premiumFeaturesEl.innerHTML = renderFeatureList(PRICING_FEATURES[mode].premium);
 
     const rootPrefix = getRootPrefix();
     const basicParams = new URLSearchParams({ slug: "swiftcopy-drive", plan: "basic" });
