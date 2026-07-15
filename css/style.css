@@ -246,10 +246,13 @@ p {
 /* "Cập nhật" — bo góc MIRROR (trên-phải) so với "Bán chạy", đặt trong
    `.product-badges-right` (xem dưới) nên KHÔNG tự set `position`/`top`/
    `right` riêng — vị trí do wrapper flex-column quyết định (xếp chồng dưới
-   badge danh mục). */
+   badge danh mục).
+   Vòng 58: đổi nền từ đặc `--color-success` sang GRADIENT ngang theo đúng 2
+   mã màu khách chỉ định — trái (cạnh cắt phẳng) đậm hơn, phải (góc bo tròn)
+   sáng hơn. */
 .badge-update {
   border-radius: 0 10px 0 0;
-  background: var(--color-success);
+  background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
 
@@ -910,14 +913,18 @@ p {
 }
 
 /* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải —
-   badge danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó (top:9px;
-   right:9px, tính từ chính wrapper) không phụ thuộc "Cập nhật" có tồn tại
-   hay không, đáp ứng đúng yêu cầu "độ cao cố định trên mọi card". "Cập nhật"
-   (nếu có) tự nhiên xếp NGAY DƯỚI nhờ flex-column + gap, không cần tính tay
-   toạ độ riêng. */
+   badge danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó (tính từ chính
+   wrapper) không phụ thuộc "Cập nhật" có tồn tại hay không, đáp ứng đúng yêu
+   cầu "độ cao cố định trên mọi card". "Cập nhật" (nếu có) tự nhiên xếp NGAY
+   DƯỚI nhờ flex-column + gap, không cần tính tay toạ độ riêng.
+   Vòng 58 — SỬA LỖI VỊ TRÍ: `top` trước đó là 9px trong khi "Bán chạy" lại
+   `top:0` (flush đúng góc) — 2 nhãn KHÔNG cùng hàng dù rule 2 yêu cầu chúng
+   phải ngang nhau khi cùng xuất hiện (vd SwiftCopy.Drive). Đổi `top` wrapper
+   này về 0 để khớp đúng "Bán chạy", `right` giữ nguyên 9px (pill không cần
+   flush sát mép như shape góc-bo của "Bán chạy"). */
 .product-badges-right {
   position: absolute;
-  top: 9px;
+  top: 0;
   right: 9px;
   z-index: 2;
   display: flex;
@@ -929,9 +936,12 @@ p {
 /* Card có "Cập nhật" xếp chồng dưới badge danh mục (2 tầng, cao hơn 1 badge
    thường) — tăng padding-top CHỈ cho card đó để 2 tầng này không đè lên
    khung mockup device bên dưới (khách yêu cầu rõ "không đè lên khung mockup
-   bên trong" — khác hẳn ý đồ vòng 56, lúc đó CỐ Ý cho đè lên). */
+   bên trong" — khác hẳn ý đồ vòng 56, lúc đó CỐ Ý cho đè lên). Giảm từ 60px
+   (vòng 57, tính theo `top:9px` cũ) xuống 52px vì wrapper giờ bắt đầu từ
+   `top:0` (thấp hơn 9px so với trước, nên tổng chiều cao cần cũng giảm
+   tương ứng). */
 .product-thumb:has(.badge-update) {
-  padding-top: 60px;
+  padding-top: 52px;
 }
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */
