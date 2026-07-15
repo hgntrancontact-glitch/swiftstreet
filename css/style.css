@@ -207,28 +207,28 @@ p {
 
 /* Vòng 52: 2 biến thể badge MỚI cho thẻ sản phẩm — nền ĐẶC (không phải bản
    nhạt như `.badge-success`/`.badge-error` dùng cho trạng thái).
-   Vòng 53 — khách chỉ rõ shape của 2 badge này phải khác hẳn dạng viên thuốc
-   (pill) của badge loại sản phẩm ("Web App Script"/"File kế hoạch"...) —
-   xem `.badge-bestseller, .badge-update` (dùng chung 1 shape "ruy băng/cờ
-   đuôi nheo" qua `clip-path`, KHÔNG còn `border-radius:999px` kế thừa từ
-   `.badge` gốc). Đồng thời "Bán chạy" đổi từ nền đỏ đặc `--color-error` sang
-   GRADIENT đỏ cam→vàng cam theo đúng ảnh mẫu khách gửi riêng cho badge này —
-   "Cập nhật" GIỮ NGUYÊN nền xanh lá đặc (chỉ đổi shape, khách không yêu cầu
-   đổi màu/gradient cho badge này). */
-/* Vòng 54 — SỬA LỖI: notch trước đó cắt theo % (85%) nên với badge càng HẸP
-   (như "Cập nhật", không có icon, chữ ngắn hơn "Bán chạy") phần nhọn cắt ra
-   càng nhỏ tính theo px, nhìn gần như biến mất — trông giống hình chữ nhật
-   bo góc thường, không giống ruy băng. Đổi sang `calc(100% - 12px)` (số PX
-   CỐ ĐỊNH thay vì %) để độ nhọn luôn rõ như nhau bất kể badge rộng/hẹp. */
+   Vòng 56 — ĐỔI HẲN shape (thay thế hoàn toàn cách làm "ruy băng/cờ đuôi
+   nheo" bằng `clip-path` ở vòng 53-55, khách xác nhận cách đó KHÔNG đúng ý):
+   giờ dùng đúng dạng "ruy băng góc" (corner ribbon) kinh điển — pill bo tròn
+   HOÀN TOÀN (`border-radius:999px`, kế thừa nguyên từ `.badge` gốc, KHÔNG
+   còn `clip-path` cắt nhọn nào cả), XOAY CHÉO `rotate(-45deg)`, cắm sâu vào
+   góc TRÊN-TRÁI của thẻ (`left:-34px`, tràn phần lớn thân badge ra ngoài mép
+   thẻ — tận dụng `.product-card` có sẵn `overflow:hidden` + border-radius để
+   tự động cắt gọn phần tràn ra, không cần đổi gì thêm ở đó). "Bán chạy" và
+   "Cập nhật" dùng CHUNG đúng 1 component shape/rotation/kích thước này, chỉ
+   khác NỀN MÀU + CHỮ + TẦNG CAO ĐỘ (xem 2 rule `top` riêng ngay dưới). */
 .badge-bestseller,
 .badge-update {
-  display: inline-flex;
+  position: absolute;
+  left: -34px;
+  width: 130px;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  border-radius: 6px 0 0 6px;
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
-  padding: 5px 15px 5px 10px;
-  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+  transform: rotate(-45deg);
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 .badge-bestseller .badge-icon {
@@ -237,12 +237,22 @@ p {
   flex-shrink: 0;
 }
 
+/* Tầng 1 (cao) — đè đúng mép TRÊN CÙNG của khối thẻ NGOÀI, cùng hàng với
+   nhãn danh mục khi 2 nhãn cùng xuất hiện (vd SwiftCopy.Drive: "Bán chạy" +
+   "Web app script" cùng đè mép trên thẻ). */
 .badge-bestseller {
+  top: 14px;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
 
+/* Tầng 2 (thấp hơn hẳn tầng 1) — đè lên đúng mép TRÊN của khung mockup
+   device (browser/device mockup) BÊN TRONG thẻ (`.device-screen` bắt đầu ở
+   y≈30px do `.product-thumb` có padding-top:30px, xem dưới) — ngang hàng
+   dòng tiêu đề mini-dashboard (`.dash-title`, vd "Wedding Planner"), KHÔNG
+   còn nằm chung hàng với nhãn danh mục ở tầng 1 nữa. */
 .badge-update {
+  top: 38px;
   background: var(--color-success);
   color: var(--color-white);
 }
@@ -892,34 +902,24 @@ p {
   padding: 3px 9px;
 }
 
-/* Vòng 53: badge-bestseller/badge-update dùng padding riêng (khớp shape ruy
-   băng) — phải khai báo lại ở đây (thay vì chỉ ở rule `.badge-bestseller,
-   .badge-update` chung phía trên) vì `.product-thumb .badge` (2 class,
-   specificity cao hơn `.badge-bestseller` 1 class) sẽ ghi đè mất nếu không. */
+/* Vòng 56: badge-bestseller/badge-update dùng font-size/padding riêng (khớp
+   shape ruy băng góc mới) — phải khai báo lại ở đây (thay vì chỉ ở rule
+   `.badge-bestseller, .badge-update` chung phía trên) vì `.product-thumb
+   .badge` (2 class, specificity cao hơn `.badge-bestseller` 1 class) sẽ ghi
+   đè mất nếu không. `top`/`left` (vị trí + tầng cao độ) đã khai báo đủ ở rule
+   chung phía trên rồi, KHÔNG cần lặp lại ở đây nữa. */
 .product-thumb .badge-bestseller,
 .product-thumb .badge-update {
   font-size: 10px;
-  padding: 5px 15px 5px 10px;
+  padding: 5px 8px;
 }
 
-/* Vòng 55 — SỬA LỖI VỊ TRÍ: "Cập nhật" (`badge-update`) từng xếp CHỒNG dưới
-   badge vàng ở góc phải (vòng 52-54), khiến nó nằm THẤP HƠN hẳn "Bán chạy"
-   (đứng riêng ở góc trái) khi so 2 thẻ cạnh nhau trong lưới — khách chụp ảnh
-   chỉ ra "sai vị trí". Vì `bestSeller`/`updated` KHÔNG BAO GIỜ cùng có mặt
-   trên 1 sản phẩm (xem `data/products.js`), giờ CẢ 2 badge dùng CHUNG đúng 1
-   "vị trí" — góc trái, `top:9px; left:-6px` (tràn nhẹ ra mép, bị viền bo góc
-   `.product-card` cắt qua, xem ghi chú gốc ở dưới) — nên luôn nằm CÙNG ĐỘ CAO
-   bất kể sản phẩm nào đang hiện badge nào. */
-.product-thumb .badge-bestseller,
-.product-thumb .badge-update {
-  position: absolute;
-  top: 9px;
-  left: -6px;
-}
-
-/* Badge vàng "loại sản phẩm" — giờ đứng RIÊNG 1 mình ở góc phải (không còn
-   bọc trong `.product-badges-right` để xếp chồng với "Cập nhật" như trước,
-   vì "Cập nhật" đã chuyển hẳn sang góc trái ở trên). */
+/* Badge vàng "loại sản phẩm" — đứng RIÊNG 1 mình ở góc phải, LUÔN cố định vị
+   trí này (mép trên cùng của khối thẻ ngoài) bất kể nhãn trạng thái bên cạnh
+   là "Bán chạy", "Cập nhật", hay không có nhãn nào — không phụ thuộc tầng
+   cao độ của nhãn trạng thái (xem rule `.badge-bestseller`/`.badge-update`
+   phía trên, nay có 2 tầng cao độ khác nhau nhưng KHÔNG ảnh hưởng tới vị trí
+   badge vàng này). */
 .product-badge-category {
   position: absolute;
   top: 9px;

@@ -156,6 +156,25 @@ Khung "laptop" (`.device-display`) cố định `height: 138px` — đây là ng
 
 **`.product-card` có `max-width: 340px` (căn giữa bằng `margin: 0 auto`)** — áp dụng cho MỌI lưới sản phẩm (cả `.hero-products .product-grid` lẫn `san-pham.html`). Lý do: trước vòng sửa 18, thẻ không có giới hạn nên ở trang `san-pham.html` (không bị chia cột bởi hero, container rộng tới 1360px), mỗi thẻ bị kéo dãn tới ~440px — trông "kéo dài, khoảng trống giữa các thẻ bị hẹp", nút Thêm giỏ hàng/Mua ngay dù đúng kích thước tuyệt đối nhưng trông "nhỏ/dẹt" bất thường so với thẻ quá to. Giới hạn 340px giữ tỉ lệ thẻ nhất quán ở mọi ngữ cảnh (hero lẫn trang danh sách đầy đủ). Trên mobile (`max-width:720px`) có override `.product-card { max-width: none; }` để thẻ full-width như thiết kế 1 cột.
 
+### Nhãn (badge) trên thẻ sản phẩm — 3 QUY TẮC CỐ ĐỊNH, chốt ở vòng sửa 56
+
+Sau nhiều vòng chỉnh qua lại (52→55, đổi shape/vị trí liên tục vì đoán sai), khách chốt CHÍNH XÁC 3 quy tắc sau — **đọc kỹ mục này trước khi đụng vào bất kỳ badge nào trên thẻ sản phẩm**, tránh lặp lại vòng lặp thử-sai đã tốn nhiều lượt sửa:
+
+1. **Nhãn TRẠNG THÁI ("Bán chạy" `.badge-bestseller`, "Cập nhật" `.badge-update`) dùng CHUNG 1 style component** — dạng "ruy băng góc" (corner ribbon) kinh điển: pill bo tròn HOÀN TOÀN (`border-radius:999px`, KHÔNG được dùng `clip-path`/đầu nhọn kiểu cờ — đã thử ở vòng 53-55 và bị bác bỏ rõ ràng), xoay chéo `transform:rotate(-45deg)`, cắm sâu vào góc TRÊN-TRÁI của thẻ (`left:-34px; width:130px`) để phần lớn thân nhãn nhô ra ngoài mép thẻ — dựa vào `.product-card` có sẵn `overflow:hidden` + `border-radius:10px` để tự động cắt gọn phần tràn ra (KHÔNG cần đổi overflow/thêm wrapper riêng). 2 nhãn này chỉ khác nhau ở màu nền + chữ + tầng cao độ (mục 2 dưới đây).
+2. **2 TẦNG CAO ĐỘ khác nhau giữa nhãn trạng thái và nhãn danh mục** (vì `bestSeller`/`updated` không bao giờ cùng xuất hiện trên 1 sản phẩm — xem `data/products.js` — nhưng khi xuất hiện, vị trí theo chiều dọc của MỖI loại là khác nhau, không dùng chung 1 tầng như vòng 55 từng làm sai):
+   - **"Bán chạy" — tầng 1 (cao)**: `top:14px` (trước khi xoay) — đè đúng mép TRÊN CÙNG của khối thẻ NGOÀI (`.product-thumb`), CÙNG HÀNG với nhãn danh mục khi cả 2 cùng xuất hiện (vd SwiftCopy.Drive: "Bán chạy" + "Web app script").
+   - **"Cập nhật" — tầng 2 (thấp hơn hẳn)**: `top:38px` (trước khi xoay) — đè lên đúng mép TRÊN của khung mockup device (`.device-screen`, bắt đầu ở y≈30px do `.product-thumb` có `padding-top:30px`) BÊN TRONG thẻ, ngang hàng dòng tiêu đề mini-dashboard (`.dash-title`, vd "Wedding Planner"/"Content Planner") — KHÔNG còn nằm chung hàng với nhãn danh mục nữa (áp dụng: Wedding Planner, Content Planner, và bất kỳ sản phẩm nào sau này có `updated:true`).
+3. **Nhãn DANH MỤC ("File kế hoạch"/"Web app script"/"Công cụ hỗ trợ", class `.product-badge-category`) LUÔN giữ nguyên hình dạng pill PHẲNG (không xoay, không đổi)**, neo CỐ ĐỊNH ở góc TRÊN-PHẢI, đè mép trên cùng của khối thẻ NGOÀI (`top:9px; right:9px`) — vị trí này áp dụng THỐNG NHẤT cho MỌI thẻ, KHÔNG phụ thuộc nhãn trạng thái bên cạnh là gì hay đang ở tầng cao độ nào (khác với nhãn trạng thái, vị trí nhãn danh mục KHÔNG BAO GIỜ thay đổi theo ngữ cảnh).
+
+**Áp dụng cho MỌI sản phẩm có cấu trúc 2 nhãn tương tự** — không chỉ 3 sản phẩm hiện có ví dụ (SwiftCopy.Drive/Wedding Planner/Content Planner) mà cả các sản phẩm hàng dưới (Travel Planner/Shop Admin/Hotel & Homestay Manager) nếu sau này chúng được gán `bestSeller`/`updated`.
+
+**Mô tả cụ thể từng loại thẻ (để đối chiếu)**:
+- **Thẻ có "Bán chạy"** (hiện tại: SwiftCopy.Drive): "Bán chạy" (ruy băng cam-đỏ xoay chéo, góc trên-trái, tầng cao — ngang mép trên thẻ) + "Web app script" (pill vàng phẳng, góc trên-phải, mép trên thẻ) — 2 nhãn NGANG HÀNG nhau.
+- **Thẻ có "Cập nhật"** (hiện tại: Wedding Planner, Content Planner): "Cập nhật" (ruy băng xanh lá xoay chéo, góc trên-trái, tầng THẤP — ngang mép trên khung mockup/dòng tiêu đề mini-dashboard) + "File kế hoạch" (pill vàng phẳng, góc trên-phải, mép trên thẻ — VẪN Ở TẦNG CAO như bình thường) — 2 nhãn LỆCH TẦNG nhau (danh mục cao hơn, trạng thái thấp hơn).
+- **Thẻ KHÔNG có nhãn trạng thái** (hiện tại: Travel Planner, Shop Admin, Hotel & Homestay Manager): chỉ còn pill vàng phẳng ở góc trên-phải, mép trên thẻ — không có gì ở góc trái.
+
+**Chưa kiểm chứng bằng ảnh chụp thật** (hạn chế môi trường — không có công cụ trình duyệt) — các con số `top:14px`/`top:38px`/`left:-34px`/`width:130px`/`rotate(-45deg)` là ước lượng theo công thức "corner ribbon" phổ biến, CHƯA đo bằng `getBoundingClientRect()` thật. Nếu khách phản hồi lệch vị trí/góc xoay/độ tràn ra mép, đây là nhóm con số cần chỉnh đầu tiên — đọc đúng mục này để hiểu ý nghĩa từng con số trước khi đoán mò tiếp.
+
 ### `.hero-shop-grid` KHÔNG BAO GIỜ xếp dọc trên desktop — chỉ xếp dọc ở mobile thật (≤720px)
 
 **Đây là yêu cầu tường minh của khách** (vòng sửa 20): "hero auto bên trái trừ trường hợp xem trên mobile" — tức cột `.hero-intro` ("Kho công cụ số giúp bạn...") phải LUÔN nằm bên trái ở MỌI độ rộng desktop khi kéo thu nhỏ cửa sổ trình duyệt, không được rơi xuống xếp dọc (hero trên, lưới sản phẩm dưới) cho tới khi thật sự là màn hình mobile.
@@ -552,6 +571,14 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - **Bỏ luôn `.product-thumb:has(.badge-update) { padding-top: 58px }`** (thêm ở vòng 52, tăng thêm padding cho card có badge Cập nhật vì trước đó nó xếp CHỒNG 2 tầng cao hơn bình thường) — không còn cần thiết vì "Cập nhật" giờ chỉ còn 1 tầng (giống hệt "Bán chạy"), mọi card dùng chung `padding-top: 30px` mặc định.
   - Tăng cache-bust `css/style.css?v=55→56`, `js/main.js?v=55→56`, `data/products.js?v=55→56` trên toàn bộ 16 trang HTML.
   - **Chưa kiểm chứng bằng ảnh chụp thật lần nữa sau khi sửa** — cần khách xác nhận: (a) "Bán chạy" và "Cập nhật" giờ đã nằm ĐÚNG cùng 1 độ cao (góc trái) trên các thẻ tương ứng; (b) padding-top mặc định 30px đã đủ cho thẻ "Cập nhật" không bị đè lên tiêu đề mini-dashboard bên dưới (rủi ro thấp hơn trước vì giờ chỉ còn 1 tầng badge, không còn 2 tầng như vòng 52-54).
+
+- ✅ Vòng sửa 56: khách yêu cầu đọc CLAUDE.md trước, sau đó chốt LẠI HẲN 3 quy tắc rõ ràng cho toàn bộ badge trên thẻ sản phẩm (thay thế hoàn toàn cách làm "ruy băng/cờ đuôi nheo" bằng `clip-path` đã thử ở vòng 53-55 — khách xác nhận hướng đó SAI):
+  1. **Đổi hẳn shape nhãn trạng thái** ("Bán chạy"/"Cập nhật") sang dạng "ruy băng góc" (corner ribbon) kinh điển: pill bo tròn HOÀN TOÀN + xoay chéo `rotate(-45deg)` + cắm sâu góc trên-trái, tràn phần lớn thân ra ngoài mép thẻ (tận dụng `overflow:hidden`/`border-radius` có sẵn của `.product-card`, không cần đổi gì thêm). Dùng CHUNG 1 component cho cả 2 nhãn, chỉ khác màu/chữ/tầng cao độ.
+  2. **Tách lại 2 TẦNG CAO ĐỘ khác nhau** cho "Bán chạy" (tầng 1 — mép trên thẻ ngoài, `top:14px`) và "Cập nhật" (tầng 2 — mép trên khung mockup device bên trong thẻ, ngang dòng tiêu đề mini-dashboard, `top:38px`) — ĐẢO NGƯỢC quyết định vòng 55 (lúc đó gộp chung 1 tầng vì tưởng nhầm 2 badge cần đồng nhất độ cao — khách làm rõ: KHÔNG, 2 tầng khác nhau mới đúng).
+  3. **Nhãn danh mục LUÔN cố định vị trí** góc trên-phải (`top:9px; right:9px`, class `.product-badge-category`), giữ nguyên hình pill phẳng không đổi, hoàn toàn độc lập với nhãn trạng thái bên cạnh.
+  - Xem đầy đủ chi tiết + lý do tại mục **"Nhãn (badge) trên thẻ sản phẩm — 3 QUY TẮC CỐ ĐỊNH, chốt ở vòng sửa 56"** (ngay trên mục "Lưu ý về kích thước thẻ sản phẩm") — đọc mục đó trước khi sửa bất kỳ badge nào sau này.
+  - Tăng cache-bust `css/style.css?v=56→57`, `js/main.js?v=56→57`, `data/products.js?v=56→57` trên toàn bộ 16 trang HTML.
+  - **Chưa kiểm chứng bằng ảnh chụp thật** — đây là lần đầu dùng `transform:rotate()` cho badge trên site, rủi ro lệch góc/vị trí cao hơn bình thường. Cần khách xác nhận: (a) 2 nhãn trạng thái có đúng dạng ruy băng góc xoay chéo, cắm sâu vào góc trái, tràn ra mép thẻ tự nhiên không; (b) "Cập nhật" có đúng nằm ngang tầm dòng tiêu đề mini-dashboard (thấp hơn "File kế hoạch") không; (c) nhãn danh mục có đứng yên đúng vị trí góc phải trên MỌI thẻ không.
 
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
