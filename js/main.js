@@ -165,7 +165,9 @@ function renderProductGrid() {
     // SwiftCopy.Drive) và `updated` (xanh lá, xếp CHỒNG ngay dưới badge vàng ở
     // góc phải, hiện Swift Wedding Planner + Swift Content Planner) — xem field
     // tương ứng trong `data/products.js`.
-    const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller">🔥 Bán chạy</span>` : "";
+    // Vòng 53: đổi icon 🔥 emoji sang SVG "Minimalist Outline" (khách yêu cầu) —
+    // hình lửa đơn giản, chỉ có đường viền (stroke), không tô đặc.
+    const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C8 8 6 11 6 14a6 6 0 0 0 12 0c0-3-2-6-6-11Z"/></svg>Bán chạy</span>` : "";
     const updatedHTML = p.updated ? `<span class="badge badge-update">Cập nhật</span>` : "";
     return `
     <div class="product-card">

@@ -206,11 +206,34 @@ p {
 }
 
 /* Vòng 52: 2 biến thể badge MỚI cho thẻ sản phẩm — nền ĐẶC (không phải bản
-   nhạt như `.badge-success`/`.badge-error` dùng cho trạng thái), tái dùng
-   ĐÚNG 2 mã màu thương hiệu sẵn có (`--color-error`/`--color-success`) làm
-   NỀN thay vì chữ, để không phải bịa thêm mã màu mới. */
+   nhạt như `.badge-success`/`.badge-error` dùng cho trạng thái).
+   Vòng 53 — khách chỉ rõ shape của 2 badge này phải khác hẳn dạng viên thuốc
+   (pill) của badge loại sản phẩm ("Web App Script"/"File kế hoạch"...) —
+   xem `.badge-bestseller, .badge-update` (dùng chung 1 shape "ruy băng/cờ
+   đuôi nheo" qua `clip-path`, KHÔNG còn `border-radius:999px` kế thừa từ
+   `.badge` gốc). Đồng thời "Bán chạy" đổi từ nền đỏ đặc `--color-error` sang
+   GRADIENT đỏ cam→vàng cam theo đúng ảnh mẫu khách gửi riêng cho badge này —
+   "Cập nhật" GIỮ NGUYÊN nền xanh lá đặc (chỉ đổi shape, khách không yêu cầu
+   đổi màu/gradient cho badge này). */
+.badge-bestseller,
+.badge-update {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px 0 0 6px;
+  clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%);
+  padding: 5px 15px 5px 10px;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.badge-bestseller .badge-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
 .badge-bestseller {
-  background: var(--color-error);
+  background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
 
@@ -864,10 +887,24 @@ p {
   padding: 3px 9px;
 }
 
+/* Vòng 53: badge-bestseller/badge-update dùng padding riêng (khớp shape ruy
+   băng) — phải khai báo lại ở đây (thay vì chỉ ở rule `.badge-bestseller,
+   .badge-update` chung phía trên) vì `.product-thumb .badge` (2 class,
+   specificity cao hơn `.badge-bestseller` 1 class) sẽ ghi đè mất nếu không. */
+.product-thumb .badge-bestseller,
+.product-thumb .badge-update {
+  font-size: 10px;
+  padding: 5px 15px 5px 10px;
+}
+
+/* Đẩy badge "Bán chạy" tràn nhẹ ra ngoài mép trái (`left:-6px` thay vì 9px)
+   để đầu ruy băng bị VIỀN BO GÓC của `.product-card` (border-radius:10px +
+   overflow:hidden) cắt qua — tạo cảm giác "lá cờ cắm ở góc thẻ" giống ảnh
+   mẫu khách gửi, thay vì nằm lọt thỏm hẳn bên trong như badge vàng. */
 .product-thumb .badge-bestseller {
   position: absolute;
   top: 9px;
-  left: 9px;
+  left: -6px;
 }
 
 /* Bọc badge vàng + badge "Cập nhật" (nếu có) thành 1 cột canh phải, để 2 badge
@@ -883,12 +920,18 @@ p {
   gap: 5px;
 }
 
+/* Cùng lý do với "Bán chạy" — đẩy riêng badge "Cập nhật" tràn ra mép phải
+   (badge vàng phía trên đứng yên tại right:9px, chỉ "Cập nhật" tràn thêm). */
+.badge-update {
+  margin-right: -6px;
+}
+
 /* Card có badge "Cập nhật" xếp chồng dưới badge vàng (2 tầng, cao hơn 1 badge
    thường) — tăng padding-top CHỈ cho card đó để không đè lên tiêu đề mini-
    dashboard bên dưới (cùng nguyên lý lỗi đã ghi ở mục "Lưu ý về kích thước thẻ
    sản phẩm" trong CLAUDE.md — badge cao hơn phải có padding-top tương ứng). */
 .product-thumb:has(.badge-update) {
-  padding-top: 56px;
+  padding-top: 58px;
 }
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */
