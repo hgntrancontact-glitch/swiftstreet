@@ -741,9 +741,20 @@ p {
 /* Lưới sản phẩm ở trang chủ (.hero-products, bị chia sẻ chỗ với cột hero bên
    cạnh) vẫn giữ khoảng cách hẹp như cũ — chỉ trang "Sản phẩm" (san-pham.html,
    nhiều chỗ trống hơn) mới nới rộng khoảng cách giữa các thẻ theo phản hồi
-   "khoảng cách giữa các thẻ chưa tốt" (so với thiết kế của đối thủ). */
+   "khoảng cách giữa các thẻ chưa tốt" (so với thiết kế của đối thủ).
+   Vòng 44: hero-products LUÔN TỐI ĐA 2 CỘT (không kế thừa 3 cột từ
+   `.product-grid` gốc nữa) — khách chụp ảnh so sánh phóng to (3 cột, nút bị
+   hẹp) vs thu nhỏ (2 cột, tỉ lệ đúng ý). Gốc rễ: `--container-width` chỉ
+   1480px và `.hero-intro` chiếm tới 600px + gap 28px, nên `.hero-products`
+   KHÔNG BAO GIỜ vượt quá ~852px dù màn hình rộng cỡ nào — 3 cột × 370px cap
+   + 2 gap cần 1166px, KHÔNG BAO GIỜ đủ chỗ nên luôn bị ép hẹp hơn 370px (chỉ
+   còn ~250-265px/thẻ). Ngược lại 2 cột chỉ cần 754px, đã đủ chỗ để tiệm cận
+   hoặc chạm hẳn mức 370px — đúng tỉ lệ khách xác nhận là đẹp. San-pham.html
+   KHÔNG bị ảnh hưởng (không có `.hero-products` bao ngoài, vẫn giữ 3 cột vì
+   không phải chia chỗ với cột trái). */
 .hero-products .product-grid {
   gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 370px));
 }
 
 /* Vòng 33: khi lưới CHỈ CÓ ĐÚNG 1 sản phẩm (hiện tại chỉ SwiftCopy.Drive), các
@@ -2911,6 +2922,9 @@ p {
     font-size: clamp(26px, 3vw, 32px);
   }
 
+  /* Từ vòng 44, `.hero-products .product-grid` đã mặc định 2 cột ở MỌI độ
+     rộng (xem rule gốc, ngay sau vòng 33/34) — dòng dưới đây giờ TRÙNG giá
+     trị, giữ lại chỉ để tài liệu hoá rõ ý định 2 cột vẫn áp dụng ở dải này. */
   .hero-products .product-grid {
     grid-template-columns: repeat(2, minmax(0, 370px));
   }
