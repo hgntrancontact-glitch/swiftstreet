@@ -659,14 +659,21 @@ function generateOrderCode() {
  * 2 nơi không bao giờ lệch số nhau do sửa 1 chỗ quên sửa chỗ kia.
  * Giá Team nội suy TUYẾN TÍNH giữa mốc 5 người (min) và 10 người (max).
  */
+/**
+ * Vòng 48: mô tả ngắn của Basic/Premium giờ DÙNG CHUNG 1 nội dung cho cả Cá
+ * nhân lẫn Nhóm (khách yêu cầu, trước đó 2 chế độ có desc khác nhau — cũng
+ * tiện sửa luôn 1 lỗi có sẵn: bản HTML tĩnh ở vòng 46 đã đổi chữ mới nhưng
+ * quên đổi TRONG data này, nên trang thực tế vẫn hiện chữ CŨ vì JS luôn ghi
+ * đè `textContent` bằng field `desc` ở đây).
+ */
 const SWIFTCOPY_PRICING = {
   personal: {
-    basic: { price: 490000, desc: "Sao chép Drive" },
-    premium: { price: 998888, desc: "Sao chép & Tải Drive về máy" },
+    basic: { price: 490000, desc: "Sao chép dữ liệu Google Drive" },
+    premium: { price: 998888, desc: "Sao chép Google Drive và Tải về máy tính" },
   },
   team: {
-    basic: { min: 1998000, max: 3996888, desc: "Sao chép Drive cho cả nhóm" },
-    premium: { min: 4078888, max: 8148888, desc: "Sao chép & Tải về máy cho cả nhóm" },
+    basic: { min: 1998000, max: 3996888, desc: "Sao chép dữ liệu Google Drive" },
+    premium: { min: 4078888, max: 8148888, desc: "Sao chép Google Drive và Tải về máy tính" },
   },
 };
 
@@ -728,17 +735,36 @@ function getCheckoutItems() {
 const CHECKOUT_LINKABLE_SLUGS = ["swiftcopy-drive"];
 
 /**
- * Giá gạch ngang "giả định" (vòng 47, khách xác nhận chấp nhận số ước lượng)
- * cho các mức giá CHƯA từng có giá gốc chính thức ở bất kỳ đâu trên site
- * (Premium cá nhân, cả 2 gói ở chế độ Nhóm) — chỉ Basic cá nhân có số THẬT
- * (620.000đ, đã dùng ở thẻ sản phẩm trang chủ/Sản phẩm). Suy ra bằng cách áp
- * dụng ĐÚNG tỉ lệ giảm giá thật duy nhất đã biết (490.000/620.000 ≈ 79,03%)
- * lên các mức giá còn lại, làm tròn tới hàng nghìn cho gọn số — không bịa
- * ngẫu nhiên. Nếu sau này khách cho số gốc thật, thay trực tiếp ở đây.
+ * Giá gạch ngang "giả định" (vòng 47) CHỈ còn dùng cho Premium cá nhân — mức
+ * giá DUY NHẤT trên toàn site chưa từng có giá gốc chính thức lẫn công thức
+ * rõ ràng nào khác. Suy ra bằng cách áp dụng ĐÚNG tỉ lệ giảm giá thật duy
+ * nhất đã biết (490.000/620.000 ≈ 79,03%, của Basic cá nhân) lên mức giá này,
+ * làm tròn tới hàng nghìn cho gọn số — không bịa ngẫu nhiên.
  */
 const ASSUMED_DISCOUNT_RATIO = 490000 / 620000;
 function assumedOldPrice(currentPrice) {
   return Math.round(currentPrice / ASSUMED_DISCOUNT_RATIO / 1000) * 1000;
+}
+
+/**
+ * Giá gạch ngang ĐÚNG cho từng tổ hợp mode/plan của SwiftCopy.Drive — dùng
+ * CHUNG giữa trang Bảng giá (`setupPricingPage()`) và modal "Chọn gói" trong
+ * giỏ hàng (`openPlanPicker()`/`resolvePlanPickForCart()`), để không lệch số
+ * giữa 2 nơi (bài học từ vòng 48 — bản đầu áp nhầm tỉ lệ Basic cá nhân
+ * ~21% cho CẢ gói Nhóm, ra sai số so với badge "Tiết kiệm 18,45%" đã công bố).
+ * - Basic cá nhân: giá gốc THẬT 620.000đ (đã dùng ở thẻ sản phẩm).
+ * - Premium cá nhân: `assumedOldPrice()` (giả định, xem ghi chú trên).
+ * - Nhóm (Basic & Premium): giá gốc = SỐ THÀNH VIÊN × giá CÁ NHÂN cùng gói —
+ *   đây chính xác là cách tính ra đúng con số "Tiết kiệm 18,45%" (so sánh
+ *   mua gói Nhóm với mua lẻ từng người ở giá cá nhân), verify bằng tay khớp
+ *   ~18,3%-18,45% ở mọi số thành viên 5-10, không phải chọn tuỳ ý.
+ */
+function computeSwiftcopyOldPrice(mode, plan, currentPrice, members) {
+  if (mode === "team") {
+    return (members || 5) * SWIFTCOPY_PRICING.personal[plan].price;
+  }
+  if (plan === "basic") return 620000;
+  return assumedOldPrice(currentPrice);
 }
 
 /**
@@ -774,6 +800,11 @@ function openPlanPicker(slug) {
       premiumDesc = SWIFTCOPY_PRICING.personal.premium.desc;
     }
 
+    const basicOld = computeSwiftcopyOldPrice(mode, "basic", basicPrice, members);
+    const premiumOld = computeSwiftcopyOldPrice(mode, "premium", premiumPrice, members);
+    const basicDiscountPercent = Math.round(((basicOld - basicPrice) / basicOld) * 100);
+    const premiumDiscountPercent = Math.round(((premiumOld - premiumPrice) / premiumOld) * 100);
+
     bodyEl.innerHTML = `
       <div class="pricing-toggle-wrap">
         <div class="pricing-toggle">
@@ -792,6 +823,10 @@ function openPlanPicker(slug) {
         <div class="pricing-card">
           <span class="pricing-card-label">${basicLabel}</span>
           <div class="pricing-card-price">${formatPriceVN(basicPrice)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
+          <div class="pricing-old-row">
+            <span class="pricing-price-old">${formatPriceVN(basicOld)}</span>
+            <span class="pricing-price-discount">-${basicDiscountPercent}%</span>
+          </div>
           <p class="pricing-card-desc">${basicDesc}</p>
           <button type="button" class="btn pricing-buy-btn pricing-buy-basic" data-choose-plan="basic">Chọn gói này</button>
           <ul class="pricing-feature-list">${renderFeatureList(PRICING_FEATURES[mode].basic)}</ul>
@@ -800,6 +835,10 @@ function openPlanPicker(slug) {
           <span class="pricing-badge-popular">PHỔ BIẾN NHẤT</span>
           <span class="pricing-card-label">${premiumLabel}</span>
           <div class="pricing-card-price">${formatPriceVN(premiumPrice)}<span class="pricing-price-suffix"> / Trọn đời</span></div>
+          <div class="pricing-old-row">
+            <span class="pricing-price-old">${formatPriceVN(premiumOld)}</span>
+            <span class="pricing-price-discount">-${premiumDiscountPercent}%</span>
+          </div>
           <p class="pricing-card-desc">${premiumDesc}</p>
           <button type="button" class="btn pricing-buy-btn pricing-buy-premium" data-choose-plan="premium">Chọn gói này</button>
           <ul class="pricing-feature-list">${renderFeatureList(PRICING_FEATURES[mode].premium)}</ul>
@@ -836,10 +875,10 @@ function openPlanPicker(slug) {
 
 /**
  * Ghi gói đã chọn (kèm chế độ Cá nhân/Nhóm + số thành viên nếu có) vào ĐÚNG
- * dòng giỏ hàng (localStorage) — gọi khi bấm "Chọn gói này" trong modal.
- * Basic cá nhân dùng giá gạch ngang THẬT (620.000đ, đã công bố ở thẻ sản
- * phẩm) — 3 trường hợp còn lại (Premium cá nhân, Basic/Premium Nhóm) dùng
- * `assumedOldPrice()` (số giả định, khách đã xác nhận chấp nhận ở vòng 47).
+ * dòng giỏ hàng (localStorage) — gọi khi bấm "Chọn gói này" trong modal. Giá
+ * gạch ngang tính bằng `computeSwiftcopyOldPrice()` dùng chung (xem ghi chú
+ * ở hàm đó) — vòng 48 sửa lại đúng công thức cho gói Nhóm (18,45%), trước đó
+ * lỡ áp nhầm tỉ lệ của Basic cá nhân (~21%) khiến % giảm hiển thị sai.
  */
 function resolvePlanPickForCart(slug, plan, mode, members) {
   const tier = SWIFTCOPY_PRICING[mode][plan];
@@ -849,7 +888,7 @@ function resolvePlanPickForCart(slug, plan, mode, members) {
   if (!item) return;
 
   const price = mode === "team" ? interpolateTeamPrice(tier.min, tier.max, members) : tier.price;
-  const priceOld = mode === "personal" && plan === "basic" ? 620000 : assumedOldPrice(price);
+  const priceOld = computeSwiftcopyOldPrice(mode, plan, price, members);
 
   item.plan = plan;
   item.planMode = mode;
@@ -947,8 +986,15 @@ function setupCheckoutPage() {
     // Vòng 46: sản phẩm nhiều gói CHƯA chọn gói bị loại khỏi phép tính tổng
     // tiền (giá chưa xác định) — đồng thời nếu nó đang ĐƯỢC CHỌN, chặn hẳn
     // nút thanh toán cho tới khi khách bấm "Yêu cầu chọn gói" để resolve.
-    const blocked = calcItems.some((item) => productNeedsPlan(item));
-    const priceableItems = calcItems.filter((item) => !productNeedsPlan(item));
+    // Vòng 48 — SỬA LỖI: cơ chế này CHỈ áp dụng ở chế độ giỏ hàng nhiều sản
+    // phẩm (`!isSingleSlug`). Luồng mua thẳng 1 sản phẩm qua
+    // `?slug=...&plan=...` (từ trang Bảng giá) đã có giá HOÀN TOÀN xác định
+    // ngay trong `getCheckoutItems()` — item đó không có field `plan` (khác
+    // quy ước field `plan` dùng riêng cho giỏ hàng) nên trước đây bị
+    // `productNeedsPlan()` hiểu NHẦM là "chưa chọn gói", làm tổng tiền về 0đ
+    // và khoá cứng nút Thanh toán dù khách đã chọn gói xong xuôi ở bước trước.
+    const blocked = !isSingleSlug && calcItems.some((item) => productNeedsPlan(item));
+    const priceableItems = isSingleSlug ? calcItems : calcItems.filter((item) => !productNeedsPlan(item));
     const subtotalOld = priceableItems.reduce((sum, item) => sum + (item.priceOld > item.price ? item.priceOld : item.price) * item.qty, 0);
     const total = priceableItems.reduce((sum, item) => sum + item.price * item.qty, 0);
     const discount = subtotalOld - total;
@@ -1129,14 +1175,26 @@ function setupPricingPage() {
   const basicDescEl = document.getElementById("pricing-basic-desc");
   const basicBuyEl = document.getElementById("pricing-basic-buy");
   const basicFeaturesEl = document.getElementById("pricing-basic-features");
+  const basicOldEl = document.getElementById("pricing-basic-old");
+  const basicDiscountEl = document.getElementById("pricing-basic-discount");
 
   const premiumLabelEl = document.getElementById("pricing-premium-label");
   const premiumPriceEl = document.getElementById("pricing-premium-price");
   const premiumDescEl = document.getElementById("pricing-premium-desc");
   const premiumBuyEl = document.getElementById("pricing-premium-buy");
   const premiumFeaturesEl = document.getElementById("pricing-premium-features");
+  const premiumOldEl = document.getElementById("pricing-premium-old");
+  const premiumDiscountEl = document.getElementById("pricing-premium-discount");
 
   let mode = "personal";
+
+  /** Vòng 48: đổ giá gạch ngang + % giảm cho 1 thẻ — dùng chung Basic/Premium. */
+  function renderOldPriceRow(oldEl, discountEl, plan, currentPrice, members) {
+    const oldPrice = computeSwiftcopyOldPrice(mode, plan, currentPrice, members);
+    const percent = Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
+    if (oldEl) oldEl.textContent = formatPriceVN(oldPrice);
+    if (discountEl) discountEl.textContent = `-${percent}%`;
+  }
 
   function render() {
     const members = parseInt(slider.value, 10) || 5;
@@ -1146,19 +1204,24 @@ function setupPricingPage() {
     basicLabelEl.textContent = mode === "team" ? "BASIC NHÓM" : "BASIC";
     premiumLabelEl.textContent = mode === "team" ? "PREMIUM NHÓM" : "PREMIUM";
 
+    let basicPrice, premiumPrice;
     if (mode === "team") {
       const basicTier = SWIFTCOPY_PRICING.team.basic;
       const premiumTier = SWIFTCOPY_PRICING.team.premium;
-      basicPriceEl.textContent = formatPriceVN(interpolateTeamPrice(basicTier.min, basicTier.max, members));
-      premiumPriceEl.textContent = formatPriceVN(interpolateTeamPrice(premiumTier.min, premiumTier.max, members));
+      basicPrice = interpolateTeamPrice(basicTier.min, basicTier.max, members);
+      premiumPrice = interpolateTeamPrice(premiumTier.min, premiumTier.max, members);
       basicDescEl.textContent = basicTier.desc;
       premiumDescEl.textContent = premiumTier.desc;
     } else {
-      basicPriceEl.textContent = formatPriceVN(SWIFTCOPY_PRICING.personal.basic.price);
-      premiumPriceEl.textContent = formatPriceVN(SWIFTCOPY_PRICING.personal.premium.price);
+      basicPrice = SWIFTCOPY_PRICING.personal.basic.price;
+      premiumPrice = SWIFTCOPY_PRICING.personal.premium.price;
       basicDescEl.textContent = SWIFTCOPY_PRICING.personal.basic.desc;
       premiumDescEl.textContent = SWIFTCOPY_PRICING.personal.premium.desc;
     }
+    basicPriceEl.textContent = formatPriceVN(basicPrice);
+    premiumPriceEl.textContent = formatPriceVN(premiumPrice);
+    renderOldPriceRow(basicOldEl, basicDiscountEl, "basic", basicPrice, members);
+    renderOldPriceRow(premiumOldEl, premiumDiscountEl, "premium", premiumPrice, members);
 
     basicFeaturesEl.innerHTML = renderFeatureList(PRICING_FEATURES[mode].basic);
     premiumFeaturesEl.innerHTML = renderFeatureList(PRICING_FEATURES[mode].premium);

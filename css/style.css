@@ -11,12 +11,6 @@
   --color-orange-dark: #e59900;
   --color-white: #ffffff;
 
-  /* Vòng 36: vàng nhạt riêng cho chữ trên nền đen ở trang Bảng giá (toggle/nút
-     "Mua ngay" gói Premium) — khách chỉ định rõ #fac775, khác hẳn tông cam
-     thương hiệu #feb20a (nhạt/ánh vàng hơn, không phải biến thể gõ nhầm) nên
-     giữ nguyên làm biến riêng, không gộp chung với --color-orange. */
-  --color-gold-text: #fac775;
-
   /* Nền & chữ */
   --bg-page: #ffffff;
   --bg-section: #f7f6f3;
@@ -1478,11 +1472,18 @@ p {
    Trang chi tiết sản phẩm
    =========================================================== */
 
-/* Vòng 27: tăng nhẹ cỡ chữ breadcrumb (13→14px, "chỉ 1 tí thôi" theo yêu cầu). */
+/* Vòng 27: tăng nhẹ cỡ chữ breadcrumb (13→14px, "chỉ 1 tí thôi" theo yêu cầu).
+   Vòng 48: giảm padding DƯỚI (20→6px) — khách yêu cầu áp dụng cho TOÀN SITE,
+   không riêng 1 trang — `.breadcrumb` là class DÙNG CHUNG ngay trước phần
+   nội dung chính ở MỌI trang có breadcrumb (trang chi tiết sản phẩm, Bảng
+   giá, footer-pages, thanh toán...), nên đây là điểm chỉnh AN TOÀN DUY NHẤT
+   thu hẹp khoảng cách "breadcrumb → tiêu đề" ở khắp nơi cùng lúc mà không
+   phải sửa riêng từng trang. Giữ nguyên padding TRÊN (20px, cách nav/header
+   phía trên). */
 .breadcrumb {
   font-size: 14px;
   color: var(--text-muted);
-  padding: 20px 0;
+  padding: 20px 0 6px;
 }
 
 .breadcrumb a:hover {
@@ -2422,9 +2423,13 @@ p {
 /* Vòng 46: 2 nút toggle KHÔNG còn dùng chung 1 kiểu active — khách yêu cầu
    "Cá nhân" phải khác hẳn "Nhóm" để không nhầm 2 trạng thái. "Nhóm" giữ tông
    đậm hơn (nền đen/chữ trắng, vì đây là gói lớn hơn/nhiều tiền hơn); "Cá
-   nhân" dùng tông nhẹ/đơn giản hơn (nền xám nhạt/chữ đen). */
+   nhân" dùng tông nhẹ/đơn giản hơn.
+   Vòng 48: đổi nền "Cá nhân" từ xám nhạt sang ĐÚNG màu vàng cam thương hiệu
+   (`--color-orange`, khách chỉ rõ "màu vàng thương hiệu thay màu xám") — chữ
+   đen vẫn giữ nguyên vì tương phản tốt trên nền vàng cam (giống `.badge-orange`/
+   `.btn-primary` đã dùng cùng tổ hợp này ở nơi khác trên site). */
 .pricing-toggle-btn[data-pricing-mode="personal"].active {
-  background: var(--bg-section);
+  background: var(--color-orange);
   color: var(--color-black);
 }
 
@@ -2466,11 +2471,13 @@ p {
   accent-color: var(--color-orange);
 }
 
+/* Vòng 48: rộng thêm 780→900px — cần chỗ để mỗi dòng tính năng nằm gọn trên
+   1 hàng, không xuống dòng (xem `.pricing-feature-list li` bên dưới). */
 .pricing-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-  max-width: 780px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -2494,7 +2501,7 @@ p {
   top: -14px;
   left: 22px;
   background: var(--color-black);
-  color: var(--color-gold-text);
+  color: var(--color-white);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -2522,6 +2529,31 @@ p {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+/* Vòng 48: hàng giá gạch ngang + % giảm — khách yêu cầu MỌI nơi có giá đều
+   phải kèm giá gốc cao hơn gạch ngang (trước đó trang Bảng giá/modal Chọn
+   gói chỉ hiện giá phẳng, không có dòng này). Số liệu tính bằng
+   `computeSwiftcopyOldPrice()` trong js/main.js — Basic cá nhân dùng giá gốc
+   THẬT 620.000đ, Nhóm dùng đúng công thức ra ~18,45% (không phải áp nhầm tỉ
+   lệ ~21% của Basic cá nhân như bản trước). */
+.pricing-old-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.pricing-price-old {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.pricing-price-discount {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-black);
 }
 
 .pricing-card-desc {
@@ -2552,7 +2584,7 @@ p {
 
 .pricing-buy-premium {
   background: var(--color-black);
-  color: var(--color-gold-text);
+  color: var(--color-white);
 }
 
 .pricing-buy-premium:hover {
@@ -2569,12 +2601,17 @@ p {
 /* Vòng 46: đổi bullet ✓ dạng ký tự sang icon SVG "Minimalist Outline" thật —
    cho phép có thêm biến thể X đỏ (`.is-negative`) cho các dòng tính năng
    KHÔNG hỗ trợ (vd "Không hỗ trợ tải Drive về máy tính cá nhân"), thứ mà
-   ký tự "✓" cố định trước đây không thể hiện được. */
+   ký tự "✓" cố định trước đây không thể hiện được.
+   Vòng 48: giảm nhẹ font-size (13.5→12.5px) — khách yêu cầu MỖI dòng tính
+   năng phải nằm gọn 1 hàng, không xuống dòng, để 2 thẻ Basic/Premium thẳng
+   hàng nhau khi đặt cạnh nhau. Kết hợp với `.pricing-cards` rộng thêm
+   (780→900px ở trên), dòng dài nhất hiện có (~53 ký tự) đủ chỗ nằm 1 hàng ở
+   màn hình ≥600px. */
 .pricing-feature-list li {
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   line-height: 1.5;
   color: var(--text-main);
 }
@@ -2593,6 +2630,15 @@ p {
 
 .pricing-feature-list li.is-negative span {
   color: var(--text-muted);
+}
+
+/* Chỉ ép "không xuống hàng" từ 600px trở lên — dưới mốc này thẻ co lại rất
+   hẹp (đặc biệt mobile 1 cột nhưng màn hình <600px), ép nowrap sẽ làm chữ
+   tràn ra ngoài thẻ thay vì xuống dòng, còn xấu hơn việc xuống dòng. */
+@media (min-width: 600px) {
+  .pricing-feature-list li span {
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 720px) {
@@ -2814,14 +2860,41 @@ p {
   max-height: min(680px, calc(100vh - 48px));
 }
 
-/* ---------- Modal "Chọn gói" (vòng 46) — tái dùng nguyên .pricing-cards ---------- */
+/* ---------- Modal "Chọn gói" (vòng 46) — tái dùng nguyên .pricing-cards ----------
+   Vòng 48: khách yêu cầu modal hiện ĐẦY ĐỦ, hạn chế phải cuộn — vì nội dung
+   giờ có thêm toggle+slider+hàng giá gạch ngang (nhiều hơn bản đầu), tăng
+   `max-height` gần sát chiều cao màn hình VÀ thu gọn padding/khoảng cách bên
+   trong CHỈ trong phạm vi modal này (không đụng padding gốc `.pricing-card`
+   dùng ở trang Bảng giá đầy đủ, nơi có nhiều chỗ hơn). Vẫn giữ `overflow-y`
+   kế thừa từ `.modal` gốc làm lưới an toàn cuối cùng cho màn hình rất thấp —
+   không thể đảm bảo tuyệt đối 0% khả năng cuộn ở MỌI chiều cao màn hình. */
 #modal-planpicker {
-  width: min(760px, calc(100vw - 40px));
-  max-height: min(640px, calc(100vh - 48px));
+  width: min(920px, calc(100vw - 40px));
+  max-height: calc(100vh - 24px);
 }
 
 #modal-planpicker .pricing-cards {
   max-width: none;
+}
+
+#modal-planpicker .pricing-card {
+  padding: 18px 16px;
+}
+
+#modal-planpicker .pricing-feature-list {
+  gap: 7px;
+}
+
+#modal-planpicker .pricing-card-desc {
+  margin-bottom: 12px;
+}
+
+#modal-planpicker .pricing-buy-btn {
+  margin-bottom: 14px;
+}
+
+#modal-planpicker .pricing-team-controls {
+  margin: 0 auto 20px;
 }
 
 @media (max-width: 640px) {
