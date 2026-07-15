@@ -215,13 +215,18 @@ p {
    GRADIENT đỏ cam→vàng cam theo đúng ảnh mẫu khách gửi riêng cho badge này —
    "Cập nhật" GIỮ NGUYÊN nền xanh lá đặc (chỉ đổi shape, khách không yêu cầu
    đổi màu/gradient cho badge này). */
+/* Vòng 54 — SỬA LỖI: notch trước đó cắt theo % (85%) nên với badge càng HẸP
+   (như "Cập nhật", không có icon, chữ ngắn hơn "Bán chạy") phần nhọn cắt ra
+   càng nhỏ tính theo px, nhìn gần như biến mất — trông giống hình chữ nhật
+   bo góc thường, không giống ruy băng. Đổi sang `calc(100% - 12px)` (số PX
+   CỐ ĐỊNH thay vì %) để độ nhọn luôn rõ như nhau bất kể badge rộng/hẹp. */
 .badge-bestseller,
 .badge-update {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   border-radius: 6px 0 0 6px;
-  clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
   padding: 5px 15px 5px 10px;
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -920,11 +925,14 @@ p {
   gap: 5px;
 }
 
-/* Cùng lý do với "Bán chạy" — đẩy riêng badge "Cập nhật" tràn ra mép phải
-   (badge vàng phía trên đứng yên tại right:9px, chỉ "Cập nhật" tràn thêm). */
-.badge-update {
-  margin-right: -6px;
-}
+/* Vòng 54 — SỬA LỖI: `margin-right:-6px` thêm ở vòng 53 (định đẩy "Cập nhật"
+   tràn ra mép phải giống "Bán chạy") khiến nó bị đẩy LỆCH ra ngoài mép phải
+   của chính badge vàng phía trên (2 badge không còn thẳng hàng phải với
+   nhau — khách phản hồi đúng "2 badge góc phải chồng/lệch nhau"). Bỏ hẳn
+   margin âm này — để `align-items:flex-end` của `.product-badges-right` tự
+   canh 2 badge thẳng mép phải với nhau như bình thường, không cố tình tràn
+   ra ngoài card ở phía này nữa (khác với "Bán chạy" bên trái — trường hợp đó
+   chỉ có 1 badge nên không có rủi ro lệch hàng với badge khác). */
 
 /* Card có badge "Cập nhật" xếp chồng dưới badge vàng (2 tầng, cao hơn 1 badge
    thường) — tăng padding-top CHỈ cho card đó để không đè lên tiêu đề mini-
