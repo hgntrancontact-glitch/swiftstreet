@@ -933,16 +933,19 @@ p {
   gap: 4px;
 }
 
-/* Card có "Cập nhật" xếp chồng dưới badge danh mục (2 tầng, cao hơn 1 badge
-   thường) — tăng padding-top CHỈ cho card đó để 2 tầng này không đè lên
-   khung mockup device bên dưới (khách yêu cầu rõ "không đè lên khung mockup
-   bên trong" — khác hẳn ý đồ vòng 56, lúc đó CỐ Ý cho đè lên). Giảm từ 60px
-   (vòng 57, tính theo `top:9px` cũ) xuống 52px vì wrapper giờ bắt đầu từ
-   `top:0` (thấp hơn 9px so với trước, nên tổng chiều cao cần cũng giảm
-   tương ứng). */
-.product-thumb:has(.badge-update) {
-  padding-top: 52px;
-}
+/* Vòng 59 — SỬA LỖI GỐC: đã XOÁ HẲN rule tăng riêng `padding-top` cho card có
+   "Cập nhật" (từng là 60px ở vòng 57, 52px ở vòng 58). Lý do: `.product-grid`
+   dùng CSS Grid mặc định `align-items:stretch`, nên MỌI thẻ trong CÙNG 1 HÀNG
+   bị kéo giãn cao bằng thẻ cao nhất hàng đó — khi SwiftCopy.Drive (padding-top
+   30px) nằm CÙNG HÀNG với Wedding/Content Planner (từng là 52px), cả hàng bị
+   giãn theo thẻ cao hơn, khiến nhãn danh mục "File kế hoạch" của Wedding/
+   Content Planner (dù cùng code `top:0`) hiển thị LỆCH CAO hơn so với card
+   không có "Cập nhật" — đúng lỗi khách chỉ ra ("nhãn danh mục bị đẩy cao hơn").
+   Khách xác nhận rõ: "Cập nhật" ĐƯỢC PHÉP tràn xuống đè lên mép trên khung
+   mockup bên trong thẻ — KHÔNG cần né bằng cách tăng padding-top nữa. Bỏ hẳn
+   rule này khiến MỌI thẻ (có hay không có "Cập nhật") đều dùng chung đúng 1
+   `padding-top:30px` mặc định — loại trừ hoàn toàn khả năng lệch hàng do Grid
+   stretch, đảm bảo nhãn danh mục luôn thẳng 1 đường ngang trên toàn lưới. */
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */
 .device-screen {
