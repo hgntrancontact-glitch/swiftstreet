@@ -163,12 +163,14 @@ p {
 }
 
 .btn-sm {
-  padding: 13px 6px;
+  padding: 11px 6px;
   font-size: 12px;
   font-weight: 600;
   border-width: 1px;
   border-radius: 6px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: center;
   line-height: 1.25;
 }
@@ -1252,7 +1254,7 @@ p {
 .price-discount {
   font-size: 12px;
   font-weight: 700;
-  color: var(--color-error);
+  color: var(--color-black);
 }
 
 .price-current {
