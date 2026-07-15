@@ -174,13 +174,14 @@ p {
 }
 
 /* Nút Thêm giỏ hàng/Mua ngay trong lưới sản phẩm ở trang chủ (.hero-products)
-   PHẢI giữ nguyên cỡ nhỏ ban đầu — khách chỉ yêu cầu tăng size nút này khi vào
-   trang "Sản phẩm" (san-pham.html, không có .hero-products bao ngoài), không
-   yêu cầu đổi trên landing/trang chủ. */
-.hero-products .btn-sm {
-  padding: 9px 4px;
-  font-size: 10px;
-}
+   từng CỐ Ý nhỏ hơn hẳn trang "Sản phẩm" (vòng 20) — khách phản hồi lại ở
+   vòng 40 rằng size nhỏ này "hơi nhỏ" và muốn 2 trang ĐỒNG BỘ, không còn tách
+   riêng nữa (khớp với việc thẻ sản phẩm 2 trang đã đồng bộ 700px ở vòng 39).
+   Đã XOÁ HẲN rule ghi đè riêng cho `.hero-products` — giờ nút ở cả 2 trang
+   cùng dùng đúng 1 kích thước gốc của `.btn-sm` (padding 13px 6px, font 12px,
+   đã được tinh chỉnh kỹ ở vòng 19 cho trang Sản phẩm). Rule mobile riêng ở
+   vòng 27 (đặt trong @media max-width:720px) cũng bị xoá theo vì đã thành dư
+   thừa — giá trị đó giờ áp dụng mặc định ở MỌI độ rộng. */
 
 /* ---------- Badges ---------- */
 .badge {
@@ -1234,14 +1235,33 @@ p {
    badge "CÔNG CỤ", mockup "Drive Overview" đầy đủ (tiêu đề/3 ô số liệu/donut/
    danh sách file), khung "laptop" (bezel đen + chân đế), tên/giá cỡ chữ mặc
    định — tất cả đều KHÔNG còn override nào, tự rơi về đúng rule gốc phía trên
-   (`.product-thumb`, `.device-screen`, `.device-display` height:186px,
-   `.dash-*`, `.product-body h3`, `.price-current/.price-old`...). Duy nhất
-   thay đổi còn giữ lại: giới hạn chiều rộng thẻ tăng 420px→700px (xem comment
-   đầy đủ ở khối `@media (min-width:721px)` phía trên, ngay sau rule vòng
-   33/34) — ĐÂY LÀ CÁCH DUY NHẤT đáp ứng yêu cầu "khối to/ngang hơn" mà không
-   cần đụng lại bất kỳ nội dung mockup nào, đồng thời ÁP DỤNG CHUNG cho cả
-   hero VÀ san-pham.html (không còn phân nhánh `.hero-products` riêng như vòng
-   37/38) để 2 nơi luôn đồng bộ 1 kích thước. */
+   (`.product-thumb`, `.device-screen`, `.dash-*`, `.product-body h3`,
+   `.price-current/.price-old`...) NGOẠI TRỪ chiều cao `.device-display`, xem
+   rule riêng ngay bên dưới (tăng lại ở vòng 40). Thay đổi còn giữ lại từ vòng
+   39: giới hạn chiều rộng thẻ tăng 420px→700px (xem comment đầy đủ ở khối
+   `@media (min-width:721px)` phía trên, ngay sau rule vòng 33/34) — ĐÂY LÀ
+   CÁCH DUY NHẤT đáp ứng yêu cầu "khối to/ngang hơn" mà không cần đụng lại bất
+   kỳ nội dung mockup nào, đồng thời ÁP DỤNG CHUNG cho cả hero VÀ san-pham.html
+   (không còn phân nhánh `.hero-products` riêng như vòng 37/38) để 2 nơi luôn
+   đồng bộ 1 kích thước. */
+
+/* Vòng 40: khách xác nhận bề rộng 700px (vòng 39) đã ổn, nhưng muốn khối sản
+   phẩm CAO thêm nữa — đủ để "Xem thêm" nằm gần sát đáy màn hình đầu tiên,
+   KHÔNG còn thấy được badge "QUY TRÌNH" của section kế tiếp trước khi cuộn
+   (trước đó với height gốc 186px, tổng khối quá ngắn nên hở ra một phần
+   "QUY TRÌNH" ở đáy màn hình). Tăng height của `.device-display` từ 186px
+   (mặc định) lên 340px — CHUNG cho cả hero lẫn san-pham.html (không tách
+   riêng, giữ đúng tinh thần đồng bộ của vòng 39). Vẫn dùng đúng 1 pattern
+   `:has(> .product-card:only-child)`. Nội dung mini-dashboard bên trong
+   (`.dash-row` có `flex:1`) tự giãn ra lấp khoảng cao dư thêm, không cần
+   chỉnh gì thêm — donut/danh sách file chỉ có thêm khoảng trắng xung quanh,
+   không bị vỡ layout. 340px chọn để tổng chiều cao trang (header + hero-shop
+   padding + thẻ + "Xem thêm") ước tính ~700-750px, khớp xấp xỉ chiều cao
+   viewport phổ biến sau khi trừ thanh trình duyệt — CHƯA đo bằng ảnh chụp
+   thật, nếu vẫn còn thấy "QUY TRÌNH" thì tăng tiếp con số 340px này. */
+.product-grid:has(> .product-card:only-child) .device-display {
+  height: 340px;
+}
 
 /* ---------- How it works ---------- */
 .steps {
@@ -2952,15 +2972,6 @@ p {
   .hero-intro h1 {
     font-size: 26px;
     line-height: 1.32;
-  }
-
-  /* Vòng 27: đồng bộ size nút Thêm giỏ hàng/Mua ngay ở trang chủ với trang Sản
-     phẩm — nhưng CHỈ trên mobile thật (≤720px), khách xác nhận size ở trang
-     Sản phẩm đã ổn trên điện thoại. KHÔNG đụng desktop — 2 trang này vẫn cố ý
-     khác nhau ở màn hình rộng như đã chốt từ vòng 20. */
-  .hero-products .btn-sm {
-    padding: 13px 6px;
-    font-size: 12px;
   }
 
   .main-nav,

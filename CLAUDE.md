@@ -409,6 +409,12 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - Tăng cache-bust `css/style.css?v=38→39`.
   - **Vẫn chưa kiểm chứng bằng ảnh chụp thật** (hạn chế môi trường lặp lại từ vòng 35-38 — không có Node/Playwright/chromium-cli, chưa có quyền Automation macOS). Nếu khách phản hồi 700px vẫn chưa đúng tỉ lệ mong muốn (quá rộng/chưa đủ rộng), đây là con số DUY NHẤT cần chỉnh — mọi thứ khác đã quay về nguyên bản thiết kế gốc.
 
+- ✅ Vòng sửa 40: khách xác nhận bề rộng 700px (vòng 39) ổn, yêu cầu thêm 2 việc:
+  1. **Tăng chiều cao khối sản phẩm** để "Xem thêm" nằm gần sát đáy màn hình đầu tiên, không còn thấy badge "QUY TRÌNH" của section kế tiếp trước khi cuộn (trước đó với `.device-display` height gốc 186px, tổng khối hơi ngắn nên "QUY TRÌNH" hở ra 1 phần ở đáy). Tăng `.device-display` height 186px→**340px** — dùng CHUNG cho cả hero lẫn san-pham.html (không tách riêng, đúng tinh thần đồng bộ vòng 39), cùng pattern `:has(> .product-card:only-child)`. `.dash-row` (chứa donut+danh sách file) có sẵn `flex:1` nên tự giãn lấp khoảng cao dư thêm, không cần chỉnh nội dung bên trong.
+  2. **Tăng size nút "Thêm giỏ hàng"/"Mua ngay" ở trang chủ** — khách phản hồi size cũ (`.hero-products .btn-sm`, cố ý nhỏ hơn từ vòng 20: padding 9px 4px/font 10px) "hơi nhỏ", muốn 2 trang **đồng bộ** kích thước nút luôn (không chỉ thẻ sản phẩm). Đã **XOÁ HẲN** rule `.hero-products .btn-sm` (cả bản desktop lẫn bản mobile @media max-width:720px của vòng 27, giờ dư thừa) — nút ở cả 2 trang giờ dùng chung đúng 1 kích thước gốc `.btn-sm` (padding 13px 6px, font 12px, đã tinh chỉnh kỹ từ vòng 19 cho trang Sản phẩm).
+  - Tăng cache-bust `css/style.css?v=39→40`.
+  - **Chưa kiểm chứng bằng ảnh chụp thật** (hạn chế môi trường như các vòng trước) — 340px là ước lượng để tổng chiều cao trang ~700-750px, nếu vẫn còn thấy "QUY TRÌNH" thì tăng tiếp con số này.
+
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
 1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.
