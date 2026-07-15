@@ -234,35 +234,33 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — vòng 64 (thay thế vòng 57-63): khách bác bỏ việc mở rộng bezel
-   khung mockup (vòng 63) — "không cần kéo khung trên màn hình lên như vậy".
-   Đồng thời khách làm rõ: "Bán chạy" KHÔNG cần nằm cùng hàng với nhãn danh
-   mục nữa (2 nhãn tách biệt hoàn toàn) — vì "Bán chạy" giờ nằm HẲN vào bên
-   trong màn hình (đè lên chính nội dung mini-dashboard, không phải 1 bezel
-   riêng). `.device-screen` bezel giữ nguyên 4px (mỏng như gốc) nên
-   `.device-display` bắt đầu ngay ở y≈34px — đặt badge ở `top:36px` (2px vào
-   bên trong device-display) để nó nằm chồng lên chính nội dung màn hình,
-   không phải bezel đen mỏng phía trên. `left:20px` giữ nguyên (4px từ mép
-   trái khung mockup). Border-radius giữ 8px (khớp `.device-screen`). */
+/* "Bán chạy" — vòng 65 (tinh chỉnh sau vòng 64): khách xác nhận hướng "đè lên
+   nội dung màn hình" là đúng, chỉ cần sửa 2 điểm: (1) bỏ khoảng trống giữa
+   badge và khung mockup — đổi `left:20px→16px` để DÍNH THẲNG vào mép trái
+   thật của `.device-screen` (không còn cách 4px nữa); (2) đổi shape — bo
+   CHÉO 2 góc thay vì chỉ 1 góc: góc TRÊN-TRÁI (khớp độ cong khung mockup) VÀ
+   góc DƯỚI-PHẢI (tạo hình thoi/ruy băng chéo nhẹ) — `border-radius:
+   8px 0 0 0` → `8px 0 8px 0` (thứ tự CSS: trên-trái/trên-phải/dưới-phải/
+   dưới-trái). `top:36px` giữ nguyên (đè vào nội dung `.device-display` như
+   vòng 64, không đổi). */
 .badge-bestseller {
   position: absolute;
   top: 36px;
-  left: 20px;
-  border-radius: 8px 0 0 0;
+  left: 16px;
+  border-radius: 8px 0 8px 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
 
-/* "Cập nhật" — vòng 61: khách yêu cầu bo góc DƯỚI (không phải góc TRÊN như
-   vòng 57-60) — vì giờ "Cập nhật" nằm SÁT ngay dưới nhãn danh mục (không có
-   khoảng cách, xem `gap:0` ở `.product-badges-right` bên dưới), 2 nhãn ghép
-   lại tạo thành 1 khối liền mạch: danh mục bo góc TRÊN-phải, "Cập nhật" bo
-   góc DƯỚI-phải — giống 1 viên "capsule" 2 màu xếp chồng khít nhau.
-   Vòng 63: border-radius đổi 10px→8px (khớp độ cong `.device-screen`, cùng
-   lý do với "Bán chạy" — xem ghi chú trên).
+/* "Cập nhật" — vòng 65: đổi shape — bo CẢ 2 góc DƯỚI (trái + phải) thay vì
+   chỉ góc dưới-phải như vòng 61-64, để khớp đúng ý khách "dính vào nhãn Web
+   App Script/File kế hoạch" — góc TRÊN vẫn vuông (phẳng, áp sát mép dưới của
+   nhãn danh mục phía trên, `gap:0`), 2 góc DƯỚI bo tròn tạo đáy capsule mềm
+   mại. `border-radius: 0 0 8px 0` → `0 0 8px 8px` (dưới-phải + dưới-trái).
+   Vòng 63: border-radius 8px khớp độ cong `.device-screen` (không đổi).
    Vòng 58: nền GRADIENT ngang theo đúng 2 mã màu khách chỉ định. */
 .badge-update {
-  border-radius: 0 0 8px 0;
+  border-radius: 0 0 8px 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -949,11 +947,19 @@ p {
    với "Bán chạy" nữa (2 nhãn tách biệt hoàn toàn — "Bán chạy" đã chuyển sang
    đè lên nội dung mini-dashboard, xem `.badge-bestseller`). Nhãn danh mục
    quay lại vị trí đơn giản, an toàn trong vùng đệm NGOÀI khung mockup (không
-   overlap gì cả) — `top:34px→9px`, `right:20px→9px`. */
+   overlap gì cả) — `top:34px→9px`, `right:20px→9px`.
+   Vòng 65 — SỬA LẠI: khách phản hồi nhãn danh mục "PHẢI ĐÈ LÊN khung mockup,
+   KHÔNG ĐƯỢC TÁCH RA" — vị trí `top:9px` (nổi hẳn trong vùng đệm ngoài) ở
+   vòng 64 là SAI. Đổi lại `top:9px→18px` để đè lên viền trên khung mockup
+   (bắt đầu ở y≈30px, bezel 4px) — cùng cách overlap như "Bán chạy" đang dùng
+   nhưng ở tầng nhẹ hơn (chỉ chạm viền, không cần đè sâu vào nội dung như "Bán
+   chạy" — không có yêu cầu cụ thể về việc này). `right:9px→16px` — bỏ luôn
+   khoảng trống 7px, dính thẳng vào mép phải thật của khung mockup, đồng nhất
+   với cách sửa "không khoảng trống" đã áp dụng cho "Bán chạy". */
 .product-badges-right {
   position: absolute;
-  top: 9px;
-  right: 9px;
+  top: 18px;
+  right: 16px;
   z-index: 2;
   display: flex;
   flex-direction: column;
