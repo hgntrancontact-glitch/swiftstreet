@@ -234,33 +234,29 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — vòng 65 (tinh chỉnh sau vòng 64): khách xác nhận hướng "đè lên
-   nội dung màn hình" là đúng, chỉ cần sửa 2 điểm: (1) bỏ khoảng trống giữa
-   badge và khung mockup — đổi `left:20px→16px` để DÍNH THẲNG vào mép trái
-   thật của `.device-screen` (không còn cách 4px nữa); (2) đổi shape — bo
-   CHÉO 2 góc thay vì chỉ 1 góc: góc TRÊN-TRÁI (khớp độ cong khung mockup) VÀ
-   góc DƯỚI-PHẢI (tạo hình thoi/ruy băng chéo nhẹ) — `border-radius:
-   8px 0 0 0` → `8px 0 8px 0` (thứ tự CSS: trên-trái/trên-phải/dưới-phải/
-   dưới-trái). `top:36px` giữ nguyên (đè vào nội dung `.device-display` như
-   vòng 64, không đổi). */
+/* "Bán chạy" — vòng 66 SỬA LỖI: khách chỉ ảnh ra vẫn còn khe hở phía trên —
+   `top:36px` (vòng 64-65) để lộ 1 dải bezel đen mỏng (y:30-36) phía TRÊN
+   badge, nhìn như chưa dính sát khung mockup. Đổi `top:36px→30px` — khớp
+   ĐÚNG mép trên thật của `.device-screen` (bắt đầu ở y≈30px), badge giờ
+   chạm thẳng viền trên khung mockup (hết khe hở) trong khi vẫn đủ cao để
+   tràn xuống chồng lên nội dung `.device-display` bên dưới (không mất hiệu
+   ứng "đè lên nội dung" đã chốt từ vòng 64). Border-radius tăng 8px→14px
+   (khách yêu cầu "bo dày hơn cho đẹp"). */
 .badge-bestseller {
   position: absolute;
-  top: 36px;
+  top: 30px;
   left: 16px;
-  border-radius: 8px 0 8px 0;
+  border-radius: 14px 0 14px 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
 
-/* "Cập nhật" — vòng 65: đổi shape — bo CẢ 2 góc DƯỚI (trái + phải) thay vì
-   chỉ góc dưới-phải như vòng 61-64, để khớp đúng ý khách "dính vào nhãn Web
-   App Script/File kế hoạch" — góc TRÊN vẫn vuông (phẳng, áp sát mép dưới của
-   nhãn danh mục phía trên, `gap:0`), 2 góc DƯỚI bo tròn tạo đáy capsule mềm
-   mại. `border-radius: 0 0 8px 0` → `0 0 8px 8px` (dưới-phải + dưới-trái).
-   Vòng 63: border-radius 8px khớp độ cong `.device-screen` (không đổi).
-   Vòng 58: nền GRADIENT ngang theo đúng 2 mã màu khách chỉ định. */
+/* "Cập nhật" — vòng 66: border-radius tăng 8px→14px (đồng bộ "Bán chạy",
+   khách yêu cầu bo dày hơn cho đẹp). Chiều cao giảm riêng qua
+   `.product-thumb .badge-update` (padding dọc nhỏ hơn `.badge-bestseller`) —
+   xem rule bên dưới. */
 .badge-update {
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 14px 14px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -918,11 +914,18 @@ p {
    .badge` (2 class, specificity cao hơn `.badge-bestseller` 1 class) sẽ ghi
    đè mất nếu không.
    Vòng 61: giảm kích thước theo yêu cầu khách — khớp đúng padding mới ở rule
-   `.badge-bestseller, .badge-update` chung phía trên (4px 10px). */
-.product-thumb .badge-bestseller,
-.product-thumb .badge-update {
+   `.badge-bestseller, .badge-update` chung phía trên (4px 10px).
+   Vòng 66: tách riêng "Cập nhật" — khách yêu cầu "giảm chiều cao ô Cập nhật
+   lại" — giảm padding dọc riêng cho `.badge-update` (4px→2px), "Bán chạy"
+   giữ nguyên 4px. */
+.product-thumb .badge-bestseller {
   font-size: 8.5px;
   padding: 4px 10px;
+}
+
+.product-thumb .badge-update {
+  font-size: 8.5px;
+  padding: 2px 10px;
 }
 
 /* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải —
