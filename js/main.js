@@ -709,7 +709,13 @@ function getCheckoutItems() {
         slug: product.slug,
         name: `${product.name} — ${planLabel}${modeLabel}`,
         price,
-        priceOld: 0,
+        // Vòng 49 — SỬA LỖI: trước đó hard-code priceOld:0 khiến luồng mua
+        // thẳng 1 sản phẩm qua trang Bảng giá KHÔNG hiện giá gạch ngang/% giảm
+        // ở trang thanh toán, khác với mọi nơi khác trên site (thẻ sản phẩm,
+        // trang Bảng giá, modal Chọn gói trong giỏ hàng) đều có. Dùng đúng
+        // `computeSwiftcopyOldPrice()` dùng chung (đã có sẵn, chỉ là chưa được
+        // gọi ở đây) để tính giá gạch ngang khớp công thức 18,45% cho gói Nhóm.
+        priceOld: computeSwiftcopyOldPrice(mode, plan, price, members),
         shortDesc: tier.desc,
         type: product.type,
         qty: 1,
@@ -954,11 +960,21 @@ function setupCheckoutPage() {
       // hàng nhiều sản phẩm (isSingleSlug=false); mua thẳng qua `?slug=` thì
       // KHÔNG bao giờ rơi vào tình trạng này (getCheckoutItems() luôn trả về
       // giá đã xác định, xem mục "?plan=" ở đó).
+      // Vòng 49: thêm badge "-X%" cạnh giá gạch ngang — trước đó hàng sản phẩm
+      // ở trang thanh toán chỉ hiện giá hiện tại + giá gạch ngang, THIẾU % giảm
+      // so với thẻ sản phẩm (`.price-discount` trong renderProductGrid()) và
+      // trang Bảng giá/modal Chọn gói (đều đã có %). Dùng lại đúng
+      // computeDiscountPercent() (nhận cả string lẫn number nhờ parsePriceVN).
+      const itemDiscountPercent = computeDiscountPercent(item.price, item.priceOld);
       const priceHTML = !isSingleSlug && productNeedsPlan(item)
         ? `<button type="button" class="cart-need-plan-btn" data-need-plan="${item.slug}">Yêu cầu chọn gói</button>`
         : `
           <span class="cart-price-current">${formatPriceVN(item.price)}</span>
-          ${item.priceOld > item.price ? `<span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>` : ""}`;
+          ${item.priceOld > item.price ? `
+          <div class="cart-price-old-row">
+            <span class="cart-price-old">${formatPriceVN(item.priceOld)}</span>
+            ${itemDiscountPercent ? `<span class="cart-price-discount">-${itemDiscountPercent}%</span>` : ""}
+          </div>` : ""}`;
       return `
       <div class="checkout-item-row">
         ${isSingleSlug ? "" : `<button class="cart-item-select${item.selected ? " checked" : ""}" data-checkout-toggle-select="${item.slug}" aria-label="Chọn sản phẩm">${CHECK_ICON_SVG}</button>`}
