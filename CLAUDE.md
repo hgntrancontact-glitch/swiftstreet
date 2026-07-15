@@ -2,7 +2,7 @@
 
 ## Mô hình kinh doanh
 
-Swiftstreet là 1 "store" bán nhiều sản phẩm số nhỏ, độc lập với nhau (ví dụ: SwiftCopy.Drive — công cụ sao chép Google Drive; SwiftPlanner Wedding — file kế hoạch cưới; các file Google Sheets khác...).
+Swiftstreet là 1 "store" bán nhiều sản phẩm số nhỏ, độc lập với nhau (ví dụ: SwiftCopy.Drive — công cụ sao chép Google Drive; Swift Wedding Planner — file kế hoạch cưới; các file Google Sheets khác...).
 
 - Mỗi sản phẩm được bán **1 lần duy nhất** (mua đứt, không phải thuê bao).
 - Quy trình: khách chọn sản phẩm → thanh toán → **admin duyệt thanh toán thủ công** → khách nhận file/hướng dẫn sử dụng qua **email**.
@@ -415,10 +415,24 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - Tăng cache-bust `css/style.css?v=39→40`.
   - **Chưa kiểm chứng bằng ảnh chụp thật** (hạn chế môi trường như các vòng trước) — 340px là ước lượng để tổng chiều cao trang ~700-750px, nếu vẫn còn thấy "QUY TRÌNH" thì tăng tiếp con số này.
 
+- ✅ Vòng sửa 41: khách gửi ảnh mẫu cũ (lưới 6 sản phẩm, trước vòng 32) và yêu cầu **khôi phục lại nhiều sản phẩm** với tên/mô tả MỚI, đổi thứ tự, thay 3 sản phẩm cũ bằng 3 sản phẩm mới:
+  1. **SwiftCopy.Drive** (giữ nguyên tên) — mô tả mới: "Công cụ sao chép Google Drive & tải về máy tính tốc độ nhanh chóng". **Giá đổi khác hẳn các sản phẩm còn lại**: hiển thị `"490.000đ (nhiều gói)"` (khớp đúng giá gói Basic cá nhân ở trang Bảng giá vòng 36), KHÔNG còn giá gạch ngang (`priceOld` để rỗng) — vì sản phẩm này giờ có NHIỀU gói (xem `products/swiftcopy-drive-bang-gia.html`), 1 con số giá gốc duy nhất không còn ý nghĩa so sánh.
+  2. **Swift Wedding Planner** (đổi tên từ "SwiftPlanner Wedding", slug đổi `swiftplanner-wedding`→`swift-wedding-planner`) — mô tả mới, giá giữ nguyên 149.000đ/220.000đ.
+  3. **Swift Content Planner** (đổi tên từ "SwiftContent Planner", slug→`swift-content-planner`) — mô tả mới, giá giữ nguyên 90.000đ/200.000đ.
+  4. **Swift Travel Planner** (MỚI, thay thế SwiftTrack Finance) — type `travel` (đổi tên từ `finance` trong `renderDashboard()`, TÁI DÙNG nguyên visual donut+biểu đồ đường, chỉ đổi icon (thêm icon `pin` mới trong `DASH_ICONS`) + đổi nhãn/số liệu thành "Chuyến đi/Địa điểm lưu/Ngân sách"). Giá 79.000đ/150.000đ (tự đặt, khách chưa cho giá cụ thể).
+  5. **Swift Shop Admin** (MỚI, thay thế SwiftOrder Group) — type `shop` (đổi tên từ `order`, TÁI DÙNG nguyên visual bảng đơn hàng, chỉ đổi tiêu đề "Shop Admin"). Giá 129.000đ/220.000đ (tự đặt).
+  6. **Swift Hotel & Homestay Manager** (MỚI, thay thế SwiftHR Attendance) — type `hotel` (đổi tên từ `hr`, TÁI DÙNG nguyên visual donut+bars, thêm icon `building` mới, đổi nhãn/số liệu thành "Phòng đã đặt/Đang dọn phòng/Khách check-in"). Giá 159.000đ/250.000đ (tự đặt).
+  - Slug MỚI dùng kebab-case đầy đủ (`swift-wedding-planner` thay vì `swiftplanner-wedding`...) — CHỈ `swiftcopy-drive` giữ nguyên (đã có trang chi tiết thật, không đổi để tránh vỡ link đang dùng).
+  - **CHỈ `swiftcopy-drive` có trang chi tiết thật** (`products/swiftcopy-drive.html`) — 5 sản phẩm còn lại CHƯA có trang chi tiết, bấm vào ảnh/tên sẽ 404 (giống hệt tình trạng trước vòng 32, KHÔNG phải lỗi mới).
+  - Vì `.product-grid`/`.hero-products .product-grid` có 6 sản phẩm trở lại (không còn `:only-child`), TOÀN BỘ CSS scoped qua pattern `:has(> .product-card:only-child)` xây dựng xuyên suốt vòng 33-40 (canh giữa/phóng to/đồng bộ 700px/340px...) **tự động ngừng áp dụng** — lưới tự quay lại đúng layout nhiều cột gốc (3 cột desktop, 2/1 cột ở màn hẹp) mà KHÔNG cần xoá/sửa gì thêm. Đây chính là lý do đã cố tình dùng `:only-child` xuyên suốt các vòng trước thay vì hard-code — giờ trả về đúng thiết kế nhiều sản phẩm mà không tốn công.
+  - **Khôi phục lại link "Swift Wedding Planner"** (`thanh-toan.html?slug=swift-wedding-planner`) vào cột "Sản phẩm" ở footer trên TOÀN BỘ 13 trang HTML (đã bị gỡ hoàn toàn ở vòng 32) — cột "Sản phẩm" giờ có 3 dòng: SwiftCopy.Drive / Swift Wedding Planner / "Nhiều sản phẩm khác...". 4 sản phẩm còn lại (Content/Travel/Shop/Hotel) KHÔNG có link riêng ở footer, chỉ hiện trong lưới sản phẩm — theo đúng pattern gốc trước vòng 32 (footer chỉ nêu tối đa 2 sản phẩm + link "xem thêm").
+  - Tăng cache-bust `css/style.css?v=40→41`.
+  - **Chưa kiểm chứng bằng ảnh chụp thật** (hạn chế môi trường như các vòng trước) — đặc biệt cần kiểm tra: 6 mini-dashboard mới (travel/shop/hotel) không bị cắt chữ trong khung `.device-display` (đã tái dùng nguyên cấu trúc cũ nên rủi ro thấp, nhưng CHƯA verify trực tiếp), và layout 3 cột tự động khôi phục đúng như ảnh mẫu khách gửi.
+
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
 1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.
-2. Từ vòng sửa 32, `data/products.js` CHỈ còn đúng 1 sản phẩm (SwiftCopy.Drive) — 5 sản phẩm placeholder cũ (SwiftPlanner Wedding, SwiftTrack Finance, SwiftContent Planner, SwiftHR Attendance, SwiftOrder Group) đã bị xoá hoàn toàn, không còn là placeholder trong data nữa. Khi có sản phẩm thật mới: thêm object mới vào `PRODUCTS`, nhân bản `products/swiftcopy-drive.html` cho trang chi tiết, và nếu muốn có link riêng ở footer thì phải TỰ THÊM lại dòng `<li>` tương ứng vào cột "Sản phẩm" ở cả 12 trang HTML (xem mục "Cấu trúc Footer" và vòng sửa 32).
+2. Từ vòng sửa 41, `data/products.js` có lại 6 sản phẩm (SwiftCopy.Drive, Swift Wedding Planner, Swift Content Planner, Swift Travel Planner, Swift Shop Admin, Swift Hotel & Homestay Manager) — nhưng CHỈ SwiftCopy.Drive có trang chi tiết thật (`products/swiftcopy-drive.html`). Cần nhân bản trang này cho 5 sản phẩm còn lại (ưu tiên Swift Wedding Planner — đã có link riêng ở footer, xem mục "Vòng sửa 41" — sau khi có trang thật, đổi link footer từ `thanh-toan.html?slug=swift-wedding-planner` sang trỏ trang chi tiết, giống pattern đã áp dụng cho SwiftCopy.Drive ở vòng 25). Giá của 3 sản phẩm mới (Travel/Shop/Hotel) là do Claude tự đặt tạm (chưa có giá thật từ khách) — cần khách xác nhận/chỉnh lại.
 3. Nối luồng thanh toán thật: nút "Thanh toán" ở `thanh-toan.html`, ô nhập mã voucher (hiện luôn hiển thị "-0đ", chưa trừ tiền thật), và form "Đăng ký" ở trang CTV hiện chưa gửi dữ liệu đi đâu — cần backend (Firebase) để lưu đơn hàng/áp mã/đăng ký CTV thật.
 4. Viết nội dung thật cho trang "Khuyến mãi" và "Kiếm Tiền" (2 trang placeholder ở nav — hiện đã hết khoảng trắng thừa nhưng vẫn chỉ là 1 dòng chữ chờ cập nhật).
 5. Kết nối Firebase Firestore để lưu đơn hàng.

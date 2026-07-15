@@ -10,20 +10,22 @@ const THUMB_SHEET_HTML = '<div class="thumb-sheet"><span></span><span></span><sp
 const DASH_ICONS = {
   folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>',
   heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.2 2 4.5 5.6 4a5 5 0 0 1 6.4 2 5 5 0 0 1 6.4-2c3.6.5 5.2 4.2 3.6 7.7C19.5 16.1 12 21 12 21Z"/></svg>',
-  trend: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>',
   calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
-  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 5 18.5V20M15 6.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM19 20v-1.5a3 3 0 0 0-2-2.8M16 3.7a3 3 0 0 1 0 5.8"/></svg>',
   cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M2.5 3h2l2.3 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H5.5"/></svg>',
+  /** Vòng 41: thêm mới cho Swift Travel Planner (map pin). */
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+  /** Vòng 41: thêm mới cho Swift Hotel & Homestay Manager (nhà/toà nhà). */
+  building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/></svg>',
 };
 
 /** Ánh xạ field `type` của sản phẩm (data/products.js) sang icon tương ứng trong DASH_ICONS. */
 const PRODUCT_TYPE_ICON = {
   drive: "folder",
   wedding: "heart",
-  finance: "trend",
   content: "calendar",
-  hr: "users",
-  order: "cart",
+  travel: "pin",
+  shop: "cart",
+  hotel: "building",
 };
 
 /**
@@ -70,13 +72,13 @@ function renderDashboard(type) {
           </div>
         </div>`;
 
-    case "finance":
+    case "travel":
       return `
-        <div class="dash-title">${DASH_ICONS.trend}<span>Finance Tracker</span></div>
+        <div class="dash-title">${DASH_ICONS.pin}<span>Travel Planner</span></div>
         <div class="dash-stats">
-          <div class="dash-stat"><span>Tổng thu</span><b>125tr</b><em class="up">+19,2%</em></div>
-          <div class="dash-stat"><span>Tổng chi</span><b>78,5tr</b><em class="down">-8,7%</em></div>
-          <div class="dash-stat"><span>Lợi nhuận</span><b>46,5tr</b><em class="up">+22,1%</em></div>
+          <div class="dash-stat"><span>Chuyến đi</span><b>12</b><em class="up">+3</em></div>
+          <div class="dash-stat"><span>Địa điểm lưu</span><b>48</b></div>
+          <div class="dash-stat"><span>Ngân sách</span><b>18,5tr</b><em class="up">72%</em></div>
         </div>
         <div class="dash-row">
           <div class="dash-donut" style="background:conic-gradient(var(--dash-accent) 0 40%, var(--dash-accent-2) 40% 70%, var(--dash-accent-3) 70% 100%)"></div>
@@ -103,25 +105,25 @@ function renderDashboard(type) {
         <div class="dash-calendar">${cells}</div>`;
     }
 
-    case "hr":
+    case "hotel":
       return `
-        <div class="dash-title">${DASH_ICONS.users}<span>HR Attendance</span></div>
+        <div class="dash-title">${DASH_ICONS.building}<span>Hotel &amp; Homestay</span></div>
         <div class="dash-stats">
-          <div class="dash-stat"><span>Đi làm</span><b>47</b><em class="up">81%</em></div>
-          <div class="dash-stat"><span>Vắng mặt</span><b>6</b><em class="down">10%</em></div>
-          <div class="dash-stat"><span>Đi muộn</span><b>5</b><em class="down">9%</em></div>
+          <div class="dash-stat"><span>Phòng đã đặt</span><b>18/24</b><em class="up">75%</em></div>
+          <div class="dash-stat"><span>Đang dọn phòng</span><b>4</b></div>
+          <div class="dash-stat"><span>Khách check-in</span><b>32</b><em class="up">+6</em></div>
         </div>
         <div class="dash-row">
-          <div class="dash-donut" style="background:conic-gradient(var(--dash-accent) 0 81%, var(--dash-accent-3) 81% 100%)"></div>
+          <div class="dash-donut" style="background:conic-gradient(var(--dash-accent) 0 75%, var(--dash-accent-3) 75% 100%)"></div>
           <div class="dash-bars">
             <i style="height:60%"></i><i style="height:80%"></i><i class="muted" style="height:35%"></i>
             <i style="height:90%"></i><i style="height:70%"></i><i style="height:85%"></i><i class="muted" style="height:40%"></i>
           </div>
         </div>`;
 
-    case "order":
+    case "shop":
       return `
-        <div class="dash-title">${DASH_ICONS.cart}<span>Order Management</span></div>
+        <div class="dash-title">${DASH_ICONS.cart}<span>Shop Admin</span></div>
         <div class="dash-stats">
           <div class="dash-stat"><span>Tổng đơn</span><b>235</b></div>
           <div class="dash-stat"><span>Đang xử lý</span><b>68</b></div>
