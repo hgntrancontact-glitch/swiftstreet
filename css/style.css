@@ -902,44 +902,28 @@ p {
   padding: 5px 15px 5px 10px;
 }
 
-/* Đẩy badge "Bán chạy" tràn nhẹ ra ngoài mép trái (`left:-6px` thay vì 9px)
-   để đầu ruy băng bị VIỀN BO GÓC của `.product-card` (border-radius:10px +
-   overflow:hidden) cắt qua — tạo cảm giác "lá cờ cắm ở góc thẻ" giống ảnh
-   mẫu khách gửi, thay vì nằm lọt thỏm hẳn bên trong như badge vàng. */
-.product-thumb .badge-bestseller {
+/* Vòng 55 — SỬA LỖI VỊ TRÍ: "Cập nhật" (`badge-update`) từng xếp CHỒNG dưới
+   badge vàng ở góc phải (vòng 52-54), khiến nó nằm THẤP HƠN hẳn "Bán chạy"
+   (đứng riêng ở góc trái) khi so 2 thẻ cạnh nhau trong lưới — khách chụp ảnh
+   chỉ ra "sai vị trí". Vì `bestSeller`/`updated` KHÔNG BAO GIỜ cùng có mặt
+   trên 1 sản phẩm (xem `data/products.js`), giờ CẢ 2 badge dùng CHUNG đúng 1
+   "vị trí" — góc trái, `top:9px; left:-6px` (tràn nhẹ ra mép, bị viền bo góc
+   `.product-card` cắt qua, xem ghi chú gốc ở dưới) — nên luôn nằm CÙNG ĐỘ CAO
+   bất kể sản phẩm nào đang hiện badge nào. */
+.product-thumb .badge-bestseller,
+.product-thumb .badge-update {
   position: absolute;
   top: 9px;
   left: -6px;
 }
 
-/* Bọc badge vàng + badge "Cập nhật" (nếu có) thành 1 cột canh phải, để 2 badge
-   tự xếp CHỒNG đúng khoảng cách mà không cần tính tay từng mốc top cụ thể. */
-.product-badges-right {
+/* Badge vàng "loại sản phẩm" — giờ đứng RIÊNG 1 mình ở góc phải (không còn
+   bọc trong `.product-badges-right` để xếp chồng với "Cập nhật" như trước,
+   vì "Cập nhật" đã chuyển hẳn sang góc trái ở trên). */
+.product-badge-category {
   position: absolute;
   top: 9px;
   right: 9px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 5px;
-}
-
-/* Vòng 54 — SỬA LỖI: `margin-right:-6px` thêm ở vòng 53 (định đẩy "Cập nhật"
-   tràn ra mép phải giống "Bán chạy") khiến nó bị đẩy LỆCH ra ngoài mép phải
-   của chính badge vàng phía trên (2 badge không còn thẳng hàng phải với
-   nhau — khách phản hồi đúng "2 badge góc phải chồng/lệch nhau"). Bỏ hẳn
-   margin âm này — để `align-items:flex-end` của `.product-badges-right` tự
-   canh 2 badge thẳng mép phải với nhau như bình thường, không cố tình tràn
-   ra ngoài card ở phía này nữa (khác với "Bán chạy" bên trái — trường hợp đó
-   chỉ có 1 badge nên không có rủi ro lệch hàng với badge khác). */
-
-/* Card có badge "Cập nhật" xếp chồng dưới badge vàng (2 tầng, cao hơn 1 badge
-   thường) — tăng padding-top CHỈ cho card đó để không đè lên tiêu đề mini-
-   dashboard bên dưới (cùng nguyên lý lỗi đã ghi ở mục "Lưu ý về kích thước thẻ
-   sản phẩm" trong CLAUDE.md — badge cao hơn phải có padding-top tương ứng). */
-.product-thumb:has(.badge-update) {
-  padding-top: 58px;
 }
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */

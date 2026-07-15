@@ -161,23 +161,26 @@ function renderProductGrid() {
     // 5 sản phẩm chưa có trang chi tiết tạm thời vẫn đi thẳng checkout như cũ.
     const buyHref = CHECKOUT_LINKABLE_SLUGS.includes(p.slug) ? `products/${p.slug}.html` : `thanh-toan.html?slug=${p.slug}`;
     // Vòng 52: 2 badge trang trí MỚI, KHÔNG thay thế badge vàng "loại sản phẩm"
-    // có sẵn (chỉ đổi vị trí sang góc phải) — `bestSeller` (đỏ, góc trái, chỉ
-    // SwiftCopy.Drive) và `updated` (xanh lá, xếp CHỒNG ngay dưới badge vàng ở
-    // góc phải, hiện Swift Wedding Planner + Swift Content Planner) — xem field
-    // tương ứng trong `data/products.js`.
+    // có sẵn (chỉ đổi vị trí sang góc phải) — `bestSeller` (đỏ) và `updated`
+    // (xanh lá) — xem field tương ứng trong `data/products.js`.
     // Vòng 53: đổi icon 🔥 emoji sang SVG "Minimalist Outline" (khách yêu cầu) —
     // hình lửa đơn giản, chỉ có đường viền (stroke), không tô đặc.
+    // Vòng 55 — SỬA LỖI: `updated` từng xếp CHỒNG dưới badge vàng ở góc phải
+    // (vòng 52-54) khiến nó nằm THẤP HƠN hẳn badge "Bán chạy" (vốn đứng riêng
+    // ở góc trái) khi so 2 thẻ cạnh nhau trong lưới — khách phản hồi "sai vị
+    // trí". Vì 2 field `bestSeller`/`updated` KHÔNG BAO GIỜ cùng xuất hiện trên
+    // 1 sản phẩm (dữ liệu hiện tại: chỉ SwiftCopy.Drive có bestSeller, chỉ
+    // Wedding/Content Planner có updated), chuyển `updated` sang dùng CHUNG
+    // đúng 1 "vị trí" góc trái với `bestSeller` — giờ 2 badge này luôn nằm
+    // cùng độ cao trên mọi thẻ, không còn lệch tầng nữa.
     const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C8 8 6 11 6 14a6 6 0 0 0 12 0c0-3-2-6-6-11Z"/></svg>Bán chạy</span>` : "";
     const updatedHTML = p.updated ? `<span class="badge badge-update">Cập nhật</span>` : "";
     return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
-          ${bestSellerHTML}
-          <div class="product-badges-right">
-            <span class="badge badge-orange">${p.badge}</span>
-            ${updatedHTML}
-          </div>
+          ${bestSellerHTML}${updatedHTML}
+          <span class="badge badge-orange product-badge-category">${p.badge}</span>
           <div class="device-screen">
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>

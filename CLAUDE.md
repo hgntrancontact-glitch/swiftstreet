@@ -546,6 +546,13 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - Tăng cache-bust `css/style.css?v=54→55`, `js/main.js?v=54→55`, `data/products.js?v=54→55` trên toàn bộ 16 trang HTML.
   - **Chưa kiểm chứng bằng ảnh chụp thật lần nữa sau khi sửa** — cần khách xác nhận: (a) "Cập nhật" giờ có nhìn ra shape ruy băng rõ ràng như "Bán chạy" chưa (nếu vẫn mờ, có thể cần tăng 12px lên số lớn hơn); (b) 2 badge góc phải đã thẳng hàng mép phải, hết chồng/lệch chưa.
 
+- ✅ Vòng sửa 55: khách gửi ảnh chụp zoom 2 thẻ (SwiftCopy.Drive + Wedding Planner) lần nữa, chỉ ra "BÁN CHẠY/CẬP NHẬT CẦN ĐẶT ĐÚNG VỊ TRÍ" — xác định đúng nguyên nhân bằng cách so sánh độ cao 2 badge giữa 2 thẻ: "Bán chạy" (đứng riêng 1 mình ở góc trái) nằm CAO HƠN "Cập nhật" (xếp chồng dưới badge vàng ở góc phải, vòng 52-54) — 2 badge trạng thái đặc biệt này không nằm cùng độ cao khi so sánh các thẻ cạnh nhau trong lưới, tạo cảm giác "sai vị trí".
+  - **Nhận ra**: `bestSeller` và `updated` KHÔNG BAO GIỜ cùng xuất hiện trên 1 sản phẩm (dữ liệu hiện tại: chỉ SwiftCopy.Drive có `bestSeller`, chỉ Wedding/Content Planner có `updated`) — nên về mặt thiết kế, 2 badge này thực chất chiếm CÙNG 1 "vị trí/vai trò" (nhãn trạng thái đặc biệt), chỉ khác nhau ở SẢN PHẨM nào đang hiện. Quyết định: chuyển "Cập nhật" sang dùng CHUNG đúng vị trí góc trái với "Bán chạy" (`top:9px; left:-6px`, cùng hiệu ứng tràn mép bị viền bo góc thẻ cắt qua) thay vì xếp chồng dưới badge vàng ở góc phải.
+  - **Badge vàng "loại sản phẩm"** giờ đứng RIÊNG 1 mình ở góc phải (`top:9px; right:9px`, class mới `.product-badge-category`) — bỏ hẳn wrapper `.product-badges-right` (không còn cần bọc flex-column để xếp chồng 2 badge nữa, vì "Cập nhật" đã chuyển hẳn sang góc trái).
+  - **Bỏ luôn `.product-thumb:has(.badge-update) { padding-top: 58px }`** (thêm ở vòng 52, tăng thêm padding cho card có badge Cập nhật vì trước đó nó xếp CHỒNG 2 tầng cao hơn bình thường) — không còn cần thiết vì "Cập nhật" giờ chỉ còn 1 tầng (giống hệt "Bán chạy"), mọi card dùng chung `padding-top: 30px` mặc định.
+  - Tăng cache-bust `css/style.css?v=55→56`, `js/main.js?v=55→56`, `data/products.js?v=55→56` trên toàn bộ 16 trang HTML.
+  - **Chưa kiểm chứng bằng ảnh chụp thật lần nữa sau khi sửa** — cần khách xác nhận: (a) "Bán chạy" và "Cập nhật" giờ đã nằm ĐÚNG cùng 1 độ cao (góc trái) trên các thẻ tương ứng; (b) padding-top mặc định 30px đã đủ cho thẻ "Cập nhật" không bị đè lên tiêu đề mini-dashboard bên dưới (rủi ro thấp hơn trước vì giờ chỉ còn 1 tầng badge, không còn 2 tầng như vòng 52-54).
+
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
 1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.
