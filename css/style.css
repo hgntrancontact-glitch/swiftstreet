@@ -234,18 +234,20 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — vòng 61 SỬA LỖI: `left:0` (vòng 57-60) canh theo mép TRÁI của
-   `.product-thumb`, nhưng `.device-screen` (khung mockup đen) thật ra cách
-   mép đó 16px (do `.product-thumb` có `padding-left:16px`) — khiến badge
-   tràn vượt qua viền TRÁI màn hình máy tính ra ngoài, khách chỉ rõ "không
-   vượt qua viền màn hình bên trái". Đổi `left:0→16px` để khớp ĐÚNG mép trái
-   thật của `.device-screen` — badge giờ đè lên màn hình (nhờ `top:18px` có
-   sẵn từ vòng 60) nhưng không tràn ra ngoài viền trái của nó. */
+/* "Bán chạy" — vòng 63 SỬA LỖI (thay thế vòng 57-61): khách xác nhận rõ badge
+   phải nằm HẲN BÊN TRONG khung mockup đen (không đè/tràn qua viền như vòng
+   57-61 làm), bo góc khớp ĐỘ CONG CỦA CHÍNH khung đen (`.device-screen`,
+   8px) chứ không phải độ cong `.product-card` (10px). `.device-screen` giờ
+   có padding-top 30px (bezel dày hơn, xem phía trên) — `.device-screen` bắt
+   đầu ở y≈30px (product-thumb padding-top không đổi) nên badge đặt ở
+   `top:34px` (cách mép trên khung mockup 4px, nằm gọn trong bezel) và
+   `left:20px` (cách mép trái khung mockup 4px, do khung mockup bắt đầu ở
+   x≈16px). */
 .badge-bestseller {
   position: absolute;
-  top: 18px;
-  left: 16px;
-  border-radius: 10px 0 0 0;
+  top: 34px;
+  left: 20px;
+  border-radius: 8px 0 0 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
@@ -254,11 +256,12 @@ p {
    vòng 57-60) — vì giờ "Cập nhật" nằm SÁT ngay dưới nhãn danh mục (không có
    khoảng cách, xem `gap:0` ở `.product-badges-right` bên dưới), 2 nhãn ghép
    lại tạo thành 1 khối liền mạch: danh mục bo góc TRÊN-phải, "Cập nhật" bo
-   góc DƯỚI-phải — giống 1 viên "capsule" 2 màu xếp chồng khít nhau. Đổi
-   `border-radius: 0 10px 0 0` (trên-phải) → `0 0 10px 0` (dưới-phải).
+   góc DƯỚI-phải — giống 1 viên "capsule" 2 màu xếp chồng khít nhau.
+   Vòng 63: border-radius đổi 10px→8px (khớp độ cong `.device-screen`, cùng
+   lý do với "Bán chạy" — xem ghi chú trên).
    Vòng 58: nền GRADIENT ngang theo đúng 2 mã màu khách chỉ định. */
 .badge-update {
-  border-radius: 0 0 10px 0;
+  border-radius: 0 0 8px 0;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -940,11 +943,14 @@ p {
    máy tính".
    Vòng 61: đổi `gap:4px→0` — khách yêu cầu "Cập nhật" nằm SÁT nhãn danh mục
    (không có khoảng cách), 2 nhãn ghép liền thành 1 khối — xem cách bo góc
-   MIRROR (trên/dưới) đã đổi tương ứng ở `.badge-update`. */
+   MIRROR (trên/dưới) đã đổi tương ứng ở `.badge-update`.
+   Vòng 63: đổi `top:18px→34px`, `right:16px→20px` — khớp đúng vị trí "Bán
+   chạy" mới, để cả nhãn danh mục lẫn "Cập nhật" nằm HẲN bên trong bezel đen
+   của khung mockup (không đè/tràn qua viền như thiết kế vòng 57-61). */
 .product-badges-right {
   position: absolute;
-  top: 18px;
-  right: 16px;
+  top: 34px;
+  right: 20px;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -967,10 +973,17 @@ p {
    stretch, đảm bảo nhãn danh mục luôn thẳng 1 đường ngang trên toàn lưới. */
 
 /* ===== Khung "laptop": bọc mini-dashboard mô phỏng giao diện sản phẩm ===== */
+/* Vòng 63: khách xác nhận LẠI rõ ràng (sau khi bác bỏ bản thực thi ở vòng 62)
+   rằng Ý ĐỊNH "badge nằm HẲN bên trong khung mockup, bo góc khớp độ cong
+   khung đen" là ĐÚNG — chỉ là cách làm ở vòng 62 (tăng padding-top lên 34px
+   + giảm `.product-thumb` xuống 10px) chưa ổn. Lần này tăng padding-top vừa
+   phải hơn (4px→30px, GIỮ NGUYÊN `.product-thumb` ở 30px như cũ, không giảm)
+   — tạo đủ chỗ cho badge nằm trong bezel đen mà không đổi quá nhiều tỷ lệ
+   tổng thể của thẻ so với thiết kế gốc. */
 .device-screen {
   background: #3b3b3d;
   border-radius: 8px 8px 3px 3px;
-  padding: 4px 4px 6px;
+  padding: 30px 4px 6px;
   box-shadow: 0 8px 16px rgba(20, 20, 20, 0.1);
 }
 
