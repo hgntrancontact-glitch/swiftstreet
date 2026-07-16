@@ -147,7 +147,7 @@ async function kiemTra1Ma(ma, email) {
 }
 
 /** POST { ma: ["SSGIFT28", "SALE10"], email, tamTinh } -> [{ma, hopLe, lyDo?, giam?}] */
-const kiemTraVoucher = onRequest({ cors: true }, async (req, res) => {
+const kiemTraVoucher = onRequest({ cors: true, invoker: "public" }, async (req, res) => {
   cors(req, res, async () => {
     try {
       const { ma, email, tamTinh } = req.body || {};
@@ -205,7 +205,7 @@ async function sinhMaDonHangDuyNhat() {
  */
 
 /** GIAI ĐOẠN 1 — POST { sanPham: [{slug, tenGoi, gia}] } -> { maDon, qrUrl, tamTinh } */
-const taoDonHangNhap = onRequest({ cors: true }, async (req, res) => {
+const taoDonHangNhap = onRequest({ cors: true, invoker: "public" }, async (req, res) => {
   cors(req, res, async () => {
     try {
       const { sanPham } = req.body || {};
@@ -244,7 +244,7 @@ const taoDonHangNhap = onRequest({ cors: true }, async (req, res) => {
  * GIAI ĐOẠN 2 — POST { maDon, khach: {ten, sdt, email}, maVoucher: ["..."], ctvId }
  * -> { maDon, qrUrl, tamTinh, tongGiam, thanhTien, breakdown }
  */
-const xacNhanThanhToan = onRequest({ cors: true, secrets: [TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_CHAT_IDS] }, async (req, res) => {
+const xacNhanThanhToan = onRequest({ cors: true, invoker: "public", secrets: [TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_CHAT_IDS] }, async (req, res) => {
   cors(req, res, async () => {
     try {
       const { maDon, khach, maVoucher, ctvId } = req.body || {};
@@ -260,7 +260,7 @@ const xacNhanThanhToan = onRequest({ cors: true, secrets: [TELEGRAM_BOT_TOKEN, T
         return res.status(409).json({ error: "Đơn hàng này đã được xử lý trước đó." });
       }
 
-      const { sanPham } = donHang;
+      const sanPham = donHang.san_pham;
       const tamTinh = donHang.tam_tinh;
 
       // Kiểm tra lại voucher SERVER-SIDE (không tin dữ liệu breakdown gửi từ client) —
@@ -331,7 +331,7 @@ const xacNhanThanhToan = onRequest({ cors: true, secrets: [TELEGRAM_BOT_TOKEN, T
 
 // ---------- Webhook Telegram (nút Duyệt/Từ chối) ----------
 
-const telegramWebhook = onRequest({ secrets: [TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_CHAT_IDS, AUTOMATION_CONTROLLER_SECRET] }, async (req, res) => {
+const telegramWebhook = onRequest({ invoker: "public", secrets: [TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_CHAT_IDS, AUTOMATION_CONTROLLER_SECRET] }, async (req, res) => {
   try {
     const update = req.body;
     const cq = update.callback_query;
@@ -474,7 +474,7 @@ function bamMaQuanLy(maGoc) {
 }
 
 /** POST { ten, email, sdt } -> tạo document chờ duyệt. */
-const dangKyCTV = onRequest({ cors: true }, async (req, res) => {
+const dangKyCTV = onRequest({ cors: true, invoker: "public" }, async (req, res) => {
   cors(req, res, async () => {
     try {
       const { ten, email, sdt } = req.body || {};
@@ -493,7 +493,7 @@ const dangKyCTV = onRequest({ cors: true }, async (req, res) => {
 });
 
 /** POST { id, maCTV } (id = document trong ctv_cho_duyet, maCTV = mã hiển thị vd "CTV0042") — CHỈ admin gọi (gọi từ dashboard Khu C đã xác thực admin riêng). */
-const duyetCTV = onRequest({ cors: true }, async (req, res) => {
+const duyetCTV = onRequest({ cors: true, invoker: "public" }, async (req, res) => {
   cors(req, res, async () => {
     try {
       const { id, maCTV } = req.body || {};
@@ -529,7 +529,7 @@ const duyetCTV = onRequest({ cors: true }, async (req, res) => {
 });
 
 /** POST { maQuanLy } -> { customToken } để client tự firebase.auth().signInWithCustomToken(...) */
-const dangNhapCTV = onRequest({ cors: true }, async (req, res) => {
+const dangNhapCTV = onRequest({ cors: true, invoker: "public" }, async (req, res) => {
   cors(req, res, async () => {
     try {
       const { maQuanLy } = req.body || {};
