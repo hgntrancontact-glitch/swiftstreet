@@ -244,14 +244,16 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — đặt trong vùng đệm sáng màu quanh khung mockup (top/left nhỏ,
-   trong phạm vi padding-top:30px/padding-left:16px của `.product-thumb`), chỉ
-   tràn nhẹ xuống góc khung mockup thay vì đè sâu lên hẳn nội dung bên trong như
-   thiết kế cũ — giống đúng cách đối thủ đặt nhãn ở ảnh tham khảo. */
+/* Vòng 79: khách yêu cầu rõ "Bán chạy" nằm HẲN BÊN TRONG khung mockup (không
+   tràn ra vùng đệm sáng bên ngoài như vòng 77/78 nữa) — `top:38px; left:24px`
+   đặt nó lọt hẳn vào bên trong `.device-screen` (bắt đầu ở y≈30px/x≈16px), đủ
+   khoảng cách để không chạm/tràn qua viền khung. Vì shape giờ là pill tròn đều
+   + bóng đổ (vòng 77), nằm sâu bên trong không còn rủi ro lộ viền như thiết kế
+   cũ (bo góc bất đối xứng phải khớp chính xác đường cong mới bị lỗi). */
 .badge-bestseller {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 38px;
+  left: 24px;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
@@ -919,14 +921,12 @@ p {
 /* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải — badge
    danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó không phụ thuộc "Cập
    nhật" có tồn tại hay không.
-   Vòng 78 — HUỶ vị trí vòng 77: khách yêu cầu rõ đưa nhãn danh mục về ĐÚNG VỊ
-   TRÍ CŨ "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66), "Cập nhật"
-   nằm ngay dưới nó. Giữ nguyên `gap:6px` (không phải 0) — dù chỉ được yêu cầu
-   đổi vị trí, KHÔNG đổi shape/gap, nhưng ép 2 pill bo tròn đều (999px, đổi ở
-   vòng 77) dính sát gap:0 sẽ lộ lại đúng kiểu khe hở đã gặp (2 cặp góc tròn
-   đối nhau tại điểm nối, thay vì 1 cặp như thiết kế cũ) — giữ khoảng cách nhỏ
-   để "Cập nhật" vẫn đọc rõ là nằm NGAY DƯỚI nhãn danh mục mà không tái phát
-   lỗi lộ viền. */
+   Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ CŨ "đè lên mockup" (`top:18px;
+   right:16px`, như vòng 65/66).
+   Vòng 79: khách yêu cầu "Cập nhật" xê dịch LÊN, nằm SÁT nhãn danh mục hơn —
+   giảm `gap:6px→2px` (không về hẳn 0 để vẫn còn 1 khoảng đệm rất nhỏ chống lộ
+   viền nếu 2 pill khác chiều rộng, nhưng đủ sát để đọc là "dính liền" như yêu
+   cầu). */
 .product-badges-right {
   position: absolute;
   top: 18px;
@@ -935,7 +935,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 2px;
 }
 
 .product-badges-right .badge {
