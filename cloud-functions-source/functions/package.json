@@ -1,0 +1,12 @@
+{
+  "name": "swiftstreet-functions",
+  "description": "Cloud Functions cho Swiftstreet Project B (voucher, đơn hàng, Telegram, CTV) — xem docs/setup/02-cloud-functions.md để biết cách deploy.",
+  "engines": { "node": "24" },
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "firebase-admin": "^13.10.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "private": true
+}

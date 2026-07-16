@@ -2434,6 +2434,66 @@ p {
   border-color: var(--color-orange);
 }
 
+/* Nhiều dòng mã voucher (1-3 mã, prompt cuối Phần 2) — mỗi dòng 1 ô nhập + nút "Áp dụng"
+   riêng, hiện breakdown/lỗi RIÊNG từng mã ngay bên dưới thay vì gộp chung 1 kết quả. */
+.voucher-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voucher-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.voucher-row .voucher-input {
+  flex: 1;
+}
+
+.voucher-apply-btn {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 0 14px;
+  border: 1px solid var(--color-black);
+  border-radius: 8px;
+  background: var(--color-black);
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.voucher-apply-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.voucher-feedback {
+  flex-basis: 100%;
+  width: 100%;
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.voucher-feedback.is-success { color: var(--color-success, #2e7d52); }
+.voucher-feedback.is-error { color: var(--color-error, #c94b3f); }
+.voucher-feedback.is-muted { color: var(--text-muted); }
+
+.voucher-add-btn {
+  margin-top: 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-orange-dark, var(--color-orange));
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 .summary-total-row {
   border-top: 1px solid var(--border-color);
   margin-top: 4px;
@@ -3417,5 +3477,161 @@ p {
 
   .support-fab .fab-label {
     display: none;
+  }
+}
+
+/* ---------- Trang "Cảm ơn bạn đã đặt hàng" (vòng 69) ---------- */
+
+.invoice-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.invoice-check-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.invoice-check-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.invoice-heading {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.invoice-sub {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 440px;
+}
+
+.invoice-meta {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 380px;
+}
+
+.invoice-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.invoice-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 440px;
+}
+
+.invoice-box {
+  background: var(--color-white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.invoice-products {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.invoice-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.invoice-voucher-row {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.invoice-customer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.invoice-customer h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.invoice-customer p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  margin: 6px 0;
+  gap: 12px;
+}
+
+.invoice-customer p span {
+  color: var(--text-muted);
+}
+
+#invoice-empty {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+#invoice-empty .btn {
+  margin-top: 16px;
+}
+
+@media (max-width: 860px) {
+  .invoice-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .site-header,
+  .site-footer,
+  .support-fab,
+  .breadcrumb,
+  .invoice-col-left {
+    display: none !important;
+  }
+
+  .invoice-grid {
+    display: block;
+  }
+
+  .invoice-box {
+    border: none;
+    padding: 0;
   }
 }

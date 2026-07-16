@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cảm ơn bạn đã đặt hàng — Swiftstreet</title>
+  <meta name="description" content="Đơn hàng của bạn đã được ghi nhận và đang chờ admin xác nhận." />
+
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css?v=71" />
+</head>
+<body>
+
+  <div id="site-header-mount"></div>
+
+  <div class="checkout-container">
+    <div class="breadcrumb">
+      <a href="index.html">Trang chủ</a> / Cảm ơn bạn đã đặt hàng
+    </div>
+  </div>
+
+  <section class="section checkout-section">
+    <div class="checkout-container">
+      <div id="invoice-loaded" style="display:none;">
+        <div class="invoice-grid">
+          <div class="invoice-col-left">
+            <div class="invoice-check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+            </div>
+            <h1 class="invoice-heading">Cảm ơn bạn đã đặt hàng!</h1>
+            <p class="invoice-sub">Đơn hàng của bạn đã được ghi nhận. Admin sẽ kiểm tra chuyển khoản và gửi file + hướng dẫn sử dụng qua email trong thời gian sớm nhất.</p>
+
+            <div class="invoice-meta">
+              <div class="invoice-meta-row">
+                <span>Mã đơn hàng</span>
+                <strong id="invoice-order-code">—</strong>
+              </div>
+              <div class="invoice-meta-row">
+                <span>Trạng thái</span>
+                <span class="badge badge-info">Đang chờ admin duyệt</span>
+              </div>
+            </div>
+
+            <div class="invoice-actions">
+              <button type="button" class="btn btn-outline" id="invoice-print-btn">In hoá đơn</button>
+              <a href="index.html" class="btn btn-dark">Về trang chủ</a>
+            </div>
+
+            <p class="invoice-note">
+              Cần hỗ trợ? Liên hệ SĐT/Zalo <a href="#" data-modal="support">0909 821 702</a> — vui lòng cung cấp mã đơn hàng ở trên để được xử lý nhanh hơn.
+            </p>
+          </div>
+
+          <div class="invoice-col-right">
+            <div class="invoice-box" id="invoice-print-area">
+              <h3 class="checkout-subheading">Hoá đơn</h3>
+
+              <div class="invoice-products" id="invoice-products"></div>
+
+              <div class="summary-group">
+                <div class="summary-row"><span>Tổng tiền</span><span id="invoice-subtotal">0đ</span></div>
+                <div class="summary-row" id="invoice-discount-row" style="display:none;">
+                  <span>Khuyến mãi</span>
+                  <span id="invoice-discount" class="discount-value">-0đ</span>
+                </div>
+              </div>
+              <div id="invoice-voucher-list"></div>
+              <div class="summary-row summary-total-row"><span>Cần thanh toán</span><span id="invoice-total" class="total-amount">0đ</span></div>
+
+              <div class="invoice-customer">
+                <h4>Thông tin khách hàng</h4>
+                <p><span>Họ tên</span><strong id="invoice-khach-ten">—</strong></p>
+                <p><span>Số điện thoại</span><strong id="invoice-khach-sdt">—</strong></p>
+                <p><span>Email nhận file</span><strong id="invoice-khach-email">—</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="invoice-empty">
+        <p>Không tìm thấy thông tin đơn hàng vừa đặt (có thể bạn đã tải lại trang, hoặc mở trực tiếp link này). Nếu bạn vừa thanh toán, vui lòng kiểm tra email hoặc liên hệ hỗ trợ để được xác nhận.</p>
+        <a href="index.html" class="btn btn-dark">Về trang chủ</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer-mount"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js?v=71"></script>
+  <script src="js/firestore-content.js?v=71"></script>
+  <script src="js/main.js?v=71"></script>
+  <script>
+    (function () {
+      function formatVND(n) {
+        return (n || 0).toLocaleString("vi-VN") + "đ";
+      }
+
+      var raw = sessionStorage.getItem("swiftstreet_last_order");
+      var loadedEl = document.getElementById("invoice-loaded");
+      var emptyEl = document.getElementById("invoice-empty");
+      if (!raw) {
+        emptyEl.style.display = "block";
+        return;
+      }
+
+      var data;
+      try {
+        data = JSON.parse(raw);
+      } catch (e) {
+        emptyEl.style.display = "block";
+        return;
+      }
+
+      loadedEl.style.display = "block";
+      emptyEl.style.display = "none";
+      sessionStorage.removeItem("swiftstreet_last_order"); // chỉ đọc được 1 lần, tránh hiện lại đơn cũ nếu khách quay lại trang này sau
+
+      document.getElementById("invoice-order-code").textContent = data.maDon || "—";
+      document.getElementById("invoice-khach-ten").textContent = (data.khach && data.khach.ten) || "—";
+      document.getElementById("invoice-khach-sdt").textContent = (data.khach && data.khach.sdt) || "—";
+      document.getElementById("invoice-khach-email").textContent = (data.khach && data.khach.email) || "—";
+
+      var productsEl = document.getElementById("invoice-products");
+      (data.sanPham || []).forEach(function (sp) {
+        var row = document.createElement("div");
+        row.className = "invoice-product-row";
+        row.innerHTML = "<span>" + sp.name + "</span><span>" + formatVND(sp.price) + "</span>";
+        productsEl.appendChild(row);
+      });
+
+      document.getElementById("invoice-subtotal").textContent = formatVND(data.tamTinh);
+      document.getElementById("invoice-total").textContent = formatVND(data.thanhTien);
+
+      if (data.tongGiam > 0) {
+        document.getElementById("invoice-discount-row").style.display = "flex";
+        document.getElementById("invoice-discount").textContent = "-" + formatVND(data.tongGiam);
+      }
+
+      var voucherListEl = document.getElementById("invoice-voucher-list");
+      (data.breakdown || []).forEach(function (b) {
+        var row = document.createElement("div");
+        row.className = "summary-row invoice-voucher-row";
+        row.innerHTML = "<span>Mã " + b.ma + "</span><span>-" + formatVND(b.giam) + "</span>";
+        voucherListEl.appendChild(row);
+      });
+
+      var printBtn = document.getElementById("invoice-print-btn");
+      if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
+    })();
+  </script>
+</body>
+</html>

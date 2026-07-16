@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập — Swiftstreet Admin</title>
+  <link rel="stylesheet" href="css/dashboard.css?v=1" />
+</head>
+<body class="login-body">
+  <form class="login-card" id="login-form">
+    <h1>Swiftstreet Admin</h1>
+    <p class="login-sub">Dashboard quản lý sản phẩm / CTV / đơn hàng / thông báo — Khu C (tách biệt, không liên kết với site công khai).</p>
+
+    <div class="login-note">
+      ⚠️ CHƯA nối Firebase Auth thật — form này hiện chỉ là khung giao diện. Bấm "Đăng nhập"
+      sẽ vào thẳng dashboard (bỏ qua xác thực) cho tới khi Project B thật được cấu hình.
+    </div>
+
+    <label>Email
+      <input type="email" id="login-email" placeholder="admin@swiftstreet.vn" required />
+    </label>
+    <label>Mật khẩu
+      <input type="password" id="login-password" placeholder="••••••••" required />
+    </label>
+    <button type="submit" class="btn-primary">Đăng nhập</button>
+  </form>
+
+  <script src="js/dashboard-auth.js?v=1"></script>
+</body>
+</html>

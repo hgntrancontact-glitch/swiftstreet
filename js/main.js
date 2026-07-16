@@ -38,6 +38,202 @@ function getRootPrefix() {
   return path.includes("/products/") || path.includes("/footer-pages/") ? "../" : "";
 }
 
+/**
+ * Bắt mã giới thiệu CTV (`?ref=CTV0042`) ngay khi trang tải — vd khách bấm vào link CTV
+ * chia sẻ, link dẫn về `index.html?ref=CTV0042` hoặc thẳng 1 trang sản phẩm. Lưu vào
+ * `sessionStorage` (KHÔNG dùng cookie dài hạn — đúng thiết kế đã chốt, xem
+ * docs/firestore/03b-ctv-auth-phuong-an-b.md mục "2 cách kiếm hoa hồng", cách (a)): chỉ
+ * tính công nếu khách THANH TOÁN TRONG CÙNG PHIÊN TRUY CẬP đó — đóng hết tab/mở lại bằng
+ * link thường (không `?ref=`) thì phiên mới, không còn mã, không tính công.
+ */
+const REF_CTV_STORAGE_KEY = "swiftstreet_ref_ctv";
+
+function luuMaGioiThieuTuUrl() {
+  const ref = new URLSearchParams(location.search).get("ref");
+  if (!ref) return;
+  try {
+    sessionStorage.setItem(REF_CTV_STORAGE_KEY, ref);
+  } catch (e) {
+    /* sessionStorage có thể bị chặn (vd chế độ duyệt riêng tư khắt khe) — bỏ qua, không vỡ trang */
+  }
+}
+
+/** Đọc lại mã giới thiệu đã lưu — gọi lúc tạo đơn hàng thật (`taoDonHang`) để gắn `ctvId`. */
+function layMaGioiThieuDaLuu() {
+  try {
+    return sessionStorage.getItem(REF_CTV_STORAGE_KEY);
+  } catch (e) {
+    return null;
+  }
+}
+
+luuMaGioiThieuTuUrl(); // chạy ngay khi file này load, không chờ DOMContentLoaded
+
+/**
+ * Header/footer/support-fab dùng chung — vòng "database hoá" (Phần 8): trước đây HTML của
+ * 3 khối này được COPY-PASTE y hệt vào từng trang (~12 file), khiến mỗi lần đổi nội dung
+ * (vd thêm cột footer, đổi link sản phẩm...) phải sửa tay từng file — đã gây lỗi thực tế 2
+ * lần (bỏ sót trang khi xoá/thêm sản phẩm). Giờ mỗi trang HTML chỉ còn 2 mount point rỗng
+ * (`#site-header-mount`/`#site-footer-mount`), nội dung thật dựng ở đây rồi thay thế bằng
+ * `outerHTML` ngay khi tải trang — sửa nội dung chỉ cần sửa 3 hàm này, không đụng HTML nữa.
+ */
+const NAV_LINKS = [
+  { href: "index.html", label: "Trang chủ" },
+  { href: "san-pham.html", label: "Sản phẩm" },
+  { href: "khuyen-mai.html", label: "Khuyến mãi" },
+  { href: "kiem-tien.html", label: "Kiếm Tiền" },
+];
+
+/**
+ * Mục nào trong menu đang được xem — tự tính theo URL thay vì phải nhớ gắn tay
+ * `class="active"` ở từng trang HTML mới nhân bản (rủi ro đã ghi trong CLAUDE.md).
+ * `index.html` cố ý không có mục nào active (đúng yêu cầu khách từ đầu dự án).
+ */
+function getActiveNavHref() {
+  const path = location.pathname;
+  if (path.includes("/products/")) return "san-pham.html";
+  if (/san-pham\.html$/.test(path)) return "san-pham.html";
+  if (/khuyen-mai\.html$/.test(path)) return "khuyen-mai.html";
+  if (/kiem-tien\.html$/.test(path)) return "kiem-tien.html";
+  return null;
+}
+
+function renderHeaderHTML() {
+  const prefix = getRootPrefix();
+  const activeHref = getActiveNavHref();
+  const navHTML = NAV_LINKS.map(
+    (item) => `<a href="${prefix}${item.href}"${activeHref === item.href ? ' class="active"' : ""}>${item.label}</a>`
+  ).join("\n        ");
+
+  return `
+  <header class="site-header">
+    <div class="container">
+      <a href="${prefix}index.html" class="brand">
+        <img src="${prefix}assets/img/logo-header.png" alt="Swiftstreet" />
+        <span>Swiftstreet</span>
+      </a>
+
+      <nav class="main-nav">
+        ${navHTML}
+      </nav>
+
+      <div class="header-actions">
+        <div class="notify-wrap">
+          <button class="icon-btn" aria-label="Thông báo" id="notify-trigger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          </button>
+          <div class="notify-dropdown" id="notify-dropdown">
+            <div class="notify-dropdown-head">Thông báo</div>
+            <div class="notify-dropdown-list" id="notify-dropdown-list"></div>
+          </div>
+        </div>
+        <a class="icon-btn" aria-label="Giỏ hàng" href="${prefix}thanh-toan.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M2.5 3h2l2.3 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H5.5"/></svg>
+          <span class="icon-dot"></span>
+        </a>
+        <button class="nav-toggle" aria-label="Mở menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>`;
+}
+
+function renderFooterHTML() {
+  const prefix = getRootPrefix();
+  const year = new Date().getFullYear();
+  return `
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="${prefix}index.html" class="brand">
+            <img src="${prefix}assets/img/logo-header.png" alt="Swiftstreet" />
+            <span>Swiftstreet</span>
+          </a>
+          <p>Cửa hàng công cụ &amp; file số nhỏ gọn, giúp công việc của bạn nhanh và gọn hơn mỗi ngày.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Giới thiệu</h4>
+          <ul>
+            <li><a href="${prefix}footer-pages/ve-chung-toi.html">Về chúng tôi</a></li>
+            <li><a href="${prefix}footer-pages/cau-hoi-thuong-gap.html">Câu hỏi thường gặp</a></li>
+            <li><a href="${prefix}footer-pages/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sản phẩm</h4>
+          <ul>
+            <li><a href="${prefix}products/swiftcopy-drive.html">SwiftCopy.Drive</a></li>
+            <li><a href="${prefix}thanh-toan.html?slug=swift-wedding-planner">Swift Wedding Planner</a></li>
+            <li><a href="${prefix}san-pham.html">Nhiều sản phẩm khác...</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Hỗ trợ</h4>
+          <ul>
+            <li><a href="${prefix}footer-pages/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></li>
+            <li><a href="${prefix}footer-pages/chinh-sach-doi-tra.html">Chính sách đổi trả</a></li>
+            <li><a href="${prefix}footer-pages/kiem-tien-ctv.html">Kiếm tiền CTV</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col footer-contact">
+          <h4>Liên hệ</h4>
+          <p class="footer-email">hgntran.contact@gmail.com</p>
+          <p class="footer-zalo-label">Quét mã Zalo kết nối</p>
+          <div class="footer-qr">
+            <img src="${prefix}assets/img/zalo-qr.png" alt="Mã QR Zalo Swiftstreet" />
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span class="footer-copy">© ${year} Swiftstreet. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/swiftstreet.vn/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.16 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.78 8.44-4.94 8.44-9.94Z"/></svg></a>
+          <a href="https://www.tiktok.com/@by.swiftstreet?lang=en" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 2h-3v13.6a3 3 0 1 1-2.6-2.98v-3.1a6 6 0 1 0 5.6 5.98V9.1a7.5 7.5 0 0 0 4.4 1.4V7.4A4.5 4.5 0 0 1 16.5 2Z"/></svg></a>
+          <a href="#" data-platform-dev="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" data-platform-dev="Threads" aria-label="Threads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.2c-4.6 0-7.3 2.9-7.3 7.4v2.8c0 4.3 2.6 7.4 7.3 7.4 4.2 0 6.7-2.2 6.7-5.6 0-2.6-1.6-4-4-4-2.1 0-3.6 1.1-3.6 2.7 0 1.2 1 2.1 2.3 2.1.9 0 1.7-.4 2.1-1.1"/></svg></a>
+          <a href="#" data-platform-dev="YouTube" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="4" stroke="currentColor" stroke-width="1.8"/><path d="M10 9l5 3-5 3V9Z" fill="currentColor"/></svg></a>
+        </div>
+        <span class="footer-made">Made with care in Vietnam</span>
+      </div>
+    </div>
+  </footer>`;
+}
+
+function renderSupportFabHTML() {
+  return `
+    <div class="support-fab-menu" id="support-fab-menu">
+      <button type="button" data-modal="support">Hỗ trợ</button>
+      <button type="button" data-modal="faq">FAQ</button>
+      <button type="button" data-report-bug>Báo lỗi</button>
+    </div>
+    <button class="support-fab-trigger" aria-label="Hỗ trợ" id="support-fab-trigger">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2" y="13" width="5" height="7" rx="2"/><rect x="17" y="13" width="5" height="7" rx="2"/></svg>
+      <span class="fab-label">Hỗ trợ</span>
+    </button>`;
+}
+
+/** Chèn header/footer/support-fab thật vào 2 mount point + body — PHẢI chạy TRƯỚC mọi
+ * hàm setup khác (setupNavToggle/setupModals/setupSupportFab/setupNotifyDropdown...) vì
+ * chúng query thẳng vào các phần tử nằm bên trong 3 khối này. */
+function renderSiteChrome() {
+  const headerMount = document.getElementById("site-header-mount");
+  if (headerMount) headerMount.outerHTML = renderHeaderHTML();
+
+  const footerMount = document.getElementById("site-footer-mount");
+  if (footerMount) footerMount.outerHTML = renderFooterHTML();
+
+  if (!document.querySelector(".support-fab")) {
+    document.body.insertAdjacentHTML("beforeend", `<div class="support-fab">${renderSupportFabHTML()}</div>`);
+  }
+}
+
 /** Trả về HTML mini-dashboard mô phỏng theo loại sản phẩm (dữ liệu mẫu, không phải số liệu thật). */
 function renderDashboard(type) {
   switch (type) {
@@ -367,16 +563,26 @@ function setupNavToggle() {
   });
 }
 
+/**
+ * Ghi đè email hỗ trợ + FAQ rút gọn khi đọc được từ Firestore (`cau_hinh/ho_tro`, xem
+ * js/firestore-content.js) — `null` = chưa có/lỗi, giữ nguyên nội dung tĩnh mặc định bên
+ * dưới. Gán trong `syncFirestoreContent()`, đọc lại trong `buildSupportModalHTML()`/
+ * `buildFaqModalHTML()` — 2 hàm này CHỈ được gọi (qua `buildModalContentMap()`) SAU khi
+ * `syncFirestoreContent()` đã chạy xong, xem thứ tự trong `DOMContentLoaded`.
+ */
+let _hoTroOverride = null;
+
 /** Modal "Hỗ trợ" — thông tin liên hệ + mã QR Zalo (ảnh thật, dùng chung với footer). */
 function buildSupportModalHTML() {
   const prefix = getRootPrefix();
+  const email = (_hoTroOverride && _hoTroOverride.email) || "hgntran.contact@gmail.com";
   return `
     <div class="modal-head">
       <h3>Thông tin hỗ trợ kỹ thuật</h3>
       <button class="modal-close" data-modal-close aria-label="Đóng">×</button>
     </div>
     <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">Đội ngũ Swiftstreet luôn sẵn sàng hỗ trợ bạn qua email hoặc Zalo.</p>
-    <div class="modal-support-row"><b>Email</b><span>hgntran.contact@gmail.com</span></div>
+    <div class="modal-support-row"><b>Email</b><span>${email}</span></div>
     <div class="modal-support-row"><b>Zalo</b><span>Quét mã bên dưới</span></div>
     <div style="display:flex; justify-content:center; margin:16px 0 4px;">
       <img src="${prefix}assets/img/zalo-qr.png" alt="Mã QR Zalo Swiftstreet" style="width:150px; height:150px; border-radius:8px; border:1px solid var(--border-color);" />
@@ -387,13 +593,16 @@ function buildSupportModalHTML() {
 /** Modal "FAQ" — bản rút gọn 5 câu hỏi tiêu biểu nhất, link sang trang FAQ đầy đủ. */
 function buildFaqModalHTML() {
   const prefix = getRootPrefix();
-  const items = [
+  const defaultItems = [
     ["Mua một lần thì dùng được trong bao lâu?", "Tất cả sản phẩm trên Swiftstreet đều áp dụng mô hình mua một lần, sử dụng trọn đời, không phát sinh phí định kỳ."],
     ["Sau khi thanh toán, tôi nhận sản phẩm như thế nào?", "Chúng tôi gửi thông tin đơn hàng và đường dẫn sử dụng qua email bạn đã đăng ký, ngay sau khi đơn được xác nhận."],
     ["Dữ liệu của tôi có được bảo mật không?", "Mọi dữ liệu nằm trong tài khoản Google Drive của chính bạn — chúng tôi không lưu trữ hay truy cập được."],
     ["Thanh toán bằng cách nào?", "Chuyển khoản ngân hàng qua mã QR hiển thị ngay tại trang thanh toán."],
     ["Tôi có thể yêu cầu hoàn tiền không?", "Có, tuỳ từng trường hợp cụ thể — xem chi tiết tại trang Chính sách đổi trả."],
   ];
+  const items = (_hoTroOverride && _hoTroOverride.faqRutGon && _hoTroOverride.faqRutGon.length)
+    ? _hoTroOverride.faqRutGon.map((f) => [f.cau_hoi, f.tra_loi])
+    : defaultItems;
 
   const itemsHTML = items.map(([q, a], i) => `
     <details class="faq-item"${i === 0 ? " open" : ""}>
@@ -419,7 +628,7 @@ const REVIEWS = [
   { email: "hu***********an@gmail.com", rating: 5, comment: "Giá hợp lý, mua 1 lần dùng lâu dài, không lo phí gia hạn." },
   { email: "th*******12@gmail.com", rating: 4, comment: "Sản phẩm tốt, nhận file qua email hơi chậm một chút nhưng vẫn ổn." },
   { email: "lin**********rk@gmail.com", rating: 5, comment: "Hỗ trợ nhiệt tình khi mình nhắn Zalo hỏi cách dùng." },
-  { email: "kh***********88@gmail.com", rating: 5, comment: "SwiftTrack Finance giúp mình theo dõi chi tiêu rõ ràng hơn hẳn so với ghi tay." },
+  { email: "kh***********88@gmail.com", rating: 5, comment: "Swift Travel Planner giúp mình lên lịch trình du lịch rõ ràng hơn hẳn so với ghi tay." },
   { email: "ng************99@gmail.com", rating: 4, comment: "Công cụ hữu ích, cần thêm vài mẫu báo cáo có sẵn thì sẽ hoàn hảo hơn." },
   { email: "ph**********ng@gmail.com", rating: 5, comment: "Đặt hàng xong nhận file rất nhanh, đúng như mô tả." },
   { email: "vu*******an@gmail.com", rating: 4, comment: "Ổn trong tầm giá, sẽ ủng hộ thêm sản phẩm khác của Swiftstreet." },
@@ -510,14 +719,25 @@ function buildPlanPickerModalHTML() {
   `;
 }
 
-/** Nội dung modal: hỗ trợ, FAQ rút gọn, đánh giá Swiftstreet, chọn gói (giỏ hàng). */
-const MODAL_CONTENT = {
-  support: buildSupportModalHTML(),
-  faq: buildFaqModalHTML(),
-  rate: buildRateModalHTML(),
-  planpicker: buildPlanPickerModalHTML(),
-};
+/**
+ * Nội dung modal: hỗ trợ, FAQ rút gọn, đánh giá Swiftstreet, chọn gói (giỏ hàng).
+ * ĐỔI TỪ `const` TÍNH SẴN Ở MODULE-SCOPE sang hàm dựng lại theo yêu cầu — vì
+ * `buildSupportModalHTML()`/`buildFaqModalHTML()` giờ phụ thuộc `_hoTroOverride` (đọc từ
+ * Firestore bất đồng bộ), nếu tính sẵn lúc file vừa load sẽ luôn dùng nội dung tĩnh mặc
+ * định (Firestore chưa kịp trả lời). Gọi `buildModalContentMap()` ngay trong
+ * `setupModals()`, tại thời điểm đó `syncFirestoreContent()` đã chạy xong (xem thứ tự gọi
+ * hàm trong `DOMContentLoaded`).
+ */
+function buildModalContentMap() {
+  return {
+    support: buildSupportModalHTML(),
+    faq: buildFaqModalHTML(),
+    rate: buildRateModalHTML(),
+    planpicker: buildPlanPickerModalHTML(),
+  };
+}
 
+let MODAL_CONTENT = {};
 let modalOverlayEl = null;
 
 /** Đóng dropdown thông báo + menu hỗ trợ nổi (dùng khi mở modal hoặc bấm ra ngoài). */
@@ -548,6 +768,8 @@ function closeModals() {
 
 /** Chèn khung modal vào cuối trang và gắn sự kiện cho các icon/nút liên quan. */
 function setupModals() {
+  MODAL_CONTENT = buildModalContentMap();
+
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
   overlay.id = "modal-overlay";
@@ -647,10 +869,10 @@ function setupSupportFab() {
 /** 5 thông báo mẫu: khuyến mãi đang diễn ra, sản phẩm mới, tính năng mới. */
 const NOTIFICATIONS = [
   { title: "Giảm 20% toàn bộ sản phẩm — chỉ đến 30/07/2026", time: "Vừa xong" },
-  { title: "SwiftOrder Group chính thức ra mắt", time: "1 ngày trước" },
-  { title: "SwiftHR Attendance: xuất phiếu lương chỉ 1 click", time: "2 ngày trước" },
+  { title: "Swift Shop Admin chính thức ra mắt", time: "1 ngày trước" },
+  { title: "Swift Hotel & Homestay Manager: quản lý đặt phòng chỉ 1 click", time: "2 ngày trước" },
   { title: "SwiftCopy.Drive tăng tốc độ sao chép file lớn", time: "3 ngày trước" },
-  { title: "SwiftContent Planner có mặt trên Swiftstreet", time: "4 ngày trước" },
+  { title: "Swift Content Planner có mặt trên Swiftstreet", time: "4 ngày trước" },
 ];
 
 /** Dropdown thông báo neo dưới icon chuông (không dùng chung hệ modal-overlay). */
@@ -679,9 +901,15 @@ function setupNotifyDropdown() {
   });
 }
 
-/** Sinh mã đơn hàng ngẫu nhiên (vd "SS4821") — dùng làm nội dung chuyển khoản để admin đối chiếu tay. */
+/**
+ * Sinh mã đơn hàng ngẫu nhiên (vd "SS48219") — ĐỔI SANG 5 SỐ (10000-99999) theo chuẩn đã
+ * chốt trong roadmap tự động hoá. LƯU Ý: hàm này CHỈ còn dùng cho placeholder hiển thị tạm
+ * ở phía client (sinh mới mỗi lần tải trang, KHÔNG kiểm tra trùng) — khi luồng đơn hàng
+ * thật (Cloud Function, xem functions/) đi vào hoạt động, mã đơn hàng THẬT phải được sinh
+ * DUY NHẤT 1 LẦN tại thời điểm tạo đơn ở phía server (có kiểm tra trùng), không phải ở đây.
+ */
 function generateOrderCode() {
-  return "SS" + Math.floor(1000 + Math.random() * 9000);
+  return "SS" + Math.floor(10000 + Math.random() * 90000);
 }
 
 /**
@@ -947,13 +1175,51 @@ function setupCheckoutPage() {
   if (!list) return;
 
   const isSingleSlug = !!new URLSearchParams(location.search).get("slug");
-  const orderCode = generateOrderCode();
+  const orderCode = generateOrderCode(); // mã TẠM phía client — thay bằng mã thật ngay khi khoiTaoDonHangNhap() trả lời (nếu Cloud Function đã cấu hình)
   const orderCodeEl = document.getElementById("checkout-order-code");
   if (orderCodeEl) orderCodeEl.textContent = orderCode;
+
+  /**
+   * Mã đơn hàng THẬT (từ Cloud Function `taoDonHangNhap`, giai đoạn 1) — null cho tới khi
+   * gọi thành công. Khi nút "Thanh toán" được bấm, PHẢI dùng mã này (không dùng lại
+   * `orderCode` tạm ở trên) để gọi `xacNhanThanhToan` — đảm bảo đúng 1 document Firestore
+   * được cập nhật, không tạo đơn trùng. Xem giải thích đầy đủ trong
+   * `cloud-functions-source/functions/index.js` (comment ngay trên `taoDonHangNhap`).
+   */
+  let maDonThatSu = null;
+
+  async function khoiTaoDonHangNhap() {
+    if (typeof CLOUD_FN_URLS === "undefined" || !isCloudFnReady(CLOUD_FN_URLS.taoDonHangNhap)) return; // giữ mã tạm phía client, không gọi gì cả
+    const itemsBanDau = isSingleSlug ? getCheckoutItems() : getCart().filter((item) => item.selected);
+    if (!itemsBanDau.length) return;
+    try {
+      const res = await fetch(CLOUD_FN_URLS.taoDonHangNhap, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sanPham: itemsBanDau.map((i) => ({ slug: i.slug, tenGoi: i.name, gia: i.price })) }),
+      });
+      const data = await res.json();
+      if (data.maDon) {
+        maDonThatSu = data.maDon;
+        if (orderCodeEl) orderCodeEl.textContent = data.maDon; // thay mã tạm bằng mã thật — từ giờ ỔN ĐỊNH, không đổi nữa
+      }
+    } catch (e) {
+      console.warn("Không tạo được đơn hàng nháp (Cloud Function), tạm giữ mã phía client:", e);
+    }
+  }
+
+  khoiTaoDonHangNhap();
 
   // Vòng 50: cờ theo dõi trạng thái "còn sản phẩm chưa chọn gói" — cập nhật
   // trong updateTotals(), đọc lại khi bấm nút Thanh toán (xem cuối hàm này).
   let planBlocked = false;
+
+  // Danh sách mã voucher ĐÃ ÁP DỤNG THÀNH CÔNG (tối đa 3, đúng yêu cầu) — mỗi phần tử hiện
+  // RIÊNG trên "Voucher" (không gộp % chung). `tamTinhHienTai` lưu lại tổng tiền sản phẩm
+  // (SAU giảm giá sản phẩm, TRƯỚC voucher) để gửi đúng số cho Cloud Function `kiemTraVoucher`
+  // tính % — cập nhật mỗi lần updateTotals() chạy.
+  let appliedVouchers = [];
+  let tamTinhHienTai = 0;
 
   // Tiêu đề đổi theo ngữ cảnh vào (vòng 26): mua thẳng 1 sản phẩm vẫn là "Hoàn
   // tất đơn hàng"; vào từ icon giỏ hàng (nhiều sản phẩm) đổi thành "Hoàn tất giỏ hàng".
@@ -1054,14 +1320,20 @@ function setupCheckoutPage() {
     const discount = subtotalOld - total;
     const discountPercent = subtotalOld > 0 ? Math.round((discount / subtotalOld) * 100) : 0;
 
+    tamTinhHienTai = total;
+    const voucherGiam = appliedVouchers.reduce((sum, v) => sum + v.giam, 0);
+    const tongCuoi = Math.max(0, total - voucherGiam);
+
     const subtotalEl = document.getElementById("checkout-subtotal");
     const discountEl = document.getElementById("checkout-discount");
     const discountPercentEl = document.getElementById("checkout-discount-percent");
     const totalEl = document.getElementById("checkout-total");
+    const voucherAmountEl = document.getElementById("checkout-voucher-amount");
     if (subtotalEl) subtotalEl.textContent = formatPriceVN(subtotalOld);
     if (discountEl) discountEl.textContent = "-" + formatPriceVN(discount);
     if (discountPercentEl) discountPercentEl.textContent = `đã giảm ${discountPercent}%`;
-    if (totalEl) totalEl.textContent = formatPriceVN(total);
+    if (voucherAmountEl) voucherAmountEl.textContent = voucherGiam > 0 ? "-" + formatPriceVN(voucherGiam) : "-0đ";
+    if (totalEl) totalEl.textContent = formatPriceVN(tongCuoi);
   }
 
   renderList();
@@ -1119,6 +1391,95 @@ function setupCheckoutPage() {
     });
   }
 
+  // Nút "+ Thêm mã khác" — tối đa 3 ô nhập (đúng yêu cầu 1-3 mã cùng lúc).
+  const voucherRowsEl = document.getElementById("voucher-rows");
+  const voucherAddBtn = document.getElementById("voucher-add-btn");
+  const MAX_VOUCHER_ROWS = 3;
+
+  function capNhatNutThemMaVoucher() {
+    if (!voucherRowsEl || !voucherAddBtn) return;
+    const soDong = voucherRowsEl.querySelectorAll("[data-voucher-row]").length;
+    voucherAddBtn.style.display = soDong >= MAX_VOUCHER_ROWS ? "none" : "";
+  }
+
+  if (voucherAddBtn && voucherRowsEl) {
+    voucherAddBtn.addEventListener("click", () => {
+      if (voucherRowsEl.querySelectorAll("[data-voucher-row]").length >= MAX_VOUCHER_ROWS) return;
+      const row = document.createElement("div");
+      row.className = "voucher-row";
+      row.setAttribute("data-voucher-row", "");
+      row.innerHTML = `
+        <input type="text" class="voucher-input" placeholder="Nhập mã voucher" data-voucher-input />
+        <button type="button" class="voucher-apply-btn" data-voucher-apply>Áp dụng</button>`;
+      voucherRowsEl.appendChild(row);
+      capNhatNutThemMaVoucher();
+    });
+  }
+
+  /**
+   * Áp dụng 1 mã voucher — gọi Cloud Function `kiemTraVoucher` (Project B). Nếu Cloud
+   * Function CHƯA cấu hình xong (xem js/cloud-functions-config.js), hiện thông báo nhẹ
+   * thay vì lỗi vỡ trang — đúng nguyên tắc "chừa placeholder, không chặn tiến độ".
+   */
+  async function apDungMaVoucher(row) {
+    const input = row.querySelector("[data-voucher-input]");
+    const btn = row.querySelector("[data-voucher-apply]");
+    const ma = input.value.trim().toUpperCase();
+    if (!ma) return;
+
+    let feedbackEl = row.querySelector(".voucher-feedback");
+    if (!feedbackEl) {
+      feedbackEl = document.createElement("p");
+      feedbackEl.className = "voucher-feedback";
+      row.appendChild(feedbackEl);
+    }
+
+    if (!isCloudFnReady(CLOUD_FN_URLS.kiemTraVoucher)) {
+      feedbackEl.textContent = "Hệ thống voucher chưa được cấu hình xong (đang chờ deploy Cloud Function).";
+      feedbackEl.className = "voucher-feedback is-muted";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Đang kiểm tra...";
+    try {
+      const emailInputEl = document.getElementById("checkout-email");
+      const res = await fetch(CLOUD_FN_URLS.kiemTraVoucher, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ma: [ma], email: emailInputEl ? emailInputEl.value.trim() : "", tamTinh: tamTinhHienTai }),
+      });
+      const data = await res.json();
+      const ketQua = data.ketQua && data.ketQua[0];
+
+      appliedVouchers = appliedVouchers.filter((v) => v.ma !== ma); // gỡ mã cũ nếu áp lại
+      if (ketQua && ketQua.hopLe) {
+        appliedVouchers.push({ ma, giam: ketQua.giam });
+        feedbackEl.textContent = `Đã áp dụng — giảm ${formatPriceVN(ketQua.giam)}`;
+        feedbackEl.className = "voucher-feedback is-success";
+      } else {
+        feedbackEl.textContent = (ketQua && ketQua.lyDo) || "Mã không hợp lệ.";
+        feedbackEl.className = "voucher-feedback is-error";
+      }
+      updateTotals();
+    } catch (e) {
+      feedbackEl.textContent = "Không kiểm tra được mã lúc này, vui lòng thử lại.";
+      feedbackEl.className = "voucher-feedback is-error";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Áp dụng";
+    }
+  }
+
+  if (voucherRowsEl) {
+    voucherRowsEl.addEventListener("click", (e) => {
+      const applyBtn = e.target.closest("[data-voucher-apply]");
+      if (!applyBtn) return;
+      apDungMaVoucher(applyBtn.closest("[data-voucher-row]"));
+    });
+  }
+  capNhatNutThemMaVoucher();
+
   // Icon sao chép cạnh mỗi dòng thông tin chuyển khoản (vòng 26).
   document.querySelectorAll(".payment-mock .copy-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1151,8 +1512,15 @@ function setupCheckoutPage() {
     blockNoteEl.style.display = "block";
   }
 
+  // Chống bấm nhiều lần (yêu cầu prompt cuối, Phần 4): sau lần bấm HỢP LỆ đầu tiên (đã qua
+  // hết 2 kiểm tra ở trên), khoá nút ngay — tránh tạo nhiều đơn trùng nếu khách bấm liên
+  // tục/mạng chậm. Không dùng cho 2 trường hợp BỊ CHẶN (planBlocked/infoMissing) — lúc đó
+  // khách còn cần sửa rồi bấm lại, không được khoá.
+  let dangXuLyThanhToan = false;
+
   if (paidBtn) {
-    paidBtn.addEventListener("click", () => {
+    paidBtn.addEventListener("click", async () => {
+      if (dangXuLyThanhToan) return;
       if (planBlocked) {
         showBlockNote("Vui lòng chọn gói cho sản phẩm có nhiều gói trước khi thanh toán.");
         return;
@@ -1163,7 +1531,53 @@ function setupCheckoutPage() {
         return;
       }
       if (blockNoteEl) blockNoteEl.style.display = "none";
-      showToast("Đã ghi nhận! Đơn hàng đang chờ admin xác nhận qua email.");
+
+      dangXuLyThanhToan = true;
+      paidBtn.disabled = true;
+      paidBtn.textContent = "Đang xử lý...";
+
+      // Nếu Cloud Function CHƯA cấu hình xong, hoặc giai đoạn 1 (khoiTaoDonHangNhap) chưa
+      // thành công lấy được mã đơn thật — giữ hành vi giả lập cũ, KHÔNG làm vỡ trang.
+      if (typeof CLOUD_FN_URLS === "undefined" || !isCloudFnReady(CLOUD_FN_URLS.xacNhanThanhToan) || !maDonThatSu) {
+        showToast("Đã ghi nhận! Đơn hàng đang chờ admin xác nhận qua email.");
+        return;
+      }
+
+      const itemsHienTai = isSingleSlug ? getCheckoutItems() : getCart().filter((item) => item.selected);
+      try {
+        const res = await fetch(CLOUD_FN_URLS.xacNhanThanhToan, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            maDon: maDonThatSu,
+            khach: { ten: nameInput.value.trim(), sdt: phoneInput.value.trim(), email: emailInput.value.trim() },
+            maVoucher: appliedVouchers.map((v) => v.ma),
+            ctvId: layMaGioiThieuDaLuu(), // mã giới thiệu CTV đã bắt từ ?ref= (nếu có)
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || "Lỗi không xác định");
+
+        // Lưu tạm dữ liệu đơn hàng để trang "Chúc mừng đã thanh toán" đọc lại và hiển thị
+        // hoá đơn — sessionStorage (không phải localStorage) vì chỉ cần sống qua đúng 1
+        // lượt điều hướng, không cần giữ lâu dài.
+        sessionStorage.setItem("swiftstreet_last_order", JSON.stringify({
+          maDon: data.maDon,
+          tamTinh: data.tamTinh,
+          tongGiam: data.tongGiam,
+          thanhTien: data.thanhTien,
+          breakdown: data.breakdown || [],
+          khach: { ten: nameInput.value.trim(), sdt: phoneInput.value.trim(), email: emailInput.value.trim() },
+          sanPham: itemsHienTai.map((i) => ({ name: i.name, price: i.price })),
+        }));
+        location.href = "cam-on-da-thanh-toan.html";
+      } catch (e) {
+        console.error("Lỗi xác nhận thanh toán:", e);
+        dangXuLyThanhToan = false;
+        paidBtn.disabled = false;
+        paidBtn.textContent = "Thanh toán";
+        showToast("Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ hỗ trợ.");
+      }
     });
   }
 }
@@ -1329,7 +1743,68 @@ function setupPricingPage() {
   render();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+/**
+ * Ghi đè banner khuyến mãi hero (`.hero-promo-text`, chỉ tồn tại ở index.html) khi đọc được
+ * `cau_hinh/hero_banner` từ Firestore — `null`/`hien:false` = giữ nguyên nội dung tĩnh
+ * đang viết sẵn trong index.html.
+ */
+function applyHeroBannerOverride(heroBanner) {
+  if (!heroBanner || heroBanner.hien === false) return;
+  const el = document.querySelector(".hero-promo-text");
+  if (!el) return;
+  el.innerHTML = `${heroBanner.dong1}<br />${heroBanner.dong2}<br />Code: <strong>${heroBanner.maCode}</strong>`;
+}
+
+/**
+ * Đồng bộ TOÀN BỘ nội dung có thể đọc từ Firestore Project A vào ĐÚNG các biến/mảng tĩnh
+ * đang có (PRODUCTS, NOTIFICATIONS, REVIEWS, SWIFTCOPY_PRICING, PRICING_FEATURES) — MUTATE
+ * TRỰC TIẾP nội dung bên trong (`.length = 0; .push(...)` cho mảng, `Object.assign()` cho
+ * object) thay vì gán lại biến mới, để mọi hàm khác (renderProductGrid, getCheckoutItems,
+ * setupCartActions, setupPricingPage...) tiếp tục đọc đúng 1 tham chiếu duy nhất mà KHÔNG
+ * cần viết lại logic của chúng sang dạng bất đồng bộ. Đây là lựa chọn CHỦ Ý để giảm rủi ro
+ * thay đổi kiến trúc lớn ngay trước ngày khai trương — xem ghi chú trong báo cáo cuối.
+ *
+ * Nếu Firestore CHƯA cấu hình xong (xem js/firebase-config.js) hoặc bất kỳ lệnh gọi nào
+ * lỗi, hàm tương ứng trong js/firestore-content.js trả về `null` và finding đó được GIỮ
+ * NGUYÊN dữ liệu tĩnh — trang KHÔNG BAO GIỜ vỡ vì lý do Firestore.
+ */
+async function syncFirestoreContent() {
+  if (typeof isFirebaseConfigReady !== "function" || !isFirebaseConfigReady(FIREBASE_CONFIG_A)) return;
+
+  const [sanPham, thongBao, danhGia, heroBanner, hoTro, bangGia] = await Promise.all([
+    layDanhSachSanPham(),
+    layThongBao(),
+    layDanhGia(),
+    layCauHinhHeroBanner(),
+    layCauHinhHoTro(),
+    layBangGiaSwiftcopy(),
+  ]);
+
+  if (sanPham && typeof PRODUCTS !== "undefined") {
+    PRODUCTS.length = 0;
+    PRODUCTS.push(...sanPham);
+  }
+  if (thongBao) {
+    NOTIFICATIONS.length = 0;
+    NOTIFICATIONS.push(...thongBao);
+  }
+  if (danhGia) {
+    REVIEWS.length = 0;
+    REVIEWS.push(...danhGia);
+  }
+  if (hoTro) _hoTroOverride = hoTro;
+  if (heroBanner) applyHeroBannerOverride(heroBanner);
+  if (bangGia) {
+    Object.assign(SWIFTCOPY_PRICING.personal, bangGia.pricing.personal);
+    Object.assign(SWIFTCOPY_PRICING.team, bangGia.pricing.team);
+    Object.assign(PRICING_FEATURES.personal, bangGia.features.personal);
+    Object.assign(PRICING_FEATURES.team, bangGia.features.team);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  renderSiteChrome();
+  await syncFirestoreContent();
   renderProductGrid();
   setupNavToggle();
   setupModals();

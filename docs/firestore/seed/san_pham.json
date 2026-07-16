@@ -1,0 +1,153 @@
+{
+  "swiftcopy-drive": {
+    "ten": "SwiftCopy.Drive",
+    "mo_ta_ngan": "Công cụ sao chép Google Drive & tải về máy tính tốc độ nhanh chóng",
+    "gia_goc": 620000,
+    "gia_ban": 490000,
+    "ghi_chu_gia": "tuỳ gói",
+    "nhan_danh_muc": "Web App Script",
+    "vi_tri": 10,
+    "loai_dashboard": "drive",
+    "badge_trang_thai": { "nhan": "Bán chạy", "mau_bat_dau": "#e8432b", "mau_ket_thuc": "#feb20a" },
+    "anh": [],
+    "video_youtube_url": "",
+    "mo_ta_dai": "",
+    "lich_su_cap_nhat": [],
+    "cau_hoi_thuong_gap": [],
+    "goi_gia": [
+      {
+        "id": "basic",
+        "ten_goi": "BASIC",
+        "gia": 490000,
+        "gia_goc": 620000,
+        "mo_ta": "Sao chép dữ liệu Google Drive",
+        "tinh_nang": [
+          "Sao chép Google Drive không giới hạn dung lượng (Gb)",
+          "Sao chép folder, file, video về đúng cấu trúc",
+          "Xem dung lượng tổng & kiểm tra quyền trước khi sao chép",
+          "Tự động sao chép tiếp tục nếu mất kết nối",
+          "Sao chép được các file không bật nút tải về",
+          "Tick chọn mục muốn sao chép tự do",
+          "Theo dõi tiến trình sao chép và báo cáo khi hoàn tất",
+          { "text": "Không hỗ trợ tải Drive về máy tính cá nhân", "negative": true }
+        ],
+        "an": false,
+        "nhom_slider": {
+          "gia_min": 1998000,
+          "gia_max": 3996888,
+          "so_nguoi_min": 5,
+          "so_nguoi_max": 10,
+          "tinh_nang": [
+            "Sao chép Google Drive không giới hạn dung lượng (Gb)",
+            "Sắp xếp file & folder về đúng cấu trúc gốc",
+            "Xem dung lượng tổng & kiểm tra quyền trước khi sao chép",
+            "Tự động sao chép tiếp tục nếu mất kết nối",
+            "Sao chép được các file không bật nút tải về",
+            "Tick chọn mục sao chép & theo dõi tiến độ khi sao chép",
+            "Giá ưu đãi khi mua gói team 5 - 10 người",
+            { "text": "Không hỗ trợ tải Drive về máy tính cá nhân", "negative": true }
+          ]
+        }
+      },
+      {
+        "id": "premium",
+        "ten_goi": "PREMIUM",
+        "gia": 998888,
+        "gia_goc": null,
+        "mo_ta": "Sao chép Google Drive và Tải về máy tính",
+        "tinh_nang": [
+          "Tất cả tính năng cao cấp từ gói Basic",
+          "Tải trực tiếp trọn bộ thư mục về máy tính cá nhân",
+          "Hỗ trợ sao chép và tải về dữ liệu tốc độ cao",
+          "Đường truyền riêng cho tác vụ tải về phức tạp",
+          "Không cần update gói mới trong tương lai",
+          "Miễn phí cập nhật tính năng cho các phiên bản mới",
+          "Sẵn sàng tính năng tải dữ liệu về máy mọi lúc",
+          "Tối ưu hoá trải nghiệm sao chép & tải về toàn diện"
+        ],
+        "an": false,
+        "nhom_slider": {
+          "gia_min": 4078888,
+          "gia_max": 8148888,
+          "so_nguoi_min": 5,
+          "so_nguoi_max": 10,
+          "tinh_nang": [
+            "Tất cả tính năng cao cấp từ gói Basic",
+            "Tải trực tiếp trọn bộ Google Drive về máy tính cá nhân",
+            "Hỗ trợ tải về và sao chép dữ liệu tốc độ cao",
+            "Đường truyền riêng cho tác vụ tải về phức tạp",
+            "Không cần update gói mới trong tương lai",
+            "Miễn phí cập nhật tính năng cho các phiên bản mới",
+            "Giá ưu đãi khi mua gói team 5 - 10 người",
+            "Hỗ trợ tải về máy tính & sao chép Drive toàn diện"
+          ]
+        }
+      }
+    ]
+  },
+  "swift-wedding-planner": {
+    "ten": "Swift Wedding Planner",
+    "mo_ta_ngan": "Tự lên kế hoạch đám cưới: Đơn giản, tiện lợi, mọi lúc trên mọi thiết bị",
+    "gia_goc": 220000,
+    "gia_ban": 149000,
+    "ghi_chu_gia": "sắp ra mắt",
+    "nhan_danh_muc": "File kế hoạch",
+    "vi_tri": 20,
+    "loai_dashboard": "wedding",
+    "badge_trang_thai": { "nhan": "Cập nhật", "mau_bat_dau": "#058249", "mau_ket_thuc": "#1db764" },
+    "anh": [], "video_youtube_url": "", "mo_ta_dai": "", "lich_su_cap_nhat": [], "cau_hoi_thuong_gap": [],
+    "goi_gia": []
+  },
+  "swift-content-planner": {
+    "ten": "Swift Content Planner",
+    "mo_ta_ngan": "Công cụ lập kế hoạch nội dung, chiến dịch marketing và lịch đăng bài chuyên nghiệp.",
+    "gia_goc": 200000,
+    "gia_ban": 90000,
+    "ghi_chu_gia": "sắp ra mắt",
+    "nhan_danh_muc": "File kế hoạch",
+    "vi_tri": 30,
+    "loai_dashboard": "content",
+    "badge_trang_thai": { "nhan": "Cập nhật", "mau_bat_dau": "#058249", "mau_ket_thuc": "#1db764" },
+    "anh": [], "video_youtube_url": "", "mo_ta_dai": "", "lich_su_cap_nhat": [], "cau_hoi_thuong_gap": [],
+    "goi_gia": []
+  },
+  "swift-travel-planner": {
+    "ten": "Swift Travel Planner",
+    "mo_ta_ngan": "Lưu trữ địa điểm và lên kế hoạch du lịch thông minh, tiện lợi.",
+    "gia_goc": 150000,
+    "gia_ban": 79000,
+    "ghi_chu_gia": "sắp ra mắt",
+    "nhan_danh_muc": "File kế hoạch",
+    "vi_tri": 40,
+    "loai_dashboard": "travel",
+    "badge_trang_thai": null,
+    "anh": [], "video_youtube_url": "", "mo_ta_dai": "", "lich_su_cap_nhat": [], "cau_hoi_thuong_gap": [],
+    "goi_gia": []
+  },
+  "swift-shop-admin": {
+    "ten": "Swift Shop Admin",
+    "mo_ta_ngan": "Giải pháp bán hàng tinh gọn: Quản lý đơn, kho, doanh thu và nhân sự",
+    "gia_goc": 220000,
+    "gia_ban": 129000,
+    "ghi_chu_gia": "sắp ra mắt",
+    "nhan_danh_muc": "Công cụ hỗ trợ",
+    "vi_tri": 50,
+    "loai_dashboard": "shop",
+    "badge_trang_thai": null,
+    "anh": [], "video_youtube_url": "", "mo_ta_dai": "", "lich_su_cap_nhat": [], "cau_hoi_thuong_gap": [],
+    "goi_gia": []
+  },
+  "swift-hotel-homestay-manager": {
+    "ten": "Swift Hotel & Homestay Manager",
+    "mo_ta_ngan": "Quản lý vận hành homestay/khách sạn: Từ đặt phòng, thông tin khách đến vệ sinh và thanh toán.",
+    "gia_goc": 250000,
+    "gia_ban": 159000,
+    "ghi_chu_gia": "sắp ra mắt",
+    "nhan_danh_muc": "Công cụ hỗ trợ",
+    "vi_tri": 60,
+    "loai_dashboard": "hotel",
+    "badge_trang_thai": null,
+    "anh": [], "video_youtube_url": "", "mo_ta_dai": "", "lich_su_cap_nhat": [], "cau_hoi_thuong_gap": [],
+    "goi_gia": []
+  }
+}

@@ -37,7 +37,23 @@ js/main.js                     Render lưới sản phẩm (khung "laptop" mô p
                                 mobile, hệ thống modal (giỏ hàng/hỗ trợ/FAQ), dropdown thông báo,
                                 dropdown hỗ trợ nổi, và logic trang thanh toán
 data/products.js               Danh sách sản phẩm (mảng PRODUCTS, field `type` quyết định
-                                mini-dashboard mô phỏng nào hiển thị trong khung laptop)
+                                mini-dashboard mô phỏng nào hiển thị trong khung laptop) — vòng
+                                sửa 67: giờ là DỮ LIỆU DỰ PHÒNG (fallback), nguồn thật ưu tiên
+                                là Firestore Project A khi đã cấu hình xong — xem mục "Firestore
+                                hoá dữ liệu" bên dưới.
+js/firebase-config.js          Config Firebase Project A + B — CHỨA PLACEHOLDER chờ điền (vòng 67)
+js/firestore-content.js        Lớp "hàm trung gian" đọc Firestore Project A (vòng 67) — xem mục
+                                "Firestore hoá dữ liệu"
+js/cloud-functions-config.js   URL các Cloud Function (Project B) — CHỨA PLACEHOLDER chờ điền (vòng 67)
+docs/setup/                    5 file hướng dẫn thủ công (Firebase/Firestore/Blaze, Cloud Functions,
+                                Telegram Bot, VietQR, giải thích Firestore Rules) — vòng 67
+docs/firestore/                Schema + Security Rules + seed data mẫu cho Project A/B — vòng 67
+cloud-functions-source/        Source code Cloud Function THAM KHẢO (chưa deploy) — copy vào thư
+                                mục `firebase init functions` riêng của bạn sau khi làm xong
+                                docs/setup/02-cloud-functions.md — vòng 67
+dashboard-khu-c/                Khung Dashboard Khu C (đăng nhập/Sản phẩm/CTV/Đơn hàng/Thông
+                                báo/Voucher) — CHẠY THẬT bằng dữ liệu mock, chưa nối Firestore
+                                — vòng 68, xem `dashboard-khu-c/README.md`
 assets/icons/                  favicon.ico, favicon-32x32.png, apple-touch-icon.png
 assets/img/                    logo-header.png (nền trong suốt), logo-square-master.png (bản gốc đã cắt vuông)
 ```
@@ -56,6 +72,99 @@ Mỗi thẻ sản phẩm trên `index.html`/`san-pham.html` gồm 3 phần, rend
 ### `getRootPrefix()` — tính đường dẫn tương đối theo độ sâu thư mục
 
 Trang web có 3 cấp thư mục dùng chung `js/main.js`: gốc (`index.html`...), `products/`, `footer-pages/`. Hàm `getRootPrefix()` kiểm tra `location.pathname` — trả về `"../"` nếu đang ở `products/` hoặc `footer-pages/`, ngược lại trả về chuỗi rỗng. Dùng để build link/ảnh đúng từ JS (vd link "Xem tất cả câu hỏi" trong modal FAQ, ảnh QR Zalo trong modal Hỗ trợ, link "Mua ngay" trong giỏ hàng tới `thanh-toan.html`) mà không phải viết cứng HTML khác nhau cho từng trang.
+
+### Header/Footer/support-fab dùng chung (vòng sửa 67 — thay thế hoàn toàn HTML lặp lại trước đó)
+
+Trước vòng 67, HTML của `<header class="site-header">`, `<footer class="site-footer">`, và
+khối `<div class="support-fab">` được COPY-PASTE y hệt vào cả 13 trang HTML — mỗi lần đổi
+nội dung (thêm link footer, đổi số điện thoại...) phải sửa tay từng file, đã gây lỗi thực tế
+2 lần (bỏ sót trang khi xoá/thêm sản phẩm ở vòng 32/41). Giờ mỗi trang chỉ còn 2 mount point
+rỗng: `<div id="site-header-mount"></div>` và `<div id="site-footer-mount"></div>` — nội
+dung thật được `renderHeaderHTML()`/`renderFooterHTML()`/`renderSupportFabHTML()` trong
+`js/main.js` dựng ra rồi thay thế bằng `outerHTML` (header/footer) hoặc `insertAdjacentHTML`
+(support-fab) ngay trong `renderSiteChrome()` — hàm này PHẢI chạy ĐẦU TIÊN trong
+`DOMContentLoaded`, trước mọi hàm setup khác (`setupNavToggle`/`setupModals`/
+`setupSupportFab`/`setupNotifyDropdown`...) vì các hàm đó query thẳng vào phần tử bên trong
+3 khối này.
+
+**Trạng thái `active` của menu giờ TỰ TÍNH** qua `getActiveNavHref()` (đọc `location.pathname`)
+thay vì phải nhớ gắn tay `class="active"` ở từng trang mới nhân bản — nếu tạo trang chi tiết
+sản phẩm mới trong `products/`, menu "Sản phẩm" tự động in đậm, không cần sửa gì thêm.
+
+**Copyright năm** trong footer giờ dùng `new Date().getFullYear()` (không hardcode "2026"
+nữa) — tự cập nhật mỗi năm mới, không cần sửa tay.
+
+Muốn đổi nội dung header/footer/support-fab (thêm link, đổi email liên hệ, sửa social
+icon...): sửa ĐÚNG 3 hàm này trong `js/main.js`, KHÔNG sửa HTML từng trang nữa (HTML mỗi
+trang giờ chỉ còn 1 dòng mount point, sửa ở đó không có tác dụng).
+
+### Firestore hoá dữ liệu (vòng sửa 67) — thay `data/products.js`/hằng số tĩnh bằng Firestore, có fallback an toàn
+
+Theo yêu cầu tách nội dung hay đổi ra khỏi code để tự sửa không cần đụng code — kiến trúc
+**2 project Firestore riêng biệt**:
+- **Project A** (công khai): `san_pham`, `thong_bao`, `danh_gia`, `cau_hinh/hero_banner`,
+  `cau_hinh/ho_tro` — ai cũng đọc được, chỉ admin ghi. Xem đầy đủ schema tại
+  `docs/firestore/project-a-schema.md` + rules tại `docs/firestore/project-a.rules`.
+- **Project B** (nhạy cảm): `voucher`, `ctv`, `don_hang`, `tra_cuu_ban_quyen` — khoá chặt,
+  hầu hết chỉ truy cập được qua Cloud Function (xem `docs/firestore/project-b-schema.md` +
+  `docs/firestore/project-b.rules` + `docs/firestore/03b-ctv-auth-phuong-an-b.md`).
+
+**Cơ chế đọc — "hàm trung gian" trong `js/firestore-content.js`**: mọi nơi khác trong code
+CHỈ được gọi qua các hàm `layDanhSachSanPham()`/`layThongBao()`/`layDanhGia()`/
+`layCauHinhHeroBanner()`/`layCauHinhHoTro()`/`layBangGiaSwiftcopy()` — không tự gọi thẳng
+`firebase.firestore()` rải rác, để sau này đổi nơi lưu trữ chỉ cần sửa đúng các hàm này.
+MỌI hàm đều trả về `null` nếu Firebase chưa cấu hình xong (`js/firebase-config.js` còn
+placeholder `"ĐIỀN_..."`) hoặc gọi lỗi — KHÔNG BAO GIỜ throw ra ngoài làm vỡ trang.
+
+**Cơ chế "mutate globals tại chỗ" — quyết định kiến trúc QUAN TRỌNG cần hiểu trước khi sửa**:
+thay vì viết lại toàn bộ `renderProductGrid()`/`getCheckoutItems()`/`setupCartActions()`/
+`setupPricingPage()` sang dạng bất đồng bộ (rủi ro cao, không thể test bằng trình duyệt thật
+trong môi trường này), hàm `syncFirestoreContent()` (gọi 1 lần, ngay đầu `DOMContentLoaded`,
+TRƯỚC `renderProductGrid()`) **MUTATE TRỰC TIẾP nội dung bên trong** các biến/mảng tĩnh đã
+có sẵn (`PRODUCTS.length=0; PRODUCTS.push(...)`, `Object.assign(SWIFTCOPY_PRICING.personal,
+...)`...) thay vì gán lại biến mới — nhờ vậy mọi hàm cũ tiếp tục đọc đúng 1 tham chiếu duy
+nhất mà KHÔNG cần sửa logic của chúng. Nếu Firestore chưa sẵn sàng, các biến này giữ nguyên
+giá trị tĩnh gốc — trang KHÔNG BAO GIỜ vỡ vì lý do Firestore, kể cả trước khi bạn hoàn tất
+`docs/setup/01-firebase-firestore-blaze.md`.
+
+**`MODAL_CONTENT`** đổi từ `const` tính sẵn lúc file vừa load (luôn dùng nội dung tĩnh vì
+Firestore chưa kịp trả lời) sang `let` + hàm `buildModalContentMap()` gọi lại bên trong
+`setupModals()` — đúng thời điểm `syncFirestoreContent()` đã chạy xong.
+
+**Cache `sessionStorage` 5 phút cho mọi hàm đọc Firestore (thêm sau khi khách hỏi về chi phí
+ở quy mô lớn)** — PHÁT HIỆN QUAN TRỌNG: `syncFirestoreContent()` chạy trên **MỌI trang**
+(không chỉ lúc thanh toán), mỗi lần chạy đọc ~29 document (6 sản phẩm + tối đa 10 thông báo +
+tối đa 30 đánh giá + 2 cấu hình + 1 đọc riêng cho bảng giá SwiftCopy.Drive) — nếu không cache,
+1 khách xem lướt 4-5 trang trong vài phút sẽ tính thành 4-5 LẦN đọc lại y hệt, dù nội dung
+không đổi; đây là nguồn đọc Firestore LỚN HƠN NHIỀU so với chính luồng mua hàng/thanh toán ở
+quy mô nhiều lượt xem. Mỗi hàm `lay...()` trong `js/firestore-content.js` giờ bọc qua
+`_voiCache(key, fetchFn)` — kiểm tra `sessionStorage` trước (TTL 5 phút), chỉ gọi Firestore
+thật nếu cache trống/hết hạn. Dùng `sessionStorage` (không phải `localStorage`) để mỗi
+tab/phiên mới vẫn lấy dữ liệu tương đối mới, tránh giữ cache "vĩnh viễn" khiến khách không
+thấy nội dung bạn vừa cập nhật trong Firestore Console.
+
+**Seed dữ liệu ban đầu**: `docs/firestore/seed/*.json` chứa ĐÚNG nội dung đang có trên site
+hiện tại (6 sản phẩm, 5 thông báo, 10 đánh giá, banner+FAQ hỗ trợ) — chạy
+`docs/firestore/seed-import.js` (cần Service Account key, xem comment đầu file) để nạp vào
+Firestore Project A sau khi tạo xong project, KHÔNG mất dữ liệu đang có khi chuyển đổi.
+
+**QUAN TRỌNG — `firebase-admin` phải dùng API MODULAR (`require("firebase-admin/app")`,
+`.../firestore`, `.../auth`), KHÔNG dùng kiểu cũ `require("firebase-admin")` +
+`admin.firestore()`/`admin.firestore.Timestamp`/`admin.auth()`** — lỗi thực tế đã gặp khi
+khách tự chạy `seed-import.js` lần đầu (`npm install firebase-admin` không ghim version, kéo
+về bản mới nhất, dùng với Node.js v24 mới cài): `admin.credential` bị `undefined`, báo lỗi
+"Cannot read properties of undefined (reading 'cert')". Đã sửa CẢ `seed-import.js` VÀ
+`cloud-functions-source/functions/index.js` sang dùng `initializeApp`/`getFirestore`/
+`Timestamp`/`FieldValue`/`getAuth` import trực tiếp từ submodule — cách này ổn định hơn,
+không phụ thuộc namespace `admin.*` có được export đầy đủ hay không. **Nếu viết thêm code
+Node.js mới dùng `firebase-admin` sau này, LUÔN dùng đúng kiểu import modular này, đừng quay
+lại kiểu `const admin = require("firebase-admin")` cũ.**
+
+**Chưa kiểm chứng bằng trình duyệt thật** (môi trường không có Node/browser) — đặc biệt cần
+test kỹ: `layBangGiaSwiftcopy()` (transform từ `goi_gia`/`nhom_slider` sang cấu trúc
+`SWIFTCOPY_PRICING`/`PRICING_FEATURES` — nhiều bước biến đổi, rủi ro cao nhất vì ảnh hưởng
+trực tiếp giá tiền thật khách trả), và toàn bộ luồng graceful-fallback (tắt Firestore đột
+ngột giữa chừng có thực sự không vỡ trang không).
 
 ### Giỏ hàng (localStorage) — không backend, không đăng nhập — VIẾT LẠI HOÀN TOÀN ở vòng sửa 25
 
@@ -97,8 +206,26 @@ Trang DUY NHẤT xử lý cả 2 luồng mua hàng, phân biệt qua query strin
   - Đoạn ghi chú email/SĐT (`.checkout-note`) nằm NGOÀI thẻ `.checkout-left-card` (bên dưới), không phải phần của thẻ thống nhất.
   - **LƯU Ý — mục "Chọn tất cả" đã bị gộp-vào-rồi-tách-ra-khỏi thẻ 2 lần (vòng 28 gộp vào, vòng 29 tách ra)**: nếu khách yêu cầu đổi cách này lần nữa, đọc kỹ 2 vòng này để hiểu rõ đã thử phương án nào, tránh làm lại y hệt vòng 28.
   - **Cột phải**: 2 khối TÁCH RIÊNG, nền TRẮNG + viền mỏng bao quanh (`.checkout-summary-box`/`.checkout-bank-box`, `background:var(--color-white); border:1px solid var(--border-color)` — tham khảo thẻ trắng ChatGPT):
-    1. **`.checkout-summary-box`** "Thông tin đơn hàng": "Tổng tiền" + **"Khuyến mãi"** bọc chung trong `.summary-group` để 2 dòng này SÁT NHAU hơn (`padding:4px 0` thay vì `9px 0` mặc định — vòng 27, tham khảo cách ChatGPT nhóm "Gói đăng ký"/"Khuyến mãi" gần nhau), kèm dòng phụ nhỏ màu xám "đã giảm X%" tính từ `discount/subtotalOld*100`, số tiền `.discount-value` màu **đỏ nhẹ không đậm** (xem mục "Ngoại lệ màu sắc" ở trên để biết lịch sử đổi qua lại) → Voucher (`.voucher-label-group` gộp chevron `▾` SÁT bên trái chữ "Voucher"; bên phải dòng hiện số tiền voucher `#checkout-voucher-amount`, tạm thời luôn "-0đ" vì CHƯA có logic áp mã thật — bấm dòng toggle class `.open` xoay chevron 180° + hiện/ẩn `#voucher-input-wrap`) → dòng "Cần thanh toán" đậm, **màu ĐEN** (`.total-amount`, xem mục "Ngoại lệ màu sắc").
+    1. **`.checkout-summary-box`** "Thông tin đơn hàng": "Tổng tiền" + **"Khuyến mãi"** bọc chung trong `.summary-group` để 2 dòng này SÁT NHAU hơn (`padding:4px 0` thay vì `9px 0` mặc định — vòng 27, tham khảo cách ChatGPT nhóm "Gói đăng ký"/"Khuyến mãi" gần nhau), kèm dòng phụ nhỏ màu xám "đã giảm X%" tính từ `discount/subtotalOld*100`, số tiền `.discount-value` màu **đỏ nhẹ không đậm** (xem mục "Ngoại lệ màu sắc" ở trên để biết lịch sử đổi qua lại) → Voucher (`.voucher-label-group` gộp chevron `▾` SÁT bên trái chữ "Voucher"; bên phải dòng hiện tổng số tiền TẤT CẢ mã đã áp `#checkout-voucher-amount` — bấm dòng toggle class `.open` xoay chevron 180° + hiện/ẩn `#voucher-input-wrap`, xem mục "Voucher nhiều mã (vòng 67)" ngay dưới để biết cơ chế mới) → dòng "Cần thanh toán" đậm, **màu ĐEN** (`.total-amount`, xem mục "Ngoại lệ màu sắc").
     2. **`.checkout-bank-box`** "Thông tin chuyển khoản": `.payment-mock.payment-mock-split` — QR bên TRÁI (`.payment-mock-qr`, 110px), thông tin ngân hàng bên PHẢI (`.payment-mock-info`, tham khảo ChatGPT); mỗi dòng thông tin có thêm **icon sao chép mờ** (`.copy-btn`, `opacity:0.55`, dùng `navigator.clipboard.writeText()` + `showToast()` xác nhận — xem `data-copy`/`data-copy-target` trong HTML và xử lý trong `setupCheckoutPage()`). Dưới 480px tự chuyển về xếp DỌC (QR trên, thông tin dưới) vì bố cục ngang không đủ chỗ hiển thị đầy đủ số tài khoản trên màn hình rất hẹp (xem mục lỗi tràn chữ mobile bên dưới). Nút "Thanh toán" bo tròn hoàn toàn dạng viên thuốc (`.checkout-paid-btn`, `border-radius:999px`, `max-width:300px` — vòng 27 tăng từ 240px "rộng thêm 1 chút" theo yêu cầu, tham khảo tỉ lệ nút "Đăng ký" ChatGPT). Cuối cùng là đoạn ghi chú `.checkout-final-note` (nguyên văn đã chốt, có 3 cụm gạch chân/link thật).
+
+**Voucher nhiều mã (vòng 67)** — thay hẳn ô nhập đơn giản luôn hiện "-0đ": giờ có 1-3 dòng
+`.voucher-row` (input + nút "Áp dụng" riêng từng dòng), nút "+ Thêm mã khác" (ẩn khi đã đủ 3
+dòng, xem `capNhatNutThemMaVoucher()`). Bấm "Áp dụng" gọi Cloud Function `kiemTraVoucher`
+(Project B, URL cấu hình trong `js/cloud-functions-config.js` — CHƯA điền, hiện thông báo
+"chưa cấu hình xong" thay vì lỗi vỡ trang cho tới khi bạn deploy xong). Mỗi mã hợp lệ được
+lưu vào mảng `appliedVouchers` (biến cục bộ trong `setupCheckoutPage()`) và hiện feedback
+RIÊNG dưới đúng ô đó (`.voucher-feedback`, xanh nếu hợp lệ + số tiền giảm, đỏ nếu lỗi) —
+**KHÔNG gộp % chung, mỗi mã giảm 1 số tiền riêng cộng dồn vào tổng**, đúng yêu cầu hiển thị
+breakdown từng mã. `updateTotals()` cộng thêm bước trừ tổng voucher vào số tiền cuối cùng.
+
+**Chống bấm nhiều lần nút "Thanh toán" (vòng 67)**: biến `dangXuLyThanhToan` khoá nút ngay
+sau lần bấm HỢP LỆ đầu tiên (`paidBtn.disabled=true`, đổi chữ thành "Đang xử lý...") — tránh
+tạo đơn trùng nếu khách bấm liên tục/mạng chậm. KHÔNG áp dụng cho 2 trường hợp bị chặn
+(`planBlocked`/thiếu thông tin) vì lúc đó khách còn cần sửa rồi bấm lại. **Bên trong handler
+vẫn chỉ là `showToast()` giả lập** — chưa gọi Cloud Function `taoDonHang` thật, đang chờ (a)
+duyệt mockup trang "Chúc mừng đã thanh toán" (xem mục riêng bên dưới), (b) bạn hoàn tất Phần
+0 (Firebase/Cloud Functions) — xem TODO ngay trong code.
 
 **Sửa lag khi tick chọn sản phẩm (vòng 27)**: trước đó MỌI lần tick chọn 1 sản phẩm (hoặc "Chọn tất cả") đều gọi `render()` — hàm này VẼ LẠI TOÀN BỘ `list.innerHTML`, tức phá huỷ + tạo mới toàn bộ DOM node của mọi dòng sản phẩm chỉ để đổi 1 class `.checked`, khiến thao tác tick cảm giác lag/chậm (khách phản hồi rõ). Đã tách hàm `render()` thành 2 hàm riêng trong `setupCheckoutPage()`: `renderList()` (vẽ lại toàn bộ HTML danh sách — CHỈ gọi khi tải trang lần đầu, hoặc xoá sản phẩm khiến giỏ về rỗng) và `updateTotals()` (chỉ tính lại số tiền + trạng thái "Chọn tất cả", KHÔNG đụng DOM danh sách). Khi tick 1 sản phẩm: chỉ `toggleCartItemSelected()` (ghi localStorage) + tự tay `classList.toggle("checked")` ngay trên nút vừa bấm + gọi `updateTotals()` — không rebuild gì cả, nên phản hồi tức thì. Khi xoá 1 sản phẩm (còn sản phẩm khác trong giỏ): chỉ `.remove()` đúng DOM node của dòng đó rồi gọi `updateTotals()`, không render lại cả danh sách. **Nếu sau này thêm thao tác mới trên danh sách, cân nhắc pattern này (sửa DOM tối thiểu) thay vì gọi lại `renderList()` cho mọi thay đổi nhỏ.**
 - **KHÔNG còn badge "THANH TOÁN" phía trên tiêu đề** (đã bỏ hẳn) — chỉ còn `<h1 class="checkout-heading">`, và bỏ khoảng trắng thừa dưới breadcrumb. **Vòng 29 giảm tiếp khoảng trống này** — `.checkout-section` đổi `padding-top` từ 20px xuống còn 4px (khách vẫn thấy khoảng cách giữa breadcrumb và tiêu đề "Hoàn tất..." quá lớn, cộng dồn với `padding-bottom:20px` sẵn có của `.breadcrumb` dùng chung toàn site — không sửa `.breadcrumb` vì ảnh hưởng mọi trang khác, chỉ giảm riêng phần padding của `.checkout-section`).
@@ -665,14 +792,88 @@ Nguyên tắc: đen + vàng cam + trắng luôn là màu chủ đạo chiếm ư
   - Tăng cache-bust `css/style.css?v=67→68`, `js/main.js?v=67→68`, `data/products.js?v=67→68` trên toàn bộ 16 trang HTML.
   - **Chưa kiểm chứng bằng ảnh chụp thật** — đây đã là lần thứ 10-11 sửa vị trí/kích thước/hình dạng badge này. Cần khách xác nhận: (a) "Bán chạy" đã hết khe hở, chạm thẳng viền trên khung mockup chưa; (b) "Cập nhật" đã thấp/gọn hơn "Bán chạy" rõ rệt chưa; (c) độ bo góc 14px có đẹp hơn như mong muốn không.
 
+- ✅ **Vòng sửa 67 — CHUYỂN ĐỔI KIẾN TRÚC LỚN NHẤT TỪ TRƯỚC ĐẾN NAY: tách nội dung hardcode ra Firestore + xây khung luồng đơn hàng tự động** (theo prompt tổng hợp cuối cùng "làm 1 lần cho xong", deadline khai trương 18/07/2026). Đây KHÔNG phải 1 vòng chỉnh CSS/UI thông thường — là 1 lớp kiến trúc backend hoàn toàn mới cho 1 site trước giờ 100% tĩnh. Tóm tắt theo từng phần đã làm:
+  - **Quyết định phạm vi quan trọng nhất (tự đưa ra, đã nói rõ với khách trước khi làm)**: luồng tự động Telegram+Cloud Function+Drive API (Phần 6) được VIẾT ĐẦY ĐỦ nhưng KHÔNG thay thế quy trình duyệt tay làm cơ chế chính thức ngay ngày khai trương — vì phụ thuộc hạ tầng khách chưa có (Phần 0) và cần thời gian test thật (khách tự yêu cầu test Apps Script API 50-100 lần trước khi dùng thật, mục 6.3). Quy trình duyệt tay hiện tại (chuyển khoản → admin tự kiểm tra ngân hàng → tự chạy gas-dashboard tay) VẪN là lưới an toàn chính ngày khai trương.
+  - **Phần 0 — 5 file hướng dẫn thủ công** (`docs/setup/00-tong-quan.md` → `04-vietqr.md`): tạo project Firebase (2 project A/B) + bật Firestore + bật Blaze (giải thích rõ vẫn free trong hạn mức, chỉ cần gắn thẻ xác minh), dựng Cloud Functions (`firebase init functions`, Secret Manager cho token), tạo Telegram Bot qua BotFather + lấy Chat ID, VietQR (dùng ngay endpoint ảnh công khai `img.vietqr.io` không cần đăng ký, đăng ký chính thức để sau), và giải thích Firestore Security Rules bằng lời dễ hiểu (không chỉ đưa code).
+  - **Phần 1.3/5.1 — sửa 2 lỗi dữ liệu cũ + đổi mã đơn hàng**: `NOTIFICATIONS`/`REVIEWS` trong `js/main.js` từng nhắc "SwiftOrder Group"/"SwiftHR Attendance"/"SwiftTrack Finance" (tên cũ đã đổi từ vòng 41) — sửa đúng tên mới (Swift Shop Admin/Swift Hotel & Homestay Manager/Swift Travel Planner). `generateOrderCode()` đổi từ "SS"+4 số (1000-9999) sang "SS"+5 số (10000-99999, đúng chuẩn roadmap) — LƯU Ý hàm này giờ CHỈ còn dùng cho placeholder hiển thị phía client (sinh mới mỗi lần tải trang, không kiểm tra trùng); mã đơn hàng THẬT (khi Cloud Function `taoDonHang` hoạt động) tự sinh riêng, có kiểm tra trùng, xem `cloud-functions-source/functions/index.js`.
+  - **Phần 8 — Header/Footer/support-fab dùng chung**: xem mục riêng "Header/Footer/support-fab dùng chung (vòng sửa 67)" ở trên. Đã thay thế HTML lặp lại ở 13 file bằng 2 mount point + `renderHeaderHTML()`/`renderFooterHTML()`/`renderSupportFabHTML()` trong `js/main.js`. Trạng thái `active` tự tính qua `getActiveNavHref()`, copyright năm tự động (`new Date().getFullYear()`).
+  - **Phần 4/9 — Firestore hoá dữ liệu Project A**: xem mục riêng "Firestore hoá dữ liệu (vòng sửa 67)" ở trên. Schema đầy đủ + Rules tại `docs/firestore/project-a-schema.md`/`.rules`, seed data mẫu (đúng nội dung đang có) tại `docs/firestore/seed/*.json` + script `seed-import.js`. Cơ chế đọc qua lớp hàm trung gian `js/firestore-content.js`, mutate trực tiếp vào các global cũ (`PRODUCTS`/`NOTIFICATIONS`/`REVIEWS`/`SWIFTCOPY_PRICING`/`PRICING_FEATURES`) thay vì viết lại toàn bộ sang async — giảm rủi ro thay đổi kiến trúc lớn ngay trước ngày khai trương, luôn fallback về dữ liệu tĩnh nếu Firestore chưa cấu hình/lỗi.
+  - **Phần 2 — Voucher + Phần 3 — mã đơn hàng + Phần 6 — Cloud Functions**: `docs/firestore/project-b-schema.md`/`.rules` (voucher/ctv/don_hang/tra_cuu_ban_quyen) + `cloud-functions-source/functions/index.js` (`kiemTraVoucher`, `taoDonHang`, `telegramWebhook`, `dangKyCTV`/`duyetCTV`/`dangNhapCTV`). Voucher: 1-3 mã cùng lúc, mỗi mã hiện RIÊNG số tiền giảm (không gộp %), mã CTV dùng chung được với mã thường, giới hạn ngày hiệu lực/số lần dùng (tổng + theo khách) đã có field dù chưa bật hết. Mã đơn hàng sinh 1 lần tại thời điểm tạo đơn thật (có kiểm tra trùng), khác hẳn placeholder client-side. Telegram: gửi đủ hoá đơn (sản phẩm + breakdown từng voucher), 2 nút Duyệt/Từ chối dùng Firestore transaction để KHOÁ NGAY khi 1 admin bấm trước (admin thứ 2 bấm sẽ nhận "đã xử lý bởi X"), mọi lỗi từ bước 5 trở đi tự gửi cảnh báo Telegram riêng (`guiCanhBaoLoi()`) — không để đơn treo. **2 điểm rõ ràng CHƯA hoàn thiện, đánh dấu TODO ngay trong code** (đúng 2 điểm khách yêu cầu dừng lại hỏi ở Phần 6.2 mục 5-6): (a) chưa có URL GAS thật để gọi Drive API/Apps Script API/gửi email (gas-dashboard hiện KHÔNG có endpoint nhận lệnh từ xa kiểu này, chỉ phục vụ chính giao diện web app của nó); (b) chưa biết cấu trúc file bàn giao (do 1 AI khác làm riêng) để gắn mã bản quyền vào đâu. CTV dùng Phương án B (mã quản lý + custom token, KHÔNG mật khẩu truyền thống, mã lưu dạng BĂM không bao giờ đọc được lại) — chi tiết `docs/firestore/03b-ctv-auth-phuong-an-b.md`.
+  - **Phần 6.1 — mockup trang "Chúc mừng đã thanh toán"**: ĐÃ GỬI DUYỆT qua artifact (chưa code trang thật vào site — đúng yêu cầu khách dừng lại chờ duyệt trước khi code). Mockup dùng đúng màu thương hiệu hiện có (`--color-black`/`--color-orange`, không tạo mã màu mới dù khách gõ #141414/#FFB020 hơi khác — cùng nguyên tắc đã áp dụng ở vòng 25), gồm: trạng thái "Đang chờ admin duyệt", mã đơn hàng, component hoá đơn (breakdown từng voucher RIÊNG dòng, tổng tiền) — component này SẼ DÙNG CHUNG với trang Check bản quyền (Phần 6.2 mục 9) khi được duyệt.
+  - **Phần 4 — validation + chống bấm nhiều lần**: nút "Thanh toán" giờ có `dangXuLyThanhToan` khoá ngay sau lần bấm hợp lệ đầu (đổi text "Đang xử lý...", disable nút) — tránh tạo đơn trùng. Voucher UI nâng cấp từ 1 ô tĩnh sang 1-3 dòng + nút "+ Thêm mã khác", mỗi dòng có nút "Áp dụng" riêng gọi Cloud Function thật (`js/cloud-functions-config.js`, có placeholder + graceful fallback y hệt Firebase config).
+  - **Phần 10 — gas-dashboard**: rà soát tìm hiểu để gộp hằng số trùng lặp (`DOWNLOAD_CONCUR`/`VIDEO_DOWNLOAD_CONCUR`/link Drive API/logo SVG/`VIDEO_NOTIF_TITLES`, trùng giữa code trang chính và code cửa sổ popup tải video) — phát hiện 1 ràng buộc kỹ thuật QUAN TRỌNG đã ghi ngay trong comment gốc của code: **cửa sổ popup KHÔNG đọc được `window.opener` do chính sách COOP của trình duyệt**, đây là lý do code gốc phải viết trùng lặp (không phải sơ suất). Vì gas-dashboard là công cụ khách hàng ĐANG DÙNG THẬT và môi trường này không có trình duyệt/Node để test, đã **CHỦ ĐỘNG KHÔNG sửa sống code đang chạy thật** — chỉ viết phân tích + hướng đi đúng (dùng `postMessage()` đã có sẵn để đồng bộ, thay vì `window.opener`) vào `gas-dashboard/content/README.md`, để dành cho 1 đợt riêng có thời gian kiểm chứng bằng trình duyệt thật.
+  - **Phần 11 — Điều khoản/Chính sách**: XÁC NHẬN giữ tách biệt như khách yêu cầu, không hợp nhất Policy.html (gas-dashboard) với `dieu-khoan-su-dung.html`/`chinh-sach-doi-tra.html` (Swiftstreet) — không tìm thấy lý do kỹ thuật nào nên hợp nhất.
+  - **Phần 12 — field chăm sóc khách hàng**: `trang_thai_cham_soc` đã có trong schema `don_hang` (`docs/firestore/project-b-schema.md`) — "moi"/"da_lien_he"/"san_sang_nang_cap"/"khong_quan_tam", chưa code phần gửi email/Zalo thật (đúng phạm vi yêu cầu — để đợt sau).
+  - Tăng cache-bust `?v=68→69` cho css/js/data trên toàn bộ 13 trang HTML + thêm 2 script mới (`js/firebase-config.js`, `js/firestore-content.js`, riêng `thanh-toan.html` có thêm `js/cloud-functions-config.js`).
+  - **CHƯA LÀM Ở ĐỢT NÀY** (đúng theo Phần 6 "ghi nhận phạm vi tương lai" của khách — không phải bỏ sót): HTML tổng quảng bá chiến dịch, dashboard đặt lịch tư vấn, 3 loại bot Telegram còn lại (duyệt CTV riêng/xem tổng kết đơn hàng/xem doanh thu-chi phí-lợi nhuận), trang changelog, đồng bộ font toàn site.
+  - **RẤT QUAN TRỌNG — trạng thái "thật" vs "giả lập/placeholder" của toàn bộ đợt này, đọc kỹ trước khi công bố rộng rãi cho khách**: xem báo cáo cuối đã gửi trực tiếp trong hội thoại (không lưu lại thành file riêng) — tóm tắt nhanh: (1) TOÀN BỘ Firestore/Cloud Functions/Telegram/VietQR CHƯA HOẠT ĐỘNG THẬT cho tới khi tự tay hoàn tất `docs/setup/`; (2) trang thanh toán/giỏ hàng/sản phẩm vẫn chạy đúng như trước (dữ liệu tĩnh) cho tới lúc đó — KHÔNG có gì bị hỏng do đợt sửa này; (3) nút "Thanh toán" vẫn chỉ hiện toast giả lập, CHƯA tạo đơn hàng thật; (4) 2 điểm tích hợp GAS/file bàn giao đang chờ khách cung cấp thêm thông tin trước khi hoàn thiện `xuLyDonHangSauDuyet()`.
+
+- ✅ **Vòng sửa 68 — khách audit lại 7 điểm cụ thể sau vòng 67 (phát hiện 1 số mục "✅" ở báo cáo trước thực ra chỉ là code/schema viết sẵn, CHƯA deploy) + giao thêm việc:**
+  - **Đính chính quan trọng**: web KHÔNG khởi tạo cấu hình Firebase Project B như từng nói — chỉ Project A được `firebase.initializeApp()` thật (cho Firestore đọc sản phẩm/thông báo...); Project B chỉ được gọi qua Cloud Function bằng `fetch()` HTTP thuần, không qua SDK. Đây là 1 thay đổi tự quyết định mà chưa báo khách trước — đã nhận lỗi và nêu rõ khi khách hỏi lại.
+  - **Mockup "Chúc mừng đã thanh toán" — đổi sang bố cục 2 CỘT** (trái: lời chúc mừng/mã đơn/trạng thái/nút hành động; phải: khung "Hoá đơn" gọn RIÊNG BIỆT chứa sản phẩm+voucher+tổng+thông tin khách) — thay bố cục xếp chồng cũ. Nút "Tải hoá đơn" đã gắn `window.print()` THẬT kèm CSS `@media print` (chỉ in khung hoá đơn, ẩn cột trái/ghi chú) — đúng phương án in-để-lưu-PDF đã chốt ở vòng 67 mục 7 (khách xác nhận lại lần nữa ở vòng này). Cùng URL artifact cũ (redeploy).
+  - **`docs/setup/06-tu-dong-hoa-gas-de-xuat.md`** (MỚI) — đề xuất 2 phương án nối Cloud Function ↔ SwiftCopy.Drive/gas-dashboard (2 dự án hoàn toàn tách biệt, xác nhận CHƯA có kết nối nào, mọi việc vẫn làm tay): Phương án A (OAuth refresh token, Cloud Function tự cầm) vs **Phương án B — ĐỀ XUẤT CHỌN** (1 Apps Script "Bộ điều phối" MỚI hoàn toàn, tách khỏi Code.gs/Index.html/JavaScript.html hiện có — dùng `ScriptApp.getOAuthToken()` tự nhiên, không cần quản lý refresh token tay). Nêu rõ 3 điểm CHƯA CHẮC CHẮN cần khách xác nhận (GCP project tiêu chuẩn hay mặc định, tài khoản Google nào sở hữu project gốc, việc chuyển quyền sở hữu luôn cần khách hàng bấm Chấp nhận — không tự động hoá được bước này). **CHƯA VIẾT CODE TÍCH HỢP** — đúng nguyên tắc khách yêu cầu không code liều phần cấp quyền.
+  - **`docs/setup/07-test-apps-script-api.md`** (MỚI) — hướng dẫn test lặp 50-100 lần bằng tài khoản Google phụ, tận dụng ĐÚNG hàm `dsTestCopy(fileId, name, destId)` đã có sẵn trong `gas-dashboard/Code.gs` dòng 271 (không cần viết hàm mới trong gas-dashboard) — kèm code mẫu hàm test lặp dán tạm vào Script Editor, cách đọc kết quả/lỗi rate-limit. Độc lập với mục "cửa sau" ở trên, làm được ngay.
+  - **`?ref=CTV0042` capture** — thêm THẬT vào `js/main.js` (`luuMaGioiThieuTuUrl()`/`layMaGioiThieuDaLuu()`, dùng `sessionStorage`, key `swiftstreet_ref_ctv`) — gọi ngay khi file load, không chờ DOMContentLoaded. Cập nhật TODO trong nút "Thanh toán" để gọi `layMaGioiThieuDaLuu()` khi nối `taoDonHang` thật.
+  - **`dashboard-khu-c/`** (MỚI, toàn bộ folder) — khung Dashboard Khu C chạy được thật trên trình duyệt (KHÔNG cần Firebase) với dữ liệu mock cục bộ: đăng nhập giả (bỏ qua xác thực), 5 tab (Sản phẩm/CTV/Đơn hàng/Thông báo/Voucher). **Kéo/thả vị trí sản phẩm** (HTML5 drag-and-drop, tự tính lại `vi_tri` cách quãng 10) và **kéo/thả + tải ảnh sản phẩm** (xem trước bằng `URL.createObjectURL`, CHƯA upload Storage thật) đã code THẬT, hoạt động được ngay — đúng yêu cầu ưu tiên của khách. CTV: nút "Duyệt" chuyển từ danh sách chờ sang hoạt động (mock). Đơn hàng: dropdown đổi `trang_thai_cham_soc` ngay tại bảng. Toàn bộ có comment `// TODO:` tại đúng chỗ cần nối Firestore/Storage/Cloud Function thật, xem `dashboard-khu-c/README.md`. **Hiện đang nằm tạm trong repo Swiftstreet — cần tách repo riêng + Firebase Hosting khi triển khai thật** (đúng yêu cầu kiến trúc "tách biệt hoàn toàn").
+  - Đã trả lời minh bạch 7 câu hỏi audit của khách (không có trong CLAUDE.md, xem lại hội thoại) — nhìn chung: **lớp dữ liệu (Firestore schema/rules/Cloud Functions) đã viết xong dạng sẵn sàng deploy nhưng CHƯA deploy; lớp giao diện quản trị (Dashboard Khu C, đăng ký CTV, duyệt CTV) trước vòng này HOÀN TOÀN CHƯA CÓ GÌ — vòng 68 mới bắt đầu phần này.**
+  - **Đổi thiết kế `taoDonHang` thành 2 giai đoạn** (khách hỏi "nội dung chuyển khoản có hiện gì không", phát hiện mã đơn hàng khi đó vẫn chỉ sinh phía client, đổi mỗi lần tải lại trang — cùng vấn đề đã ghi ở vòng 67 nhưng chưa sửa): tách `taoDonHang` (cũ) thành **`taoDonHangNhap`** (giai đoạn 1 — gọi NGAY khi khách vào trang thanh toán, chỉ cần sản phẩm, sinh mã + lưu Firestore trạng thái `"nhap"`, mã từ đây ỔN ĐỊNH không đổi nữa) và **`xacNhanThanhToan`** (giai đoạn 2 — gọi khi bấm nút "Thanh toán", cập nhật ĐÚNG document đã tạo với thông tin khách + voucher cuối cùng, chuyển `"cho_duyet"`, **báo Telegram admin Ở BƯỚC NÀY** — cố ý không báo ở giai đoạn 1 để tránh phiền admin với khách chỉ xem trang rồi bỏ đi). `js/main.js` (`setupCheckoutPage()`) đã gọi `taoDonHangNhap()` ngay khi trang tải (hàm `khoiTaoDonHangNhap()`, tự rơi về mã tạm phía client nếu Cloud Function chưa cấu hình — không vỡ trang), lưu `maDonThatSu` để nút "Thanh toán" dùng lại đúng mã này khi gọi `xacNhanThanhToan` (chưa nối thật, còn TODO). Đã cập nhật `js/cloud-functions-config.js` (2 URL mới) + `docs/firestore/project-b-schema.md` (thêm trạng thái `"nhap"`).
+
+- ✅ **Vòng sửa 69 — khách tự làm Phần 0 (đã tạo xong 2 project Firebase thật `swiftstreet-shop`/`swiftstreet-admin`, publish rules đúng, nạp seed data thành công), phát hiện + sửa 1 lỗi thật + xây "Bộ điều phối" GAS (Phương án B đã chọn):**
+  - **Sửa lỗi thật khách gặp khi tự chạy `seed-import.js`**: `TypeError: Cannot read properties of undefined (reading 'cert')` — do code dùng API namespace CŨ (`require("firebase-admin")` + `admin.credential.cert()`/`admin.firestore.Timestamp`) không tương thích với bản `firebase-admin` mới nhất (cài không ghim version) chạy trên Node.js v24 mới cài. Đã sửa CẢ `docs/firestore/seed-import.js` VÀ `cloud-functions-source/functions/index.js` sang dùng **API modular** (`require("firebase-admin/app")`, `.../firestore`, `.../auth` — `initializeApp`/`getFirestore`/`Timestamp`/`FieldValue`/`getAuth` import trực tiếp) — ổn định hơn, không phụ thuộc namespace `admin.*` có export đầy đủ hay không. **Quy tắc cho code Node.js dùng firebase-admin sau này: LUÔN dùng kiểu modular này.**
+  - **`automation-controller-source/`** (MỚI, toàn bộ folder — `Code.gs` + `appsscript.json`) — "Bộ điều phối" theo Phương án B đã chọn ở `06-tu-dong-hoa-gas-de-xuat.md`: 1 Apps Script HOÀN TOÀN MỚI, KHÔNG đụng gì gas-dashboard hiện có (tránh xung đột với việc tách File A/B đang làm riêng). Nhận lệnh qua `doPost` (xác thực bằng `secret` khớp Script Property `CONTROLLER_SHARED_SECRET`), dùng `ScriptApp.getOAuthToken()` (đại diện tài khoản hgntran.contact@gmail.com — chủ sở hữu file gốc) gọi Drive API (copy file, chuyển quyền sở hữu) + Apps Script API (tạo version + deploy). 3 action: `test_ping`, `copy_and_deploy`, `transfer_ownership`.
+  - **QUAN TRỌNG — huỷ hướng "đổi GCP project của file gốc SwiftCopy.Drive"** đã đề xuất trước đó (vòng 68's `06-...md`): sau khi suy nghĩ lại, nhận ra cái CẦN gắn GCP project tiêu chuẩn là chính CONTROLLER (bên gọi API) chứ không hẳn là file/project BỊ TÁC ĐỘNG (file gốc/bản copy khách) — không đủ chắc chắn để khẳng định 100% (chưa test được), nên đã dừng lại, KHÔNG hướng dẫn khách đụng vào file gốc thật đang phục vụ khách. Thay vào đó: Controller (project mới tinh) gắn GCP project mới ngay từ đầu (an toàn tuyệt đối, chưa ai dùng), và khách sẽ tự tạo 1 bản COPY TEST của file gốc (không đụng bản thật) để thử `copy_and_deploy` — nếu lỗi thật liên quan GCP project của file mẫu mới quay lại xử lý, dựa trên lỗi thật thay vì đoán. **Đây là ví dụ cho nguyên tắc "không code liều phần chưa chắc chắn" được áp dụng đúng — thà nhận đã suy nghĩ lại còn hơn hướng dẫn sai vào production thật.**
+  - **`docs/setup/08-tao-apps-script-controller.md`** (MỚI) — hướng dẫn từng bước tạo Controller: dán code, đặt Script Property `CONTROLLER_SHARED_SECRET`, tạo GCP project mới + đổi sang project đó (Project Settings → Change project) + bật Apps Script API cho project đó, deploy Web App, test bằng `curl` action `test_ping` TRƯỚC KHI thử `copy_and_deploy` trên bản copy TEST.
+  - **`cloud-functions-source/functions/index.js`** cập nhật: thêm `AUTOMATION_CONTROLLER_URL`/`AUTOMATION_CONTROLLER_SECRET` (secret qua Secret Manager, giống Telegram) + hàm `goiControllerGAS()`; `xuLyDonHangSauDuyet()` giờ THẬT SỰ gọi Controller (`copy_and_deploy` rồi `transfer_ownership`) nếu đã điền đủ `FILE_MAU_THEO_SLUG`/`THU_MUC_DICH_GIAO_HANG_ID`/URL Controller — nếu chưa, tự bỏ qua bước này (không chặn phần còn lại của đơn hàng) và báo rõ qua Telegram còn thiếu gì. Bước "sửa nội dung code gắn email khách" (trong Controller) và "gửi email khách" (bước 4) VẪN CÒN TODO — đúng 2 điểm chờ khách cung cấp cấu trúc file bàn giao.
+
+- ✅ **Vòng sửa 70 — Cloud Functions THẬT SỰ đã deploy lên `swiftstreet-admin` + nối xong luồng thanh toán thật (không còn toast giả lập):**
+  - **Deploy Cloud Functions thành công** sau khi tự tay khách chạy `firebase init functions`/cài Firebase CLI (có 2 lỗi thật gặp phải và đã sửa, ghi lại để tránh lặp lại): (1) file `functions/index.js` local ban đầu VẪN LÀ bản mặc định rỗng của Firebase (code thật chưa được lưu vào đúng chỗ) — Claude đã tự dùng `Write` ghi thẳng đúng nội dung `cloud-functions-source/functions/index.js` vào file đó thay vì tiếp tục nhờ khách copy-paste tay qua TextEdit (rủi ro lỗi định dạng cao với người dùng không quen thao tác này); (2) `firebase deploy --only functions` báo lỗi `npm error code EUSAGE ... npm ci can only install packages when your package.json and package-lock.json ... are in sync` — nguyên nhân: `devDependencies.firebase-functions-test` (chỉ dùng test cục bộ, không cần lúc chạy thật) làm `package-lock.json` lệch so với `package.json` sau khi cài bằng `--legacy-peer-deps`, và bước build từ xa (Cloud Build) chạy `npm ci` nghiêm ngặt không chấp nhận lệch này. Đã xoá hẳn `devDependencies` đó khỏi CẢ file `package.json` thật (`swiftstreet-functions/functions/`) LẪN file tham chiếu `cloud-functions-source/functions/package.json` (đồng thời nâng theo đúng version đang dùng thật: `firebase-admin@^13.10.0`, `firebase-functions@^7.0.0`, thêm `cors@^2.8.6`, `node: 24`) — xoá `package-lock.json`+`node_modules` rồi `npm install` lại sạch (không cần `--legacy-peer-deps` nữa vì hết xung đột), deploy lại thành công cả 7 hàm.
+  - **Đã đăng ký Telegram webhook thật** — gọi thẳng `https://api.telegram.org/bot<token>/setWebhook` trỏ về URL `telegramWebhook` vừa deploy (Claude tự chạy bằng `curl`, không cần khách thao tác) — từ giờ bấm nút Duyệt/Từ chối trên Telegram sẽ THẬT SỰ gọi vào Cloud Function.
+  - **Điền 3 URL Cloud Function thật** vào `js/cloud-functions-config.js` (`kiemTraVoucher`/`taoDonHangNhap`/`xacNhanThanhToan`, dạng `https://<tenHam>-zd2httdvpa-uc.a.run.app`) và điền `AUTOMATION_CONTROLLER_URL` thật (URL Controller đã deploy ở vòng 69) vào `cloud-functions-source/functions/index.js` (bản tham chiếu trong repo — bản thật đang chạy trên Cloud Functions đã có URL này từ lúc `Write` ở trên).
+  - **Nối THẬT nút "Thanh toán"** (`js/main.js`, trong `setupCheckoutPage()`) — bỏ hẳn đoạn `showToast()` giả lập placeholder: giờ gọi `fetch(CLOUD_FN_URLS.xacNhanThanhToan, ...)` với `maDonThatSu` (đã có từ `khoiTaoDonHangNhap()` lúc vào trang), thông tin khách, danh sách voucher đã áp dụng, và `layMaGioiThieuDaLuu()` (mã CTV từ `?ref=`, đã capture từ vòng 68). Thành công → lưu kết quả trả về (`sessionStorage`, key `swiftstreet_last_order`, đọc 1 LẦN DUY NHẤT rồi tự xoá) → điều hướng sang `cam-on-da-thanh-toan.html`. Lỗi mạng/Cloud Function trả lỗi → bắt được, MỞ LẠI nút (`dangXuLyThanhToan=false`, đổi lại chữ "Thanh toán") + `showToast()` báo lỗi, để khách bấm lại được — KHÔNG để nút bị khoá vĩnh viễn khi thất bại thật (khác với nhánh "Cloud Function chưa cấu hình", nhánh đó vẫn giữ hành vi giả lập cũ có chủ đích). Vẫn giữ graceful fallback: nếu `CLOUD_FN_URLS` chưa cấu hình xong HOẶC `maDonThatSu` chưa có (giai đoạn 1 lỗi) → về đúng hành vi toast giả lập cũ, không vỡ trang.
+  - **Trang MỚI `cam-on-da-thanh-toan.html`** (bố cục 2 cột đã duyệt mockup ở vòng 68) — đọc dữ liệu từ `sessionStorage` (không phải query string, tránh lộ thông tin khách lên URL/lịch sử trình duyệt): cột trái (icon check tròn, tiêu đề, mã đơn hàng, badge "Đang chờ admin duyệt" tái dùng `.badge-info`, 2 nút "In hoá đơn" (`window.print()`)/"Về trang chủ", ghi chú liên hệ hỗ trợ); cột phải là khối "Hoá đơn" (`.invoice-box`, tái dùng style `.checkout-summary-box`/`.summary-row`/`.total-amount`/`.discount-value` nơi hợp lý) hiện danh sách sản phẩm + breakdown từng voucher + tổng tiền + thông tin khách. Vào thẳng trang này KHÔNG qua luồng thanh toán (không có dữ liệu trong `sessionStorage`) → hiện `#invoice-empty` (thông báo + nút về trang chủ), KHÔNG vỡ trang. CSS mới thêm cuối `css/style.css`: `.invoice-*` + `@media (max-width:860px)` (xếp dọc 1 cột) + `@media print` (ẩn header/footer/support-fab/breadcrumb/cột trái, CHỈ in khối hoá đơn — đúng phương án "in để lưu PDF" đã chốt ở vòng 68).
+  - Tăng cache-bust `?v=70→71` (cho `css/style.css`, `js/main.js`, `data/products.js`, `js/firebase-config.js`, `js/firestore-content.js` — và cả trang mới `cam-on-da-thanh-toan.html`) trên toàn bộ 14 trang HTML.
+  - **CHƯA test bằng đơn hàng thật trên web thật** (Cloudflare Pages) — mới chỉ deploy xong hạ tầng, đọc code lại kỹ, chưa tự tay bấm thử từ đầu tới cuối trên trình duyệt thật. Việc cần làm NGAY: khách (hoặc Claude qua trình duyệt nếu có công cụ) thử mua 1 đơn giả để xác nhận: tạo đơn nháp lúc vào trang → bấm Thanh toán → nhận Telegram → bấm Duyệt → xem log lỗi (chắc chắn sẽ báo thiếu `FILE_MAU_THEO_SLUG`/ngân hàng/email qua `guiCanhBaoLoi()`, đó là điều DỰ KIẾN vì 3 việc đó chưa xong, không phải lỗi mới) → vào `cam-on-da-thanh-toan.html` xem hoá đơn hiện đúng không.
+  - **Vẫn CÒN Y NGUYÊN 3 việc chờ khách cung cấp** (không đổi từ vòng 67-69): thông tin ngân hàng thật (`BANK_BIN`/`BANK_ACCOUNT_NUMBER`/`BANK_ACCOUNT_NAME`, đang là placeholder — trang thanh toán vẫn hiện QR/số TK giả cho tới khi điền), ID file bàn giao File A/B + thư mục đích thật (`FILE_MAU_THEO_SLUG`/`THU_MUC_DICH_GIAO_HANG_ID`, đang là placeholder — nghĩa là `xuLyDonHangSauDuyet()` sẽ TỰ BỎ QUA bước gọi Controller copy/deploy/chuyển quyền cho tới khi có), và cách gửi email khách (chưa quyết định, chưa code).
+
 ## Việc cần làm tiếp theo (gợi ý cho phiên sau)
 
-1. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ) — khác với nội dung footer đã xong ở vòng 23.
-2. Từ vòng sửa 41, `data/products.js` có lại 6 sản phẩm (SwiftCopy.Drive, Swift Wedding Planner, Swift Content Planner, Swift Travel Planner, Swift Shop Admin, Swift Hotel & Homestay Manager) — nhưng CHỈ SwiftCopy.Drive có trang chi tiết thật (`products/swiftcopy-drive.html`). Cần nhân bản trang này cho 5 sản phẩm còn lại (ưu tiên Swift Wedding Planner — đã có link riêng ở footer, xem mục "Vòng sửa 41" — sau khi có trang thật, đổi link footer từ `thanh-toan.html?slug=swift-wedding-planner` sang trỏ trang chi tiết, giống pattern đã áp dụng cho SwiftCopy.Drive ở vòng 25). Giá của 3 sản phẩm mới (Travel/Shop/Hotel) là do Claude tự đặt tạm (chưa có giá thật từ khách) — cần khách xác nhận/chỉnh lại.
-3. Nối luồng thanh toán thật: nút "Thanh toán" ở `thanh-toan.html`, ô nhập mã voucher (hiện luôn hiển thị "-0đ", chưa trừ tiền thật), và form "Đăng ký" ở trang CTV hiện chưa gửi dữ liệu đi đâu — cần backend (Firebase) để lưu đơn hàng/áp mã/đăng ký CTV thật.
-4. Viết nội dung thật cho trang "Khuyến mãi" và "Kiếm Tiền" (2 trang placeholder ở nav — hiện đã hết khoảng trắng thừa nhưng vẫn chỉ là 1 dòng chữ chờ cập nhật).
-5. Kết nối Firebase Firestore để lưu đơn hàng.
-6. Xây trang admin duyệt đơn + gửi email giao file, và trang quản lý CTV thật (khác với trang giới thiệu chương trình đã có).
-7. Nếu khách xác nhận nội dung 6 trang footer cần khớp chính xác 100% với file Word gốc, xin lại bản gốc để đối chiếu (file txt hiện tại bị lỗi font mất một phần dấu, đã khôi phục theo ngữ cảnh chứ không phải chép nguyên văn chắc chắn tuyệt đối).
-8. 10 đánh giá trong modal "★ Đánh giá Swiftstreet" hiện là DỮ LIỆU GIẢ LẬP (hằng số `REVIEWS` trong `js/main.js`) — khi có đánh giá thật từ khách hàng, cần thay bằng dữ liệu thật hoặc nối backend để lưu đánh giá khách tự gửi (nút "Gửi đánh giá" hiện chưa gửi đi đâu).
-9. Link Instagram/Threads/YouTube ở footer vẫn là `href="#"` kèm toast "đang phát triển" (chỉ Facebook/TikTok đã có link thật từ vòng 27) — khi khách có link thật cho các nền tảng này, cập nhật theo đúng pattern đã áp dụng cho Facebook/TikTok (xem mục "Hành vi bấm icon mạng xã hội").
+**Ưu tiên cao — chặn đường tới khai trương thật (18/07/2026), xem chi tiết ở vòng sửa 67-70:**
+
+1. ✅ ĐÃ XONG (vòng 69): tạo 2 project Firebase thật, publish rules, điền config, nạp seed
+   data (Project A `swiftstreet-shop` hoàn tất).
+2. ✅ ĐÃ XONG (vòng 70): Cloud Functions (`02`) đã deploy thật lên `swiftstreet-admin` (7 hàm,
+   URL thật đã điền vào `js/cloud-functions-config.js`), Telegram bot (`03`) đã tạo + webhook
+   đã đăng ký thật, nút "Thanh toán" đã nối thật gọi `xacNhanThanhToan`, trang
+   `cam-on-da-thanh-toan.html` đã xây xong. Còn thiếu `04` (VietQR) — hiện vẫn dùng endpoint
+   ảnh công khai `img.vietqr.io` (không cần đăng ký) nên KHÔNG chặn, chỉ cần điền đúng
+   `BANK_BIN`/`BANK_ACCOUNT_NUMBER`/`BANK_ACCOUNT_NAME` thật (xem mục 3 dưới).
+3. Vẫn còn chờ khách cung cấp (đúng yêu cầu "hỏi trước"):
+   - Thông tin ngân hàng thật (Ngân hàng/Mã BIN/Số tài khoản/Tên chủ tài khoản) — điền vào
+     đầu `cloud-functions-source/functions/index.js` RỒI copy lại đúng đoạn đó vào file thật
+     `swiftstreet-functions/functions/index.js` + deploy lại. Đang hiện GIẢ trên
+     `thanh-toan.html`.
+   - Cấu trúc file bàn giao (File A/File B, đang tách riêng) — để biết gắn mã bản quyền vào
+     đâu trong `automation-controller-source/Code.gs` (`xuLyCopyVaDeploy_()`) và điền
+     `FILE_MAU_THEO_SLUG`/`THU_MUC_DICH_GIAO_HANG_ID` trong Cloud Function.
+   - Cách gửi email khách (bước 4 trong `xuLyDonHangSauDuyet()`) — chưa code, chưa bàn.
+4. `docs/setup/08-tao-apps-script-controller.md` mục 9: test action `transfer_ownership` thật
+   (cần 1 email phụ để tự nhận + bấm "Chấp nhận" thử) — vẫn CHƯA test.
+5. Test toàn bộ luồng bằng 1 đơn hàng giả trên web thật (Cloudflare Pages) trước khi công bố
+   rộng rãi: vào trang thanh toán → bấm Thanh toán → nhận Telegram → bấm Duyệt → xem
+   `cam-on-da-thanh-toan.html` hiện đúng hoá đơn không. Đặc biệt test kỹ `layBangGiaSwiftcopy()`
+   (transform giá SwiftCopy.Drive từ Firestore) vì ảnh hưởng trực tiếp số tiền khách trả.
+
+**Ưu tiên thấp hơn — việc cũ còn tồn đọng (chưa đổi):**
+
+7. Viết nội dung thật cho từng sản phẩm (mô tả, tính năng, FAQ đầy đủ — nay có thể lưu
+   thẳng qua field `mo_ta_dai`/`cau_hoi_thuong_gap` trong Firestore `san_pham/{slug}`, không
+   cần đụng code nữa).
+8. Từ vòng sửa 41, `data/products.js`/Firestore `san_pham` có 6 sản phẩm — CHỈ SwiftCopy.Drive
+   có trang chi tiết thật. Cần nhân bản `products/swiftcopy-drive.html` cho 5 sản phẩm còn
+   lại. Giá của 3 sản phẩm mới (Travel/Shop/Hotel) vẫn là Claude tự đặt tạm — cần khách xác nhận.
+9. Viết nội dung thật cho trang "Khuyến mãi" và "Kiếm Tiền" (2 trang placeholder ở nav).
+10. Nếu khách xác nhận nội dung 6 trang footer cần khớp chính xác 100% với file Word gốc, xin lại bản gốc để đối chiếu.
+11. Link Instagram/Threads/YouTube ở footer vẫn là `href="#"` kèm toast "đang phát triển".
+12. Các mục Phần 6 (ghi nhận phạm vi tương lai) khách đã nói RÕ chưa làm ở vòng 67: HTML tổng
+    quảng bá chiến dịch, dashboard đặt lịch tư vấn, 3 loại bot Telegram còn lại, trang
+    changelog, đồng bộ font toàn site.

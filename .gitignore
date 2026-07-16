@@ -1,3 +1,11 @@
 .DS_Store
 **/.DS_Store
 .claude/
+
+# Firebase / Cloud Functions — không bao giờ commit khoá bí mật
+serviceAccountKey.json
+**/serviceAccountKey.json
+.env
+**/.env
+node_modules/
+**/node_modules/

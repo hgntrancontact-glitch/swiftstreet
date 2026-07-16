@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Voucher: KHÔNG cho client đọc/ghi trực tiếp collection này (tránh lộ toàn bộ danh
+    // sách mã, tránh client tự sửa so_lan_da_dung). Việc "kiểm tra mã có hợp lệ không" đi
+    // qua Cloud Function `kiemTraVoucher` — Cloud Function dùng firebase-admin (bỏ qua rules
+    // này hoàn toàn), không phải client tự query Firestore.
+    match /voucher/{ma} {
+      allow read, write: if false;
+    }
+
+    // CTV: chỉ đúng chủ tài khoản (đã đăng nhập, uid khớp) mới ĐỌC được dữ liệu của mình.
+    // Mọi thay đổi (duyệt CTV, cộng hoa hồng...) chỉ qua Cloud Function.
+    match /ctv/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Đơn hàng: hoàn toàn khoá phía client — tạo đơn/đọc đơn/duyệt đơn ĐỀU đi qua Cloud
+    // Function (dùng firebase-admin, bỏ qua rules này), không có đường nào cho trình duyệt
+    // khách hàng tự đọc/ghi thẳng vào Firestore.
+    match /don_hang/{maDon} {
+      allow read, write: if false;
+    }
+
+    // Tra cứu bản quyền: DUY NHẤT collection cho phép đọc công khai trong Project B — vì
+    // đây là dữ liệu ĐÃ được lọc an toàn (không email/SĐT thật) để phục vụ trang Check bản
+    // quyền. Ghi vẫn khoá (chỉ Cloud Function set khi duyệt đơn xong).
+    match /tra_cuu_ban_quyen/{maBanQuyen} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

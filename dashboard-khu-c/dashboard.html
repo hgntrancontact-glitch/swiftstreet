@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Swiftstreet Admin</title>
+  <link rel="stylesheet" href="css/dashboard.css?v=1" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">Swiftstreet<span>Admin</span></div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="san-pham">Sản phẩm</button>
+        <button class="nav-item" data-tab="ctv">CTV</button>
+        <button class="nav-item" data-tab="don-hang">Đơn hàng</button>
+        <button class="nav-item" data-tab="thong-bao">Thông báo</button>
+        <button class="nav-item" data-tab="voucher">Voucher</button>
+      </nav>
+      <button class="btn-logout" id="btn-logout">Đăng xuất</button>
+    </aside>
+
+    <main class="content">
+      <div class="content-banner">
+        📝 KHUNG DASHBOARD — toàn bộ dữ liệu bên dưới là DỮ LIỆU MẪU cục bộ (chưa nối
+        Firestore Project B thật). Mọi thao tác (sửa/xoá/kéo-thả/duyệt) chỉ thay đổi trong
+        bộ nhớ tạm của trình duyệt, mất khi tải lại trang — sẽ nối Firestore thật khi Project
+        B đã sẵn sàng (xem TODO trong <code>js/dashboard.js</code>).
+      </div>
+
+      <!-- TAB: SẢN PHẨM -->
+      <section class="tab-panel active" id="tab-san-pham">
+        <div class="panel-head">
+          <h2>Sản phẩm</h2>
+          <p>Kéo-thả để đổi vị trí hiển thị trên lưới. Bấm vào 1 dòng để sửa chi tiết + ảnh.</p>
+        </div>
+        <div class="two-col">
+          <div class="product-list" id="product-list"><!-- render bằng JS --></div>
+          <div class="product-editor" id="product-editor">
+            <p class="editor-empty">Chọn 1 sản phẩm bên trái để sửa.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: CTV -->
+      <section class="tab-panel" id="tab-ctv">
+        <div class="panel-head">
+          <h2>CTV</h2>
+          <p>Danh sách chờ duyệt và CTV đang hoạt động.</p>
+        </div>
+        <h3 class="sub-heading">Chờ duyệt</h3>
+        <table class="data-table" id="ctv-pending-table"></table>
+        <h3 class="sub-heading">Đang hoạt động</h3>
+        <table class="data-table" id="ctv-active-table"></table>
+      </section>
+
+      <!-- TAB: ĐƠN HÀNG -->
+      <section class="tab-panel" id="tab-don-hang">
+        <div class="panel-head">
+          <h2>Đơn hàng</h2>
+          <p>Đổi "Trạng thái chăm sóc" để lọc khách sẵn sàng nâng cấp gói.</p>
+        </div>
+        <table class="data-table" id="don-hang-table"></table>
+      </section>
+
+      <!-- TAB: THÔNG BÁO -->
+      <section class="tab-panel" id="tab-thong-bao">
+        <div class="panel-head">
+          <h2>Thông báo chuông</h2>
+          <p>Thêm/xoá thông báo hiển thị ở dropdown chuông trên site công khai.</p>
+        </div>
+        <form class="inline-form" id="thong-bao-form">
+          <input type="text" id="thong-bao-input" placeholder="Nội dung thông báo mới..." required />
+          <button type="submit" class="btn-primary">Thêm</button>
+        </form>
+        <ul class="simple-list" id="thong-bao-list"></ul>
+      </section>
+
+      <!-- TAB: VOUCHER -->
+      <section class="tab-panel" id="tab-voucher">
+        <div class="panel-head">
+          <h2>Voucher</h2>
+          <p>Tạo mã giảm giá mới.</p>
+        </div>
+        <form class="voucher-form" id="voucher-form">
+          <label>Mã <input type="text" id="v-ma" placeholder="SALE10" required /></label>
+          <label>Loại mã
+            <select id="v-loai">
+              <option value="le">Lẻ</option>
+              <option value="xa_hang">Xả hàng</option>
+              <option value="sinh_nhat">Sinh nhật website</option>
+              <option value="minigame">Minigame</option>
+              <option value="ctv">CTV riêng</option>
+            </select>
+          </label>
+          <label>Kiểu giảm
+            <select id="v-kieu">
+              <option value="phan_tram">Phần trăm (%)</option>
+              <option value="so_tien">Số tiền cố định</option>
+            </select>
+          </label>
+          <label>Giá trị <input type="number" id="v-gia-tri" placeholder="10" required /></label>
+          <label>Ngày bắt đầu <input type="date" id="v-ngay-bat-dau" /></label>
+          <label>Ngày kết thúc <input type="date" id="v-ngay-ket-thuc" /></label>
+          <label>Giới hạn tổng số lần (để trống = không giới hạn) <input type="number" id="v-gioi-han-tong" /></label>
+          <label>Giới hạn/khách (để trống = không giới hạn) <input type="number" id="v-gioi-han-khach" /></label>
+          <button type="submit" class="btn-primary">Tạo mã</button>
+        </form>
+        <table class="data-table" id="voucher-table"></table>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/dashboard.js?v=1"></script>
+</body>
+</html>

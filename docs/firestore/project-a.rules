@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Sản phẩm, thông báo, đánh giá, cấu hình trang chủ: AI CŨNG ĐỌC được (web công khai),
+    // KHÔNG ai ghi được từ trình duyệt — ghi chỉ qua Firebase Console tay hoặc dashboard
+    // admin Khu C (Cloud Function xác thực riêng, không đi qua rules này).
+    match /san_pham/{slug} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /thong_bao/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /danh_gia/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /cau_hinh/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Chặn mặc định mọi collection khác chưa khai báo ở trên (an toàn hơn là để lọt).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "hero_banner": {
+    "hien": true,
+    "dong_1": "Giảm ngay 20% cho tất cả sản phẩm",
+    "dong_2": "Chỉ đến ngày 30/07/2026",
+    "ma_code": "SSGIFT28"
+  },
+  "ho_tro": {
+    "email": "hgntran.contact@gmail.com",
+    "faq_rut_gon": [
+      { "cau_hoi": "Mua một lần thì dùng được trong bao lâu?", "tra_loi": "Tất cả sản phẩm trên Swiftstreet đều áp dụng mô hình mua một lần, sử dụng trọn đời, không phát sinh phí định kỳ." },
+      { "cau_hoi": "Sau khi thanh toán, tôi nhận sản phẩm như thế nào?", "tra_loi": "Chúng tôi gửi thông tin đơn hàng và đường dẫn sử dụng qua email bạn đã đăng ký, ngay sau khi đơn được xác nhận." },
+      { "cau_hoi": "Dữ liệu của tôi có được bảo mật không?", "tra_loi": "Mọi dữ liệu nằm trong tài khoản Google Drive của chính bạn — chúng tôi không lưu trữ hay truy cập được." },
+      { "cau_hoi": "Thanh toán bằng cách nào?", "tra_loi": "Chuyển khoản ngân hàng qua mã QR hiển thị ngay tại trang thanh toán." },
+      { "cau_hoi": "Tôi có thể yêu cầu hoàn tiền không?", "tra_loi": "Có, tuỳ từng trường hợp cụ thể — xem chi tiết tại trang Chính sách đổi trả." }
+    ]
+  }
+}
