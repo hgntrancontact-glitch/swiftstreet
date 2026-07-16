@@ -388,12 +388,14 @@ const telegramWebhook = onRequest({ invoker: "public", secrets: [TELEGRAM_BOT_TO
   }
 });
 
-// ĐIỀN sau khi có ID thật của File A (chỉ copy)/File B (copy+tải về) — Phần 4, khách đang tự
-// tách. Chưa có ID thật thì xuLyDonHangSauDuyet() bên dưới tự bỏ qua bước gọi Controller (chỉ
-// báo lỗi rõ ràng qua guiCanhBaoLoi, không làm hỏng đơn hàng).
+// TẠM DÙNG 1 FILE GỐC DUY NHẤT cho CẢ Basic lẫn Premium (khách đã đồng ý ở vòng 71 — File
+// A/File B vẫn đang được tách riêng, chưa xong kịp ngày khai trương). Key phải khớp ĐÚNG
+// `slug` thật của sản phẩm (xem `data/products.js`/Firestore `san_pham` — hiện là
+// "swiftcopy-drive"), KHÔNG PHẢI tên gói basic/premium. Khi tách xong File A/B thật, đổi
+// sang cấu trúc { "swiftcopy-drive-basic": "...", "swiftcopy-drive-premium": "..." } và sửa
+// lại chỗ tra cứu `FILE_MAU_THEO_SLUG[slugChinh]` bên dưới cho khớp gói thay vì chỉ theo slug.
 const FILE_MAU_THEO_SLUG = {
-  "swiftcopy-drive-basic": "ĐIỀN_ID_FILE_A_CHỈ_COPY_VÀO_ĐÂY",
-  "swiftcopy-drive-premium": "ĐIỀN_ID_FILE_B_COPY_VA_TAI_VE_VÀO_ĐÂY",
+  "swiftcopy-drive": "ĐIỀN_ID_FILE_GỐC_DÙNG_TẠM_VÀO_ĐÂY",
 };
 const THU_MUC_DICH_GIAO_HANG_ID = "ĐIỀN_ID_THƯ_MỤC_DRIVE_CHỨA_BẢN_COPY_MỚI_VÀO_ĐÂY";
 
@@ -448,15 +450,35 @@ async function xuLyDonHangSauDuyet(maDon) {
 
     await donRef.update({ ma_ban_quyen: maBanQuyen, trang_thai: "da_duyet" });
 
-    // BƯỚC 4 — TODO: gửi email khách kèm file + mã bản quyền. CHƯA viết — cần quyết định cách
-    // gửi email (vd 1 action mới "send_email" trong Controller, dùng GmailApp/MailApp của
-    // chính script Controller — KHÔNG dùng lại pattern GAS_URL cũ của /api/email.js, vì đó
-    // thuộc dự án SwiftCopy.Drive cũ đã xác nhận KHÔNG dùng nữa).
+    // BƯỚC 4 — gửi email khách kèm link file + mã bản quyền, qua action "send_email" của
+    // Controller (dùng MailApp của hgntran.contact@gmail.com — khách đã đồng ý cách này).
+    // Chỉ gửi được nếu BƯỚC 1 đã chạy thành công (có ketQuaController, tức có link web app thật).
+    let daGuiEmail = false;
+    if (ketQuaController) {
+      const webAppUrl =
+        ketQuaController.deployment &&
+        ketQuaController.deployment.entryPoints &&
+        ketQuaController.deployment.entryPoints[0] &&
+        ketQuaController.deployment.entryPoints[0].webApp &&
+        ketQuaController.deployment.entryPoints[0].webApp.url;
+      if (webAppUrl) {
+        await goiControllerGAS("send_email", {
+          toEmail: donHang.khach.email,
+          tenKhach: donHang.khach.ten,
+          tenSanPham,
+          webAppUrl,
+          maBanQuyen,
+        });
+        daGuiEmail = true;
+      }
+    }
 
     await guiCanhBaoLoi(
       maDon,
-      "HOÀN TẤT (một phần)",
-      `Đã sinh mã bản quyền ${maBanQuyen} và ghi tra_cuu_ban_quyen. CÒN THIẾU: (1) bước "sửa nội dung gắn email" trong Controller (chờ biết cấu trúc file bàn giao), (2) gửi email khách. ${ketQuaController ? "Đã copy+deploy+chuyển quyền sở hữu file thành công qua Controller." : "CHƯA gọi Controller (thiếu FILE_MAU_THEO_SLUG/THU_MUC_DICH_GIAO_HANG_ID hoặc AUTOMATION_CONTROLLER_URL — điền vào đầu file index.js)."}`
+      daGuiEmail ? "HOÀN TẤT" : "HOÀN TẤT (một phần)",
+      daGuiEmail
+        ? `Đã copy+deploy+chuyển quyền sở hữu file, sinh mã bản quyền ${maBanQuyen}, và gửi email cho khách thành công.`
+        : `Đã sinh mã bản quyền ${maBanQuyen} và ghi tra_cuu_ban_quyen. CÒN THIẾU: chưa gửi được email cho khách vì ${ketQuaController ? "không lấy được link web app từ Controller (kiểm tra lại cấu trúc trả về của copy_and_deploy)." : "CHƯA gọi Controller (thiếu FILE_MAU_THEO_SLUG/THU_MUC_DICH_GIAO_HANG_ID hoặc AUTOMATION_CONTROLLER_URL — điền vào đầu file index.js)."} Ngoài ra vẫn còn TODO bước "sửa nội dung gắn email khách vào file" trong Controller (chờ biết cấu trúc file bàn giao File A/B) — mã bản quyền/kiểm tra chống dùng lậu chưa được nhúng vào bên trong file khách nhận.`
     );
   } catch (e) {
     await donRef.update({ trang_thai: "loi" });

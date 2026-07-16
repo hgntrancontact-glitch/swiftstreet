@@ -52,6 +52,8 @@ function xuLyLenh_(body) {
         return xuLyCopyVaDeploy_(body);
       case "transfer_ownership":
         return xuLyChuyenQuyenSoHuu_(body);
+      case "send_email":
+        return xuLyGuiEmail_(body);
       default:
         return { error: "Không hiểu action: " + body.action };
     }
@@ -217,4 +219,46 @@ function xuLyChuyenQuyenSoHuu_(body) {
     emailAddress: emailKhach,
   });
   return { permission: permission };
+}
+
+/**
+ * POST { toEmail, tenKhach, tenSanPham, webAppUrl, maBanQuyen } -> { ok: true }
+ * Gửi email bàn giao cho khách bằng chính Gmail của tài khoản đang chạy Controller
+ * (hgntran.contact@gmail.com) qua `MailApp` — miễn phí trong hạn mức ~100 email/ngày của tài
+ * khoản Gmail thường (đủ dùng ở quy mô hiện tại, không cần cấu hình gì thêm). Tách RIÊNG khỏi
+ * `xuLyCopyVaDeploy_()`/`xuLyChuyenQuyenSoHuu_()` — Cloud Function chỉ gọi action này SAU KHI
+ * cả 2 bước kia đã thành công, tránh gửi email cho khách khi file chưa thật sự sẵn sàng.
+ */
+function xuLyGuiEmail_(body) {
+  const { toEmail, tenKhach, tenSanPham, webAppUrl, maBanQuyen } = body;
+  if (!toEmail || !webAppUrl) throw new Error("Thiếu toEmail hoặc webAppUrl");
+
+  const loiChao = tenKhach ? "Chào " + tenKhach + "," : "Chào bạn,";
+  const body_ = [
+    loiChao,
+    "",
+    "Cảm ơn bạn đã mua " + (tenSanPham || "sản phẩm") + " tại Swiftstreet! Đơn hàng của bạn đã được xác nhận thanh toán.",
+    "",
+    "Link sử dụng công cụ (bấm để mở):",
+    webAppUrl,
+    "",
+    "Mã bản quyền của bạn (dùng để tra cứu lại thông tin đơn hàng khi cần):",
+    maBanQuyen || "(không có)",
+    "",
+    "Lưu ý: link trên đã được cấp quyền sở hữu riêng cho email này — vui lòng kiểm tra hộp thư",
+    "để bấm \"Chấp nhận\" lời mời chuyển quyền sở hữu file từ Google Drive (nếu có) trước khi sử dụng.",
+    "",
+    "Cần hỗ trợ, liên hệ SĐT/Zalo 0909 821 702.",
+    "",
+    "Trân trọng,",
+    "Swiftstreet",
+  ].join("\n");
+
+  MailApp.sendEmail({
+    to: toEmail,
+    subject: "Swiftstreet — File và hướng dẫn sử dụng " + (tenSanPham || "sản phẩm") + " của bạn",
+    body: body_,
+  });
+
+  return { ok: true };
 }
