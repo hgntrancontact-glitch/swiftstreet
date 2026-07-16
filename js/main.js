@@ -1202,6 +1202,7 @@ function setupCheckoutPage() {
       if (data.maDon) {
         maDonThatSu = data.maDon;
         if (orderCodeEl) orderCodeEl.textContent = data.maDon; // thay mã tạm bằng mã thật — từ giờ ỔN ĐỊNH, không đổi nữa
+        updateTotals(); // vẽ lại QR với đúng mã đơn hàng thật (trước đó QR ban đầu dùng mã tạm)
       }
     } catch (e) {
       console.warn("Không tạo được đơn hàng nháp (Cloud Function), tạm giữ mã phía client:", e);
@@ -1209,6 +1210,18 @@ function setupCheckoutPage() {
   }
 
   khoiTaoDonHangNhap();
+
+  // Điền thông tin ngân hàng THẬT (nếu đã cấu hình xong) — chỉ 1 chỗ cần sửa
+  // (js/cloud-functions-config.js) khi có thông tin thật, tự động cập nhật cả 3 dòng này VÀ
+  // mã QR (xem updateTotals()) mà không cần sửa HTML.
+  if (typeof BANK_INFO !== "undefined" && banKInfoReady()) {
+    const bankNameEl = document.getElementById("bank-ten-ngan-hang");
+    const bankHolderEl = document.getElementById("bank-chu-tk");
+    const bankNumberEl = document.getElementById("bank-so-tk");
+    if (bankNameEl) bankNameEl.textContent = BANK_INFO.tenNganHang;
+    if (bankHolderEl) bankHolderEl.textContent = BANK_INFO.accountName;
+    if (bankNumberEl) bankNumberEl.textContent = BANK_INFO.accountNumber;
+  }
 
   // Vòng 50: cờ theo dõi trạng thái "còn sản phẩm chưa chọn gói" — cập nhật
   // trong updateTotals(), đọc lại khi bấm nút Thanh toán (xem cuối hàm này).
@@ -1334,6 +1347,20 @@ function setupCheckoutPage() {
     if (discountPercentEl) discountPercentEl.textContent = `đã giảm ${discountPercent}%`;
     if (voucherAmountEl) voucherAmountEl.textContent = voucherGiam > 0 ? "-" + formatPriceVN(voucherGiam) : "-0đ";
     if (totalEl) totalEl.textContent = formatPriceVN(tongCuoi);
+
+    // Vẽ lại mã QR chuyển khoản khớp ĐÚNG số tiền cuối cùng (sau voucher) — chạy lại mỗi lần
+    // updateTotals() (bấm tick chọn/áp voucher...), không chỉ lúc tải trang lần đầu. Chỉ thay
+    // ảnh giả lập bằng QR thật khi bank info đã điền xong thật (banKInfoReady()) — tránh hiện
+    // ảnh lỗi/QR sai khi thông tin ngân hàng còn là placeholder.
+    const qrContainer = document.getElementById("payment-qr-container");
+    if (qrContainer && typeof BANK_INFO !== "undefined" && banKInfoReady()) {
+      const noiDungCK = maDonThatSu || orderCode;
+      const qrUrl = taoQRUrlClient(tongCuoi, noiDungCK);
+      if (qrContainer.dataset.qrUrl !== qrUrl) {
+        qrContainer.dataset.qrUrl = qrUrl;
+        qrContainer.innerHTML = `<img src="${qrUrl}" alt="Mã QR chuyển khoản ${formatPriceVN(tongCuoi)}" />`;
+      }
+    }
   }
 
   renderList();

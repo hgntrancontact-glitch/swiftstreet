@@ -19,3 +19,32 @@ const CLOUD_FN_URLS = {
 function isCloudFnReady(url) {
   return !!url && !url.startsWith("ĐIỀN_");
 }
+
+/**
+ * Thông tin ngân hàng nhận tiền — CÙNG giá trị với `BANK_BIN`/`BANK_ACCOUNT_NUMBER`/
+ * `BANK_ACCOUNT_NAME` trong `cloud-functions-source/functions/index.js` (điền cả 2 nơi khi có
+ * thông tin thật, xem `docs/setup/04-vietqr.md`). Đặt ở đây (client) vì 3 giá trị này DÙ SAO
+ * cũng hiện thành chữ thường trên trang thanh toán — không phải bí mật thật sự cần giấu, nên
+ * expose ra client để tự vẽ lại mã QR NGAY khi tổng tiền đổi (áp dụng voucher...) mà không
+ * cần gọi lại Cloud Function mỗi lần (tránh tạo đơn hàng mới/tốn round-trip không cần thiết).
+ */
+const BANK_INFO = {
+  bin: "ĐIỀN_MÃ_BIN_NGÂN_HÀNG_VÀO_ĐÂY",
+  accountNumber: "ĐIỀN_SỐ_TK_CỦA_BẠN_VÀO_ĐÂY",
+  accountName: "ĐIỀN_TÊN_CHỦ_TK_VÀO_ĐÂY",
+  tenNganHang: "ĐIỀN_TÊN_NGÂN_HÀNG_VÀO_ĐÂY", // tên hiển thị cho khách xem (vd "Vietcombank") — KHÁC mã BIN (số)
+};
+
+function banKInfoReady() {
+  return Object.values(BANK_INFO).every((v) => !!v && !v.startsWith("ĐIỀN_"));
+}
+
+/** Tạo URL ảnh QR VietQR (endpoint ảnh công khai, không cần đăng ký) cho ĐÚNG số tiền/nội dung. */
+function taoQRUrlClient(soTien, noiDungCK) {
+  const params = new URLSearchParams({
+    amount: String(soTien),
+    addInfo: noiDungCK,
+    accountName: BANK_INFO.accountName,
+  });
+  return `https://img.vietqr.io/image/${BANK_INFO.bin}-${BANK_INFO.accountNumber}-compact2.png?${params.toString()}`;
+}

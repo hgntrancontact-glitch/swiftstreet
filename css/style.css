@@ -1949,7 +1949,8 @@ p {
   margin-right: auto;
 }
 
-.payment-mock-qr svg {
+.payment-mock-qr svg,
+.payment-mock-qr img {
   display: block;
   width: 100%;
   height: auto;
