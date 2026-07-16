@@ -1990,8 +1990,8 @@ p {
 
 .payment-mock-split .payment-mock-qr {
   flex-shrink: 0;
-  width: 150px;
-  max-width: 150px;
+  width: 170px;
+  max-width: 170px;
   margin: 0;
 }
 
@@ -2004,32 +2004,31 @@ p {
   gap: 6px;
 }
 
+/* Vòng 75: BỎ cắt chữ "..." (white-space:nowrap + text-overflow:ellipsis) — khi tăng kích
+   thước QR (vòng 74/75), cột thông tin bị hẹp lại khiến "TRAN HONG NAM" bị cắt còn "TRAN
+   HON...". Cho phép xuống dòng bình thường (white-space:normal) thay vì cắt bớt — ưu tiên
+   hiện ĐẦY ĐỦ thông tin chuyển khoản hơn giữ đúng 1 dòng ngang, áp dụng ở MỌI kích thước màn
+   hình (không chỉ riêng mobile như trước). */
 .payment-mock-split .payment-mock-row b {
   flex: 1;
   min-width: 0;
   text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* Dưới ~480px, cột QR+thông tin nằm ngang không đủ chỗ hiển thị đầy đủ số tài
-   khoản (bị cắt "..."), nên chuyển về xếp dọc như bố cục gốc — ưu tiên đọc rõ
-   thông tin chuyển khoản hơn giữ đúng bố cục ngang trên màn hình rất hẹp. */
+   khoản, nên chuyển về xếp dọc như bố cục gốc — ưu tiên đọc rõ thông tin chuyển
+   khoản hơn giữ đúng bố cục ngang trên màn hình rất hẹp. */
 @media (max-width: 480px) {
   .payment-mock-split {
     flex-direction: column;
   }
 
   .payment-mock-split .payment-mock-qr {
-    width: 180px;
-    max-width: 180px;
+    width: 200px;
+    max-width: 200px;
     margin: 0 auto 12px;
-  }
-
-  .payment-mock-split .payment-mock-row b {
-    white-space: normal;
-    text-overflow: clip;
   }
 }
 
