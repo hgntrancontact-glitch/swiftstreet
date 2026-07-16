@@ -234,7 +234,6 @@ p {
   align-items: center;
   gap: 3px;
   padding: 5px 12px;
-  border-radius: 999px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
@@ -244,21 +243,24 @@ p {
   flex-shrink: 0;
 }
 
-/* Vòng 79: khách yêu cầu rõ "Bán chạy" nằm HẲN BÊN TRONG khung mockup (không
-   tràn ra vùng đệm sáng bên ngoài như vòng 77/78 nữa) — `top:38px; left:24px`
-   đặt nó lọt hẳn vào bên trong `.device-screen` (bắt đầu ở y≈30px/x≈16px), đủ
-   khoảng cách để không chạm/tràn qua viền khung. Vì shape giờ là pill tròn đều
-   + bóng đổ (vòng 77), nằm sâu bên trong không còn rủi ro lộ viền như thiết kế
-   cũ (bo góc bất đối xứng phải khớp chính xác đường cong mới bị lỗi). */
+/* Vòng 80 — khách xác nhận qua trắc nghiệm: shape ĐÚNG là bo 2 GÓC CHÉO (không
+   phải pill tròn đều như vòng 77-79) — "Bán chạy" bo góc trên-trái + dưới-phải
+   (đúng y hệt giá trị đã dùng ở vòng 65/66), "Cập nhật" dùng đúng CÙNG kiểu bo
+   chéo, MIRROR theo vị trí góc phải (bo trên-phải + dưới-trái) thay vì "bo cả
+   2 góc dưới" như thiết kế cũ (vòng 66) — khách yêu cầu rõ "Cập nhật cũng nên
+   vậy" (giống kiểu bo chéo của "Bán chạy"). Giữ nguyên box-shadow (vòng 77) và
+   vị trí đã chốt ở vòng 78/79 — CHỈ đổi border-radius. */
 .badge-bestseller {
   position: absolute;
   top: 38px;
   left: 24px;
+  border-radius: 14px 0 14px 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
 
 .badge-update {
+  border-radius: 0 14px 0 14px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
