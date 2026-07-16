@@ -1990,8 +1990,8 @@ p {
 
 .payment-mock-split .payment-mock-qr {
   flex-shrink: 0;
-  width: 110px;
-  max-width: 110px;
+  width: 150px;
+  max-width: 150px;
   margin: 0;
 }
 
@@ -2022,8 +2022,8 @@ p {
   }
 
   .payment-mock-split .payment-mock-qr {
-    width: 140px;
-    max-width: 140px;
+    width: 180px;
+    max-width: 180px;
     margin: 0 auto 12px;
   }
 
