@@ -919,16 +919,18 @@ p {
 /* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải — badge
    danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó không phụ thuộc "Cập
    nhật" có tồn tại hay không.
-   Vòng 77: đặt trong vùng đệm sáng màu quanh khung mockup (top:10px;
-   right:10px, khớp cách đặt mới của "Bán chạy") thay vì cố đè lên viền khung
-   mockup — tránh lặp lại lỗi "lộ viền đen" đã gặp khi ép 2 hình bo góc khác
-   nhau dính sát nhau. `gap:0→6px` — để category-badge và "Cập nhật" đọc như 2
-   miếng dán tròn riêng biệt (giống ảnh tham khảo đối thủ), không còn ép dính
-   liền thành 1 khối 2 màu. */
+   Vòng 78 — HUỶ vị trí vòng 77: khách yêu cầu rõ đưa nhãn danh mục về ĐÚNG VỊ
+   TRÍ CŨ "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66), "Cập nhật"
+   nằm ngay dưới nó. Giữ nguyên `gap:6px` (không phải 0) — dù chỉ được yêu cầu
+   đổi vị trí, KHÔNG đổi shape/gap, nhưng ép 2 pill bo tròn đều (999px, đổi ở
+   vòng 77) dính sát gap:0 sẽ lộ lại đúng kiểu khe hở đã gặp (2 cặp góc tròn
+   đối nhau tại điểm nối, thay vì 1 cặp như thiết kế cũ) — giữ khoảng cách nhỏ
+   để "Cập nhật" vẫn đọc rõ là nằm NGAY DƯỚI nhãn danh mục mà không tái phát
+   lỗi lộ viền. */
 .product-badges-right {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 18px;
+  right: 16px;
   z-index: 2;
   display: flex;
   flex-direction: column;
