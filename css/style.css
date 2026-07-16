@@ -1988,6 +1988,15 @@ p {
   max-width: none;
 }
 
+.payment-mock-split {
+  /* Vòng 76: THU HẸP padding/gap riêng cho layout này (không đụng .payment-mock gốc dùng ở
+     trang Hướng dẫn mua hàng) — nhường thêm chỗ cho cột thông tin sau khi QR tăng lên
+     170px (vòng 74/75), để "Chủ tài khoản" (dài nhất, "TRAN HONG NAM") vừa đúng 1 hàng mà
+     KHÔNG cần cắt chữ "..." hay xuống dòng — khách yêu cầu rõ phải nằm nguyên 1 hàng. */
+  padding: 10px;
+  gap: 8px;
+}
+
 .payment-mock-split .payment-mock-qr {
   flex-shrink: 0;
   width: 170px;
@@ -2001,20 +2010,31 @@ p {
 }
 
 .payment-mock-split .payment-mock-row {
-  gap: 6px;
+  gap: 4px;
+  font-size: 11px;
+  padding: 5px 0;
 }
 
-/* Vòng 75: BỎ cắt chữ "..." (white-space:nowrap + text-overflow:ellipsis) — khi tăng kích
-   thước QR (vòng 74/75), cột thông tin bị hẹp lại khiến "TRAN HONG NAM" bị cắt còn "TRAN
-   HON...". Cho phép xuống dòng bình thường (white-space:normal) thay vì cắt bớt — ưu tiên
-   hiện ĐẦY ĐỦ thông tin chuyển khoản hơn giữ đúng 1 dòng ngang, áp dụng ở MỌI kích thước màn
-   hình (không chỉ riêng mobile như trước). */
+.payment-mock-split .payment-mock-row span {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .payment-mock-split .payment-mock-row b {
   flex: 1;
   min-width: 0;
   text-align: right;
-  white-space: normal;
-  word-break: break-word;
+  white-space: nowrap;
+}
+
+.payment-mock-split .copy-btn {
+  width: 18px;
+  height: 18px;
+}
+
+.payment-mock-split .copy-btn svg {
+  width: 12px;
+  height: 12px;
 }
 
 /* Dưới ~480px, cột QR+thông tin nằm ngang không đủ chỗ hiển thị đầy đủ số tài

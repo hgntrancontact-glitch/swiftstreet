@@ -1347,6 +1347,8 @@ function setupCheckoutPage() {
     if (discountPercentEl) discountPercentEl.textContent = `đã giảm ${discountPercent}%`;
     if (voucherAmountEl) voucherAmountEl.textContent = voucherGiam > 0 ? "-" + formatPriceVN(voucherGiam) : "-0đ";
     if (totalEl) totalEl.textContent = formatPriceVN(tongCuoi);
+    const soTienCKEl = document.getElementById("payment-so-tien-ck");
+    if (soTienCKEl) soTienCKEl.textContent = formatPriceVN(tongCuoi); // dòng "Số tiền CK" có nút sao chép riêng, khớp đúng "Cần thanh toán"
 
     // Vẽ lại mã QR chuyển khoản khớp ĐÚNG số tiền cuối cùng (sau voucher) — chạy lại mỗi lần
     // updateTotals() (bấm tick chọn/áp voucher...), không chỉ lúc tải trang lần đầu. Chỉ thay
