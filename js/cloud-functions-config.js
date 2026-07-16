@@ -29,10 +29,10 @@ function isCloudFnReady(url) {
  * cần gọi lại Cloud Function mỗi lần (tránh tạo đơn hàng mới/tốn round-trip không cần thiết).
  */
 const BANK_INFO = {
-  bin: "ĐIỀN_MÃ_BIN_NGÂN_HÀNG_VÀO_ĐÂY",
-  accountNumber: "ĐIỀN_SỐ_TK_CỦA_BẠN_VÀO_ĐÂY",
-  accountName: "ĐIỀN_TÊN_CHỦ_TK_VÀO_ĐÂY",
-  tenNganHang: "ĐIỀN_TÊN_NGÂN_HÀNG_VÀO_ĐÂY", // tên hiển thị cho khách xem (vd "Vietcombank") — KHÁC mã BIN (số)
+  bin: "970432", // VPBank
+  accountNumber: "0388314162",
+  accountName: "TRAN HONG NAM", // viết HOA không dấu — đúng chuẩn hiển thị chuyển khoản ngân hàng
+  tenNganHang: "VPBank", // tên hiển thị cho khách xem — KHÁC mã BIN (số)
 };
 
 function banKInfoReady() {

@@ -33,9 +33,9 @@ const TELEGRAM_BOT_TOKEN = defineSecret("TELEGRAM_BOT_TOKEN");
 const TELEGRAM_ADMIN_CHAT_IDS = defineSecret("TELEGRAM_ADMIN_CHAT_IDS");
 
 // ĐIỀN_SỐ_TK_CỦA_BẠN_VÀO_ĐÂY — xem docs/setup/04-vietqr.md
-const BANK_BIN = "ĐIỀN_MÃ_BIN_NGÂN_HÀNG_VÀO_ĐÂY";
-const BANK_ACCOUNT_NUMBER = "ĐIỀN_SỐ_TK_CỦA_BẠN_VÀO_ĐÂY";
-const BANK_ACCOUNT_NAME = "ĐIỀN_TÊN_CHỦ_TK_VÀO_ĐÂY";
+const BANK_BIN = "970432"; // VPBank
+const BANK_ACCOUNT_NUMBER = "0388314162";
+const BANK_ACCOUNT_NAME = "TRAN HONG NAM";
 
 // URL + mã bí mật của "Bộ điều phối" (Apps Script MỚI, xem automation-controller-source/ +
 // docs/setup/08-tao-apps-script-controller.md) — KHÔNG PHẢI URL của gas-dashboard (gas-
