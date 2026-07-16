@@ -216,16 +216,26 @@ p {
    trí ở dưới): MIRROR lại — bo góc trên-phải, cắt phẳng 3 góc còn lại. 2
    nhãn dùng CHUNG 1 component (padding/font-size), chỉ khác hướng bo góc +
    nền màu + chữ. */
-/* Vòng 61: giảm kích thước CẢ 2 nhãn trạng thái (khách yêu cầu "không được để
-   kích thước lấn át màn hình... tạo cảm giác 2 nhãn này bám lên màn hình") —
-   giảm `padding` 6px 14px → 4px 10px. Font-size/icon giảm tương ứng ở rule
-   `.product-thumb .badge-bestseller`/`.badge-icon` bên dưới. */
+/* Vòng 77 — THIẾT KẾ LẠI HOÀN TOÀN theo ảnh tham khảo đối thủ (GSheets.vn) khách
+   gửi: gốc lỗi "lộ viền đen nhỏ khá xấu" ở thiết kế cũ (vòng 52-66) là do cố tình
+   bo góc BẤT ĐỐI XỨNG (`14px 0 14px 0`/`0 0 14px 14px`) để khớp CHÍNH XÁC với góc
+   cong của khung mockup/badge liền kề — chỉ cần lệch 1px là lộ ra 1 khe hở nhọn
+   để lộ màu nền tối phía sau. Đối thủ dùng cách ĐƠN GIẢN HƠN NHIỀU và bền hơn: mỗi
+   nhãn là 1 viên thuốc (pill) bo tròn ĐỀU cả 4 góc, có đổ bóng nhẹ để trông như 1
+   miếng dán nổi lên trên, đặt gần góc thẻ nhưng KHÔNG cố khớp chính xác đường cong
+   nào cả — không còn rủi ro lệch góc vì không có góc nào cần khớp. Đã đổi CẢ
+   "Bán chạy" LẪN "Cập nhật" sang pill tròn đều (`border-radius:999px`) + bóng đổ,
+   và tách rời 2 nhãn góc phải (danh mục + Cập nhật) bằng 1 khoảng cách nhỏ thay vì
+   cố ghép dính liền thành 1 khối 2 màu (chính việc ép dính liền 2 hình có bo góc
+   khác nhau là nguồn gốc thật sự của khe hở lộ ra). */
 .badge-bestseller,
 .badge-update {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 4px 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .badge-bestseller .badge-icon {
@@ -234,29 +244,19 @@ p {
   flex-shrink: 0;
 }
 
-/* "Bán chạy" — vòng 66 SỬA LỖI: khách chỉ ảnh ra vẫn còn khe hở phía trên —
-   `top:36px` (vòng 64-65) để lộ 1 dải bezel đen mỏng (y:30-36) phía TRÊN
-   badge, nhìn như chưa dính sát khung mockup. Đổi `top:36px→30px` — khớp
-   ĐÚNG mép trên thật của `.device-screen` (bắt đầu ở y≈30px), badge giờ
-   chạm thẳng viền trên khung mockup (hết khe hở) trong khi vẫn đủ cao để
-   tràn xuống chồng lên nội dung `.device-display` bên dưới (không mất hiệu
-   ứng "đè lên nội dung" đã chốt từ vòng 64). Border-radius tăng 8px→14px
-   (khách yêu cầu "bo dày hơn cho đẹp"). */
+/* "Bán chạy" — đặt trong vùng đệm sáng màu quanh khung mockup (top/left nhỏ,
+   trong phạm vi padding-top:30px/padding-left:16px của `.product-thumb`), chỉ
+   tràn nhẹ xuống góc khung mockup thay vì đè sâu lên hẳn nội dung bên trong như
+   thiết kế cũ — giống đúng cách đối thủ đặt nhãn ở ảnh tham khảo. */
 .badge-bestseller {
   position: absolute;
-  top: 30px;
-  left: 16px;
-  border-radius: 14px 0 14px 0;
+  top: 10px;
+  left: 10px;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
 }
 
-/* "Cập nhật" — vòng 66: border-radius tăng 8px→14px (đồng bộ "Bán chạy",
-   khách yêu cầu bo dày hơn cho đẹp). Chiều cao giảm riêng qua
-   `.product-thumb .badge-update` (padding dọc nhỏ hơn `.badge-bestseller`) —
-   xem rule bên dưới. */
 .badge-update {
-  border-radius: 0 0 14px 14px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -896,78 +896,48 @@ p {
   padding: 30px 16px 15px;
 }
 
-/* Vòng 52: badge vàng "loại sản phẩm" chuyển từ góc TRÁI sang góc PHẢI (theo
-   mockup khách gửi) để nhường chỗ góc trái cho badge "Bán chạy" mới — sizing
-   dùng chung cho MỌI badge trong `.product-thumb` (kể cả 2 badge mới), vị trí
-   tách riêng theo từng loại ngay bên dưới. */
-/* Vòng 61: giảm kích thước nhãn danh mục (khách xác nhận vị trí đã đúng,
-   chỉ cần thu nhỏ lại cho khỏi "lấn át" khung mockup bên dưới). */
+/* Sizing dùng chung cho MỌI badge trong `.product-thumb` — vị trí tách riêng
+   theo từng loại ngay bên dưới. */
 .product-thumb .badge {
   z-index: 2;
   font-size: 9px;
   padding: 2px 7px;
 }
 
-/* Vòng 57: badge-bestseller/badge-update dùng font-size/padding riêng (khớp
-   shape khối vuông mới) — phải khai báo lại ở đây (thay vì chỉ ở rule
-   `.badge-bestseller, .badge-update` chung phía trên) vì `.product-thumb
-   .badge` (2 class, specificity cao hơn `.badge-bestseller` 1 class) sẽ ghi
-   đè mất nếu không.
-   Vòng 61: giảm kích thước theo yêu cầu khách — khớp đúng padding mới ở rule
-   `.badge-bestseller, .badge-update` chung phía trên (4px 10px).
-   Vòng 66: tách riêng "Cập nhật" — khách yêu cầu "giảm chiều cao ô Cập nhật
-   lại" — giảm padding dọc riêng cho `.badge-update` (4px→2px), "Bán chạy"
-   giữ nguyên 4px. */
-.product-thumb .badge-bestseller {
-  font-size: 8.5px;
-  padding: 4px 10px;
-}
-
+/* Vòng 77: badge-bestseller/badge-update dùng font-size/padding riêng (phải
+   khai báo lại ở đây, không chỉ ở rule `.badge-bestseller, .badge-update`
+   chung phía trên, vì `.product-thumb .badge` có specificity cao hơn) —
+   ĐỒNG BỘ kích thước cả 2 (không còn làm "Cập nhật" thấp hơn "Bán chạy" như
+   thiết kế cũ, vì giờ 2 nhãn tách rời bằng khoảng cách thay vì ép dính liền
+   thành 1 khối, không còn lý do cần chênh chiều cao). */
+.product-thumb .badge-bestseller,
 .product-thumb .badge-update {
-  font-size: 8.5px;
-  padding: 2px 10px;
+  font-size: 9px;
+  padding: 5px 12px;
 }
 
-/* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải —
-   badge danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó (tính từ chính
-   wrapper) không phụ thuộc "Cập nhật" có tồn tại hay không, đáp ứng đúng yêu
-   cầu "độ cao cố định trên mọi card". "Cập nhật" (nếu có) tự nhiên xếp NGAY
-   DƯỚI nhờ flex-column + gap, không cần tính tay toạ độ riêng.
-   Vòng 60 — SỬA LỖI VỊ TRÍ (thay thế vòng 58): khách chỉ rõ nhãn danh mục
-   ("File kế hoạch"/"Web app script"...) PHẢI đè lên viền trên của khung
-   mockup đen (giống "Bán chạy"), KHÔNG được nổi trong vùng đệm trắng phía
-   trên nó. Đổi `top:0→18px` để khớp đúng độ cao mới của "Bán chạy" (cùng
-   hàng — cả 2 đều tràn xuống chồng lên khung đen 1 khoảng tương đương).
-   Đổi `right:9px→16px` để khớp ĐÚNG mép phải thật của `.device-screen`
-   (device-screen cách mép `.product-thumb` đúng 16px do padding-right:16px
-   của product-thumb) — đảm bảo "Cập nhật" (xếp ngay dưới) không tràn vượt ra
-   ngoài viền phải của khung mockup, đúng yêu cầu "không vượt ra viền khung
-   máy tính".
-   Vòng 61: đổi `gap:4px→0` — khách yêu cầu "Cập nhật" nằm SÁT nhãn danh mục
-   (không có khoảng cách), 2 nhãn ghép liền thành 1 khối — xem cách bo góc
-   MIRROR (trên/dưới) đã đổi tương ứng ở `.badge-update`.
-   Vòng 64 — HUỶ vòng 63: khách xác nhận rõ nhãn danh mục KHÔNG cần cùng hàng
-   với "Bán chạy" nữa (2 nhãn tách biệt hoàn toàn — "Bán chạy" đã chuyển sang
-   đè lên nội dung mini-dashboard, xem `.badge-bestseller`). Nhãn danh mục
-   quay lại vị trí đơn giản, an toàn trong vùng đệm NGOÀI khung mockup (không
-   overlap gì cả) — `top:34px→9px`, `right:20px→9px`.
-   Vòng 65 — SỬA LẠI: khách phản hồi nhãn danh mục "PHẢI ĐÈ LÊN khung mockup,
-   KHÔNG ĐƯỢC TÁCH RA" — vị trí `top:9px` (nổi hẳn trong vùng đệm ngoài) ở
-   vòng 64 là SAI. Đổi lại `top:9px→18px` để đè lên viền trên khung mockup
-   (bắt đầu ở y≈30px, bezel 4px) — cùng cách overlap như "Bán chạy" đang dùng
-   nhưng ở tầng nhẹ hơn (chỉ chạm viền, không cần đè sâu vào nội dung như "Bán
-   chạy" — không có yêu cầu cụ thể về việc này). `right:9px→16px` — bỏ luôn
-   khoảng trống 7px, dính thẳng vào mép phải thật của khung mockup, đồng nhất
-   với cách sửa "không khoảng trống" đã áp dụng cho "Bán chạy". */
+/* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải — badge
+   danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó không phụ thuộc "Cập
+   nhật" có tồn tại hay không.
+   Vòng 77: đặt trong vùng đệm sáng màu quanh khung mockup (top:10px;
+   right:10px, khớp cách đặt mới của "Bán chạy") thay vì cố đè lên viền khung
+   mockup — tránh lặp lại lỗi "lộ viền đen" đã gặp khi ép 2 hình bo góc khác
+   nhau dính sát nhau. `gap:0→6px` — để category-badge và "Cập nhật" đọc như 2
+   miếng dán tròn riêng biệt (giống ảnh tham khảo đối thủ), không còn ép dính
+   liền thành 1 khối 2 màu. */
 .product-badges-right {
   position: absolute;
-  top: 18px;
-  right: 16px;
+  top: 10px;
+  right: 10px;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0;
+  gap: 6px;
+}
+
+.product-badges-right .badge {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 /* Vòng 59 — SỬA LỖI GỐC: đã XOÁ HẲN rule tăng riêng `padding-top` cho card có
