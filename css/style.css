@@ -278,13 +278,13 @@ p {
    `border-radius:0 8px 0 8px` (đối xứng gương với `8px 0 8px 0` của "Bán
    chạy"). Không còn 2 hình khác nhau cần ghép vừa nhau nữa — loại bỏ hoàn
    toàn nguồn gốc của vấn đề thay vì tiếp tục vá lỗi từng góc một. */
-/* Vòng 105 — HUỶ vòng 104 (khách yêu cầu rõ KHÔNG tự ý đổi vị trí "Cập nhật"
-   khi chưa hỏi): trả về ĐÚNG vị trí/shape vòng 100-102 — đứng riêng, con trực
-   tiếp của `.device-screen`, `top:0;right:0`, `border-radius:0 8px 0 8px`
-   (đối xứng gương "Bán chạy"). KHÔNG đổi gì so với trước vòng 104. */
+/* Vòng 107: khách chỉ ra "Cập nhật" lấn nhẹ lên góc dưới-phải "File kế hoạch"
+   (2 hệ toạ độ neo khác nhau không khớp tuyệt đối). Đẩy XUỐNG 1 chút
+   (`top:0→8px`) — CHỈ đổi trục dọc, KHÔNG đổi `right`/shape/vị trí "File kế
+   hoạch" — để "File kế hoạch" đè lên trọn vẹn thay vì bị "Cập nhật" lấn vào. */
 .badge-update {
   position: absolute;
-  top: 0;
+  top: 8px;
   right: 0;
   z-index: 1;
   border-radius: 0 8px 0 8px;
