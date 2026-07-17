@@ -250,15 +250,19 @@ p {
    2 góc dưới" như thiết kế cũ (vòng 66) — khách yêu cầu rõ "Cập nhật cũng nên
    vậy" (giống kiểu bo chéo của "Bán chạy"). Giữ nguyên box-shadow (vòng 77) và
    vị trí đã chốt ở vòng 78/79 — CHỈ đổi border-radius. */
-/* Vòng 81: khách xác nhận shape đúng rồi, CHỈ còn "Bán chạy" chưa "bám sát"
-   hẳn vào nội dung mockup (còn hở 1 khoảng sáng phía trên trước khi chạm nội
-   dung thật của mini-dashboard) — "Cập nhật"/nhãn danh mục đã đúng, KHÔNG đụng.
-   Tăng nhẹ `top:38→44px; left:24→28px` (đẩy sâu thêm 1 chút vào bên trong
-   `.device-display`, nơi nội dung mini-dashboard thật sự bắt đầu hiện). */
+/* Vòng 82 — khách gửi đặc tả CHÍNH XÁC bằng chữ (thay vì ảnh): "Bán chạy" phải
+   ĐÈ LÊN đúng góc trên-trái của khung mockup (`.device-screen`, bắt đầu ở
+   y≈30px/x≈16px tính từ `.product-thumb`), KHÔNG được có khoảng hở giữa nhãn
+   và khung. Đặt `top:22px; left:12px` — bắt đầu TRƯỚC khi khung mockup bắt đầu
+   (nằm 1 phần trong vùng đệm sáng) rồi tràn qua hẳn góc khung (khung bắt đầu ở
+   30px/16px, nhãn cao/rộng hơn khoảng cách đó nên chắc chắn tràn qua, không
+   phụ thuộc đo pixel chính xác) — đảm bảo LUÔN đè lên góc, không thể có khoảng
+   hở dù sai số nhỏ. Vẫn nằm gọn trong `.product-thumb` (dương, không âm) nên
+   không tràn ra ngoài viền `.product-card`. */
 .badge-bestseller {
   position: absolute;
-  top: 44px;
-  left: 28px;
+  top: 22px;
+  left: 12px;
   border-radius: 14px 0 14px 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
@@ -930,10 +934,10 @@ p {
    nhật" có tồn tại hay không.
    Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ CŨ "đè lên mockup" (`top:18px;
    right:16px`, như vòng 65/66).
-   Vòng 79: khách yêu cầu "Cập nhật" xê dịch LÊN, nằm SÁT nhãn danh mục hơn —
-   giảm `gap:6px→2px` (không về hẳn 0 để vẫn còn 1 khoảng đệm rất nhỏ chống lộ
-   viền nếu 2 pill khác chiều rộng, nhưng đủ sát để đọc là "dính liền" như yêu
-   cầu). */
+   Vòng 82: khách đặc tả rõ bằng chữ — cạnh TRÊN của "Cập nhật" phải "chạm
+   sát/dính liền" vào nhãn danh mục, KHÔNG có khoảng cách — giảm hẳn
+   `gap:2px→0`. Nhãn danh mục GIỮ NGUYÊN vị trí/style (top:18px;right:16px),
+   đúng yêu cầu "không sửa gì". */
 .product-badges-right {
   position: absolute;
   top: 18px;
@@ -942,7 +946,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 0;
 }
 
 .product-badges-right .badge {
