@@ -284,16 +284,31 @@ p {
    (8px, khớp bán kính thật khung mockup) để nó "đè lên thanh đen mockup tạo
    cảm giác liền nhau", giống hệt cách "Bán chạy" hoạt động — 3 góc còn lại
    (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo.
-   Vòng 95: khách khoanh đỏ chỉ đúng điểm hở — góc trên-phải của "Cập nhật"
-   (vuông) tiếp giáp với đường cong tròn của "File kế hoạch" (pill 999px) phía
-   trên nó, 2 hình dạng khác nhau tại điểm nối để lộ khe nhỏ — ĐÚNG loại lỗi
-   "bo góc khác nhau chạm nhau" đã gặp nhiều lần. Thêm bo góc trên-phải 8px
-   (khớp bán kính thật của "File kế hoạch" tại điểm tiếp xúc) để 2 đường cong
-   khớp nhau, hết khe hở. */
+   Vòng 95: thêm bo góc trên-phải 8px (thường/lồi) — CHƯA đúng ý khách.
+   Vòng 96 — khách VẼ TAY chính xác hình dạng muốn: KHÔNG PHẢI bo lồi bình
+   thường — 2 cạnh TRÊN (trái VÀ phải) của "Cập nhật" phải cong LÕM (concave,
+   như hình cái phễu/mỏ neo) để nối liền mượt sang đường cong của "File kế
+   hoạch" phía trên (kiểu "2 khối tròn chảy dính vào nhau" — hiệu ứng
+   "metaball"). `border-radius` CSS chỉ tạo được góc LỒI, không tạo được góc
+   LÕM — phải dùng `mask-image` với 2 lớp `radial-gradient` (1 lớp cắt trong
+   suốt góc trên-trái, 1 lớp cắt góc trên-phải) kết hợp bằng `mask-composite:
+   intersect` (giao của 2 vùng hiện — tương đương "ẩn nếu ở gần 1 trong 2
+   góc"). Bán kính lõm ước lượng 6px — CHƯA kiểm chứng được bằng mắt, đây là
+   kỹ thuật CSS nâng cao, có thể cần chỉnh lại giá trị hoặc gặp lỗi hiển thị
+   tuỳ trình duyệt (lần thử mask-image trước ở vòng 83 đã từng sai, lần này
+   làm cho đúng vị trí — 2 góc TRÊN, không phải góc dưới). */
 .badge-update {
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 0 8px 0;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
+  -webkit-mask-image:
+    radial-gradient(circle 6px at 0 0, transparent 99%, black 100%),
+    radial-gradient(circle 6px at 100% 0, transparent 99%, black 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(circle 6px at 0 0, transparent 99%, black 100%),
+    radial-gradient(circle 6px at 100% 0, transparent 99%, black 100%);
+  mask-composite: intersect;
 }
 
 /* ---------- Header ---------- */
