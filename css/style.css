@@ -284,31 +284,17 @@ p {
    (8px, khớp bán kính thật khung mockup) để nó "đè lên thanh đen mockup tạo
    cảm giác liền nhau", giống hệt cách "Bán chạy" hoạt động — 3 góc còn lại
    (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo.
-   Vòng 95: thêm bo góc trên-phải 8px (thường/lồi) — CHƯA đúng ý khách.
-   Vòng 96 — khách VẼ TAY chính xác hình dạng muốn: KHÔNG PHẢI bo lồi bình
-   thường — 2 cạnh TRÊN (trái VÀ phải) của "Cập nhật" phải cong LÕM (concave,
-   như hình cái phễu/mỏ neo) để nối liền mượt sang đường cong của "File kế
-   hoạch" phía trên (kiểu "2 khối tròn chảy dính vào nhau" — hiệu ứng
-   "metaball"). `border-radius` CSS chỉ tạo được góc LỒI, không tạo được góc
-   LÕM — phải dùng `mask-image` với 2 lớp `radial-gradient` (1 lớp cắt trong
-   suốt góc trên-trái, 1 lớp cắt góc trên-phải) kết hợp bằng `mask-composite:
-   intersect` (giao của 2 vùng hiện — tương đương "ẩn nếu ở gần 1 trong 2
-   góc"). Bán kính lõm ước lượng 6px — CHƯA kiểm chứng được bằng mắt, đây là
-   kỹ thuật CSS nâng cao, có thể cần chỉnh lại giá trị hoặc gặp lỗi hiển thị
-   tuỳ trình duyệt (lần thử mask-image trước ở vòng 83 đã từng sai, lần này
-   làm cho đúng vị trí — 2 góc TRÊN, không phải góc dưới). */
+   Vòng 95: thêm bo góc trên-phải 8px (thường/lồi).
+   Vòng 96 — thử bo LÕM bằng mask-image (2 lớp radial-gradient) theo hình
+   khách vẽ tay — khách xác nhận "sai rồi, cạp nó hả" (kết quả xấu, như bị
+   cắn 1 miếng). Vòng 97 — HUỶ HẲN mask-image: đây là lần THỨ 2 kỹ thuật này
+   cho kết quả xấu (lần 1 ở vòng 83, lần 2 ở vòng 96) — bỏ hẳn hướng "góc
+   lõm/metaball" cho badge này, quay lại bo LỒI bình thường như vòng 95 (an
+   toàn, đã dùng ổn định ở nhiều chỗ khác trên site). */
 .badge-update {
-  border-radius: 0 0 8px 0;
+  border-radius: 0 8px 8px 0;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
-  -webkit-mask-image:
-    radial-gradient(circle 6px at 0 0, transparent 99%, black 100%),
-    radial-gradient(circle 6px at 100% 0, transparent 99%, black 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    radial-gradient(circle 6px at 0 0, transparent 99%, black 100%),
-    radial-gradient(circle 6px at 100% 0, transparent 99%, black 100%);
-  mask-composite: intersect;
 }
 
 /* ---------- Header ---------- */
