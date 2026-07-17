@@ -283,12 +283,12 @@ p {
    phải đè lên trọn vẹn giờ xử lý bằng cách tăng KÍCH THƯỚC (không phải vị
    trí) của "File kế hoạch" — xem `.product-badges-right .badge-orange` bên
    dưới, dùng `:has()` để chỉ áp dụng cho thẻ có "Cập nhật". */
-/* Vòng 111 — khách gửi ảnh mô phỏng "sai/đúng", yêu cầu RÕ RÀNG: đẩy "Cập
-   nhật" xuống 1 tí (top:0→4px) để nó nằm cân đối/căn giữa hơn ngay dưới
-   "File kế hoạch" — đây là yêu cầu trực tiếp của khách, không phải tự ý. */
+/* Vòng 113 — HUỶ vòng 111: khách làm rõ CHỈ muốn đổi CỠ CHỮ (font-size),
+   còn cái NHÃN (vị trí/kích thước khung) phải giữ NGUYÊN — trả `top` về
+   đúng `0` như trước vòng 111, y hệt "Bán chạy". */
 .badge-update {
   position: absolute;
-  top: 4px;
+  top: 0;
   right: 0;
   z-index: 1;
   border-radius: 0 8px 0 8px;
