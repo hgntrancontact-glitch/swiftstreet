@@ -945,12 +945,14 @@ p {
   padding: 5px 12px;
 }
 
-/* Bọc badge danh mục (CHỈ hiện khi sản phẩm KHÔNG có "Cập nhật", xem
-   js/main.js — `categoryBadgeHTML`). Vòng 78: `top:18px;right:16px`, như
-   vòng 65/66 — GIỮ NGUYÊN cho các thẻ không có "Cập nhật". */
+/* Bọc badge danh mục. Vòng 78: `top:18px;right:16px`, như vòng 65/66.
+   Vòng 103: khách yêu cầu rõ nhãn danh mục phải "đẩy lên, đè lên" nhãn "Cập
+   nhật" (đang hiện lại đè lên nhau từ vòng 101) — giảm `top:18px→8px` để đẩy
+   lên, tăng phần chồng lấn (z-index:2 đã có sẵn đảm bảo nó hiện TRÊN "Cập
+   nhật" tại vùng chồng lấn). */
 .product-badges-right {
   position: absolute;
-  top: 18px;
+  top: 8px;
   right: 16px;
   z-index: 2;
   display: flex;
