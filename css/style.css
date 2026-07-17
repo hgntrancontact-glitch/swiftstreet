@@ -280,12 +280,12 @@ p {
    ro chồng lấn). CHỈ giữ lại phần sửa thật sự cần thiết từ vòng 83-85: bỏ
    mask-image (rủi ro), border-radius đổi 14px→8px (khớp bán kính thật khung
    mockup, mirror "Bán chạy": bo trên-phải + dưới-trái).
-   Vòng 90: khách xác nhận góc dưới-trái (bo sẵn) đã ổn, yêu cầu THÊM góc
-   dưới-phải cũng bo 8px (giữ nguyên góc dưới-trái + trên-phải đã có, không
-   đổi) — giờ CẢ 3 góc (trên-phải, dưới-phải, dưới-trái) đều bo 8px, chỉ góc
-   trên-trái (chỗ áp sát nhãn danh mục phía trên) vẫn vuông. */
+   Vòng 91 — HUỶ vòng 90: khách chỉ rõ CHỈ CẦN ĐÚNG 1 góc bo — góc dưới-phải
+   (8px, khớp bán kính thật khung mockup) để nó "đè lên thanh đen mockup tạo
+   cảm giác liền nhau", giống hệt cách "Bán chạy" hoạt động — 3 góc còn lại
+   (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo. */
 .badge-update {
-  border-radius: 0 8px 8px 8px;
+  border-radius: 0 0 8px 0;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
