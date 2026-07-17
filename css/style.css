@@ -278,10 +278,16 @@ p {
    `border-radius:0 8px 0 8px` (đối xứng gương với `8px 0 8px 0` của "Bán
    chạy"). Không còn 2 hình khác nhau cần ghép vừa nhau nữa — loại bỏ hoàn
    toàn nguồn gốc của vấn đề thay vì tiếp tục vá lỗi từng góc một. */
+/* Vòng 102: khách yêu cầu nhãn danh mục nằm TRÊN "Cập nhật" (đang hiện lại
+   bình thường từ vòng 101, tạm đè lên nhau) — "Cập nhật" GIỮ NGUYÊN vị trí
+   (`top:0;right:0`, không đổi) — chỉ thêm `z-index:1` (thấp hơn
+   `.product-badges-right` đang có `z-index:2`) để nhãn danh mục luôn hiện
+   TRÊN "Cập nhật" ở chỗ 2 nhãn chồng lấn. */
 .badge-update {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 1;
   border-radius: 0 8px 0 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
