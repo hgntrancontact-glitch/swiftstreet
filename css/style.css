@@ -283,9 +283,12 @@ p {
    phải đè lên trọn vẹn giờ xử lý bằng cách tăng KÍCH THƯỚC (không phải vị
    trí) của "File kế hoạch" — xem `.product-badges-right .badge-orange` bên
    dưới, dùng `:has()` để chỉ áp dụng cho thẻ có "Cập nhật". */
+/* Vòng 111 — khách gửi ảnh mô phỏng "sai/đúng", yêu cầu RÕ RÀNG: đẩy "Cập
+   nhật" xuống 1 tí (top:0→4px) để nó nằm cân đối/căn giữa hơn ngay dưới
+   "File kế hoạch" — đây là yêu cầu trực tiếp của khách, không phải tự ý. */
 .badge-update {
   position: absolute;
-  top: 0;
+  top: 4px;
   right: 0;
   z-index: 1;
   border-radius: 0 8px 0 8px;
@@ -949,11 +952,18 @@ p {
   z-index: 1;
 }
 
-/* Vòng 100: "Cập nhật" giờ đứng riêng, mirror "Bán chạy" hoàn toàn — dùng
-   CHUNG kích thước (font-size/padding) với nó, không còn thu nhỏ riêng như
-   vòng 92-94 nữa (khách yêu cầu "giống nhãn bán chạy"). */
-.product-thumb .badge-bestseller,
+/* Vòng 111 — khách yêu cầu RÕ RÀNG: giảm nhỏ riêng size "Cập nhật" (KHÔNG
+   đụng "Bán chạy") để nó gọn/cân đối hơn so với "File kế hoạch" phía trên —
+   tách khỏi rule dùng chung với `.badge-bestseller` ở dưới. */
 .product-thumb .badge-update {
+  font-size: 8px;
+  padding: 3px 12px;
+}
+
+/* Vòng 100: "Cập nhật" từng dùng CHUNG kích thước với "Bán chạy" ở đây —
+   vòng 111 tách riêng size "Cập nhật" ra rule mới phía trên (nhỏ hơn theo
+   yêu cầu khách), "Bán chạy" vẫn giữ nguyên kích thước gốc này. */
+.product-thumb .badge-bestseller {
   font-size: 9px;
   padding: 5px 12px;
 }
