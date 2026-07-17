@@ -284,11 +284,13 @@ p {
    (8px, khớp bán kính thật khung mockup) để nó "đè lên thanh đen mockup tạo
    cảm giác liền nhau", giống hệt cách "Bán chạy" hoạt động — 3 góc còn lại
    (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo.
-   Vòng 98 — khách vẽ hình rõ ràng: CHỈ ĐÚNG 1 góc bo — góc TRÊN-TRÁI, 3 góc
-   còn lại (trên-phải, dưới-phải, dưới-trái) đều vuông thẳng. Vẽ theo ĐÚNG
-   hình khách gửi, không suy diễn thêm. */
+   Vòng 99 — khách gửi mô phỏng đầy đủ cả thẻ: bo CẢ 2 góc DƯỚI (trái + phải)
+   của "Cập nhật" — khớp với cách "Bán chạy" cũng có góc dưới bo tương tự —
+   2 góc TRÊN vẫn vuông (áp sát nhãn danh mục phía trên). CHƯA đụng padding
+   (khách nhắc rõ "File kế hoạch giữ nguyên, không kéo đệm dưới" — phần này
+   cần hỏi lại rõ hơn trước khi đụng, xem phản hồi trong hội thoại). */
 .badge-update {
-  border-radius: 8px 0 0 0;
+  border-radius: 0 0 8px 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
