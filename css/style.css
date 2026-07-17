@@ -283,9 +283,15 @@ p {
    Vòng 91 — HUỶ vòng 90: khách chỉ rõ CHỈ CẦN ĐÚNG 1 góc bo — góc dưới-phải
    (8px, khớp bán kính thật khung mockup) để nó "đè lên thanh đen mockup tạo
    cảm giác liền nhau", giống hệt cách "Bán chạy" hoạt động — 3 góc còn lại
-   (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo. */
+   (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo.
+   Vòng 95: khách khoanh đỏ chỉ đúng điểm hở — góc trên-phải của "Cập nhật"
+   (vuông) tiếp giáp với đường cong tròn của "File kế hoạch" (pill 999px) phía
+   trên nó, 2 hình dạng khác nhau tại điểm nối để lộ khe nhỏ — ĐÚNG loại lỗi
+   "bo góc khác nhau chạm nhau" đã gặp nhiều lần. Thêm bo góc trên-phải 8px
+   (khớp bán kính thật của "File kế hoạch" tại điểm tiếp xúc) để 2 đường cong
+   khớp nhau, hết khe hở. */
 .badge-update {
-  border-radius: 0 0 8px 0;
+  border-radius: 0 8px 8px 0;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
