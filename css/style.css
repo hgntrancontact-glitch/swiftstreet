@@ -936,6 +936,19 @@ p {
   padding: 2px 7px;
 }
 
+/* Vòng 110 — sửa lỗi z-index thật sự: rule `.product-thumb .badge` ở trên
+   (specificity 0,2,0) vô tình GHI ĐÈ mất `z-index:1` đã khai báo riêng cho
+   `.badge-update` (specificity 0,1,0, thấp hơn) — khiến "Cập nhật" luôn có
+   z-index THẬT là 2, bằng đúng "File kế hoạch" (`.product-badges-right`,
+   z-index:2). Khi 2 z-index bằng nhau, thứ tự DOM quyết định — "Cập nhật"
+   đứng sau trong HTML nên luôn đè lên trên, dù ý định là ngược lại. Rule
+   này ép lại z-index thật của riêng "Cập nhật" xuống 1 (thấp hơn 2 của
+   "File kế hoạch") bằng cách viết SAU với ĐÚNG độ đặc hiệu — không đụng
+   top/left/right/padding/font-size của bất kỳ nhãn nào. */
+.product-thumb .badge-update {
+  z-index: 1;
+}
+
 /* Vòng 100: "Cập nhật" giờ đứng riêng, mirror "Bán chạy" hoàn toàn — dùng
    CHUNG kích thước (font-size/padding) với nó, không còn thu nhỏ riêng như
    vòng 92-94 nữa (khách yêu cầu "giống nhãn bán chạy"). */
