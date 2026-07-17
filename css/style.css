@@ -944,13 +944,15 @@ p {
   padding: 5px 12px;
 }
 
-/* Bọc riêng nhãn danh mục (vòng 105 — HUỶ vòng 104, trả về neo vào
-   `.product-thumb` như trước, "Cập nhật" đã tách ra đứng riêng lại). Vị trí
-   `top:8px` giữ nguyên như vòng 103 — khách nói vẫn CHƯA đúng nhưng dặn KHÔNG
-   tự ý đoán tiếp, chờ hỏi lại giá trị cụ thể trước khi đổi. */
+/* Bọc riêng nhãn danh mục (neo vào `.product-thumb`, "Cập nhật" đứng riêng
+   trong `.device-screen`, xem `.badge-update` phía trên).
+   Vòng 106 — HUỶ vòng 103: khách xác nhận `top:18px` (giá trị GỐC, ổn định từ
+   vòng 78/88, chưa từng đổi cho tới khi vòng 103 lỡ giảm xuống 8px) MỚI THẬT
+   SỰ LÀ "vị trí cũ" đang đè đúng lên mockup + đè lên "Cập nhật" — trả lại
+   ĐÚNG giá trị này, không đổi gì thêm. */
 .product-badges-right {
   position: absolute;
-  top: 8px;
+  top: 18px;
   right: 16px;
   z-index: 2;
   display: flex;
