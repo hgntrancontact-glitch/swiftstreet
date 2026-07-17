@@ -378,10 +378,10 @@ function renderProductGrid() {
         <div class="product-thumb">
           <div class="product-badges-right">
             <span class="badge badge-orange">${p.badge}</span>
-            ${updatedHTML}
           </div>
           <div class="device-screen">
             ${bestSellerHTML}
+            ${updatedHTML}
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>
           <div class="device-base"></div>

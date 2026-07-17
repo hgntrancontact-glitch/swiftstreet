@@ -268,29 +268,25 @@ p {
   color: var(--color-white);
 }
 
-/* "Cập nhật" — góc dưới-phải cần bo LÕM (concave, cong ngược vào trong) để ôm
-   khít đường cong LỒI (convex) thật của góc trên-phải khung mockup — bản thân
-   `border-radius` CSS chỉ tạo được góc lồi, không tạo được góc lõm, nên phải
-   dùng `mask-image` với `radial-gradient`: vùng trong bán kính 8px tính từ
-   đúng điểm góc dưới-phải bị CẮT TRONG SUỐT (để lộ đúng những gì thật sự nằm
-   phía sau, không cần đoán màu nền) — tạo hiệu ứng "khuyết lõm" ôm theo đúng
-   đường cong lồi 8px của khung mockup bên dưới nó.
-   `position:relative; z-index:1` (thấp hơn nhãn danh mục, z-index:2 ở rule
-   `.product-badges-right .badge-orange` bên dưới) — khách yêu cầu "Cập nhật"
-   không được đè/che nhãn danh mục nếu 2 nhãn chồng lấn nhẹ ở điểm nối. */
+/* Vòng 85 — HUỶ kỹ thuật mask-image concave của vòng 83 (rủi ro cao, không
+   kiểm chứng được, khách xác nhận "đang sai"). Áp dụng ĐÚNG pattern đã CHỨNG
+   MINH hiệu quả cho "Bán chạy" ở vòng 84: "Cập nhật" chuyển thành con trực
+   tiếp của `.device-screen` (tách khỏi `.product-badges-right`, xem
+   js/main.js) — MIRROR chính xác "Bán chạy" ở góc phải: `top:0; right:0`,
+   `border-radius: 0 8px 0 8px` (bo trên-phải + dưới-trái, cùng bán kính 8px
+   khớp khung mockup). Nhãn danh mục (`.product-badges-right`, chỉ còn 1 mình
+   badge-orange) giữ NGUYÊN VẸN vị trí `top:18px;right:16px` như khách yêu
+   cầu — do đó "Cập nhật" có thể không chạm khít 100% vào đúng cạnh dưới nhãn
+   danh mục (2 hệ toạ độ neo khác nhau: 1 cái theo `.product-thumb`, 1 cái
+   theo `.device-screen`) — nếu còn hở nhẹ ở đúng chỗ nối này, báo lại để tinh
+   chỉnh thêm 1 giá trị offset nhỏ, không cần đổi lại cách neo. */
 .badge-update {
-  position: relative;
-  z-index: 1;
-  border-radius: 0 14px 0 14px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 8px 0 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
-  -webkit-mask-image: radial-gradient(circle at 100% 100%, transparent 8px, black 8.5px);
-  mask-image: radial-gradient(circle at 100% 100%, transparent 8px, black 8.5px);
-}
-
-.product-badges-right .badge-orange {
-  position: relative;
-  z-index: 2;
 }
 
 /* ---------- Header ---------- */
@@ -948,15 +944,11 @@ p {
   padding: 5px 12px;
 }
 
-/* Bọc badge danh mục + badge "Cập nhật" (nếu có) thành 1 cột canh phải — badge
-   danh mục LUÔN là phần tử ĐẦU TIÊN nên vị trí của nó không phụ thuộc "Cập
-   nhật" có tồn tại hay không.
-   Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ CŨ "đè lên mockup" (`top:18px;
-   right:16px`, như vòng 65/66).
-   Vòng 82: khách đặc tả rõ bằng chữ — cạnh TRÊN của "Cập nhật" phải "chạm
-   sát/dính liền" vào nhãn danh mục, KHÔNG có khoảng cách — giảm hẳn
-   `gap:2px→0`. Nhãn danh mục GIỮ NGUYÊN vị trí/style (top:18px;right:16px),
-   đúng yêu cầu "không sửa gì". */
+/* Bọc badge danh mục (chỉ còn 1 mình, xem vòng 85 — "Cập nhật" đã tách sang
+   làm con của `.device-screen`, xem `.badge-update` phía trên).
+   Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ "đè lên mockup" (`top:18px;
+   right:16px`, như vòng 65/66) — GIỮ NGUYÊN xuyên suốt vòng 82-85 theo đúng
+   yêu cầu khách "không sửa gì". */
 .product-badges-right {
   position: absolute;
   top: 18px;
