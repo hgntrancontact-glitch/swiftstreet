@@ -2630,6 +2630,18 @@ p {
 }
 
 /* ---------- Bảng giá (products/swiftcopy-drive-bang-gia.html, vòng 36) ---------- */
+/* Vòng 115 — khách phản hồi thẻ BASIC (nền trắng `--color-white`) bị "chìm"
+   vào nền trang (trang này trước đó không có nền riêng, dùng chung nền
+   trắng mặc định của `<body>`) — khiến thẻ Basic gần như không nổi bật,
+   khác hẳn thẻ Premium (đã có `#fffdf7` + viền đen 2px riêng). Đổi nền của
+   CẢ SECTION này sang `var(--bg-section)` (màu xám nhạt thương hiệu có sẵn,
+   #faf9f7 — ĐÚNG màu đã dùng cho mọi section xen kẽ khác trên site qua
+   `.section-alt`, không bịa màu mới) — thẻ Basic VẪN giữ nguyên nền trắng
+   tuyệt đối, chỉ nền xung quanh tối hơn 1 chút để tạo tương phản nhẹ. */
+.pricing-section {
+  background: var(--bg-section);
+}
+
 .pricing-heading {
   text-align: center;
   max-width: 600px;
