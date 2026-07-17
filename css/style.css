@@ -278,17 +278,13 @@ p {
    `border-radius:0 8px 0 8px` (đối xứng gương với `8px 0 8px 0` của "Bán
    chạy"). Không còn 2 hình khác nhau cần ghép vừa nhau nữa — loại bỏ hoàn
    toàn nguồn gốc của vấn đề thay vì tiếp tục vá lỗi từng góc một. */
-/* Vòng 102: khách yêu cầu nhãn danh mục nằm TRÊN "Cập nhật" (đang hiện lại
-   bình thường từ vòng 101, tạm đè lên nhau) — "Cập nhật" GIỮ NGUYÊN vị trí
-   (`top:0;right:0`, không đổi) — chỉ thêm `z-index:1` (thấp hơn
-   `.product-badges-right` đang có `z-index:2`) để nhãn danh mục luôn hiện
-   TRÊN "Cập nhật" ở chỗ 2 nhãn chồng lấn. */
+/* Vòng 104 — HUỶ vị trí "đứng riêng" của vòng 100-102: "Cập nhật" quay lại
+   xếp NGAY DƯỚI nhãn danh mục bằng flexbox (xem `.product-badges-right` bên
+   dưới, giờ neo vào CÙNG `.device-screen` với nhãn danh mục — cùng 1 hệ toạ
+   độ, hết lệch). Bo 2 góc DƯỚI (8px, khớp bán kính khung mockup), 2 góc TRÊN
+   vuông (áp sát nhãn danh mục phía trên, gap:0). */
 .badge-update {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  border-radius: 0 8px 0 8px;
+  border-radius: 0 0 8px 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -945,15 +941,16 @@ p {
   padding: 5px 12px;
 }
 
-/* Bọc badge danh mục. Vòng 78: `top:18px;right:16px`, như vòng 65/66.
-   Vòng 103: khách yêu cầu rõ nhãn danh mục phải "đẩy lên, đè lên" nhãn "Cập
-   nhật" (đang hiện lại đè lên nhau từ vòng 101) — giảm `top:18px→8px` để đẩy
-   lên, tăng phần chồng lấn (z-index:2 đã có sẵn đảm bảo nó hiện TRÊN "Cập
-   nhật" tại vùng chồng lấn). */
+/* Bọc badge danh mục + "Cập nhật" (nếu có).
+   Vòng 104: chuyển thành con TRỰC TIẾP của `.device-screen` (mirror cách
+   "Bán chạy" đã ổn định từ vòng 84) — `top:0;right:0` đặt ĐÚNG NGAY góc thật
+   của khung mockup, khớp CÙNG hệ toạ độ với "Bán chạy", không còn phải đoán
+   khoảng cách giữa `.product-thumb` và `.device-screen` nữa (nguồn gốc lệch
+   hàng đã gặp suốt vòng 100-103). */
 .product-badges-right {
   position: absolute;
-  top: 8px;
-  right: 16px;
+  top: 0;
+  right: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
