@@ -956,9 +956,15 @@ p {
    yêu cầu đổi kích thước cái nhãn (padding) — trả `padding` về ĐÚNG như cũ
    (bằng "Bán chạy", 5px 12px), CHỈ giữ lại `font-size:8px` (phần khách xác
    nhận "hiện tại ok rồi"). */
+/* Vòng 114 — khách yêu cầu RÕ: thay vì canh giữa chữ bằng đệm trên/dưới
+   BẰNG NHAU (5px/5px, vòng 112), đẩy chữ "Cập nhật" xuống 1 tí bằng cách
+   chia LẠI tỉ lệ đệm trên/dưới (7px/3px) — TỔNG đệm dọc vẫn giữ nguyên
+   5+5=10px như cũ (7+3=10px), nên KÍCH THƯỚC tổng thể của khung xanh KHÔNG
+   đổi, chỉ chữ bên trong dịch xuống ~2px so với vị trí canh giữa cũ. Không
+   đụng vị trí (top/right) hay kích thước tổng của bất kỳ nhãn nào khác. */
 .product-thumb .badge-update {
   font-size: 8px;
-  padding: 5px 12px;
+  padding: 7px 12px 3px;
 }
 
 /* Vòng 100: "Cập nhật" từng dùng CHUNG kích thước với "Bán chạy" ở đây —
