@@ -952,12 +952,13 @@ p {
   z-index: 1;
 }
 
-/* Vòng 111 — khách yêu cầu RÕ RÀNG: giảm nhỏ riêng size "Cập nhật" (KHÔNG
-   đụng "Bán chạy") để nó gọn/cân đối hơn so với "File kế hoạch" phía trên —
-   tách khỏi rule dùng chung với `.badge-bestseller` ở dưới. */
+/* Vòng 112 — HUỶ MỘT PHẦN vòng 111: khách CHỈ yêu cầu giảm cỡ CHỮ, không
+   yêu cầu đổi kích thước cái nhãn (padding) — trả `padding` về ĐÚNG như cũ
+   (bằng "Bán chạy", 5px 12px), CHỈ giữ lại `font-size:8px` (phần khách xác
+   nhận "hiện tại ok rồi"). */
 .product-thumb .badge-update {
   font-size: 8px;
-  padding: 3px 12px;
+  padding: 5px 12px;
 }
 
 /* Vòng 100: "Cập nhật" từng dùng CHUNG kích thước với "Bán chạy" ở đây —
