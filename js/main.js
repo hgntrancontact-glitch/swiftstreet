@@ -376,12 +376,12 @@ function renderProductGrid() {
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
-          ${bestSellerHTML}
           <div class="product-badges-right">
             <span class="badge badge-orange">${p.badge}</span>
             ${updatedHTML}
           </div>
           <div class="device-screen">
+            ${bestSellerHTML}
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>
           <div class="device-base"></div>

@@ -250,18 +250,19 @@ p {
    2 góc dưới" như thiết kế cũ (vòng 66) — khách yêu cầu rõ "Cập nhật cũng nên
    vậy" (giống kiểu bo chéo của "Bán chạy"). Giữ nguyên box-shadow (vòng 77) và
    vị trí đã chốt ở vòng 78/79 — CHỈ đổi border-radius. */
-/* Vòng 83 — khách chỉ RÕ NGUYÊN NHÂN kỹ thuật: bán kính bo góc của nhãn (14px)
-   không khớp với bán kính bo góc THẬT của `.device-screen` (`border-radius:
-   8px 8px 3px 3px` — góc trên-trái/trên-phải là 8px, KHÔNG PHẢI 14px), nên dù
-   chỉnh vị trí bao nhiêu vẫn lộ lệch khi 2 đường cong khác bán kính chồng lên
-   nhau. Đổi border-radius góc ngoài của CẢ 2 nhãn từ 14px→8px (khớp ĐÚNG bán
-   kính thật của khung mockup). "Bán chạy" kéo `top`/`left` lùi lại (không còn
-   lấn sâu 16px vào trong mockup như vòng 82 — đó là lý do bị chê "vượt qua
-   viền đen") để chỉ vừa chạm khít viền, không cắt qua. */
+/* Vòng 83 — bán kính bo góc của nhãn (14px) không khớp bán kính THẬT của
+   `.device-screen` (8px) — đổi border-radius góc ngoài 14px→8px.
+   Vòng 84 — SỬA TẬN GỐC lỗi "cách khung 1 khoảng trắng": khách gửi ảnh chụp
+   xác nhận badge đang lơ lửng cách xa khung mockup — nguyên nhân là badge
+   được định vị theo padding ƯỚC LƯỢNG của `.product-thumb` (30px/16px), sai
+   lệch so với thực tế hiển thị. Đã chuyển HTML của badge này ra làm CON TRỰC
+   TIẾP của `.device-screen` (xem `js/main.js`, `renderProductGrid()`) — giờ
+   `top:0; left:0` đặt ĐÚNG NGAY góc thật của khung mockup, không cần đoán
+   khoảng đệm nào cả, loại bỏ hoàn toàn nguồn sai số đã gặp nhiều lần. */
 .badge-bestseller {
   position: absolute;
-  top: 8px;
-  left: 10px;
+  top: 0;
+  left: 0;
   border-radius: 8px 0 8px 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
@@ -992,7 +993,14 @@ p {
    chạy" giờ nằm "vào trong màn hình" bằng cách khác (đè trực tiếp lên nội
    dung mini-dashboard, xem `.badge-bestseller` bên dưới), không cần đổi tỷ lệ
    khung mockup nữa. */
+/* Vòng 84: thêm `position:relative` — "Bán chạy" (`.badge-bestseller`) giờ là
+   CON TRỰC TIẾP của `.device-screen` (chuyển từ `.product-thumb` sang, xem
+   js/main.js) để định vị `top:0;left:0` NGAY TẠI góc thật của khung mockup,
+   không còn phải ước lượng khoảng đệm của `.product-thumb` (nguồn gốc lỗi
+   "cách khung 1 khoảng trắng" đã gặp — ước lượng padding-top:30px sai lệch
+   so với thực tế hiển thị). */
 .device-screen {
+  position: relative;
   background: #3b3b3d;
   border-radius: 8px 8px 3px 3px;
   padding: 4px 4px 6px;
