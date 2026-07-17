@@ -2634,12 +2634,17 @@ p {
    vào nền trang (trang này trước đó không có nền riêng, dùng chung nền
    trắng mặc định của `<body>`) — khiến thẻ Basic gần như không nổi bật,
    khác hẳn thẻ Premium (đã có `#fffdf7` + viền đen 2px riêng). Đổi nền của
-   CẢ SECTION này sang `var(--bg-section)` (màu xám nhạt thương hiệu có sẵn,
-   #faf9f7 — ĐÚNG màu đã dùng cho mọi section xen kẽ khác trên site qua
-   `.section-alt`, không bịa màu mới) — thẻ Basic VẪN giữ nguyên nền trắng
-   tuyệt đối, chỉ nền xung quanh tối hơn 1 chút để tạo tương phản nhẹ. */
+   CẢ SECTION này sang xám nhạt để tạo tương phản nhẹ, thẻ Basic VẪN giữ
+   nguyên nền trắng tuyệt đối.
+   Vòng 116 — HUỶ MỘT PHẦN vòng 115: khách phản hồi `var(--bg-section)`
+   (#f7f6f3, dùng cho các section xen kẽ mạnh như FAQ/how-it-works) "xám đậm
+   quá, không tự nhiên" cho 1 trang bảng giá đơn lẻ — đổi sang
+   `var(--bg-section-soft)` (#fafafa, biến CÓ SẴN, hiện chỉ dùng cho nền
+   `.hero-shop` ở trang chủ) — nhạt hơn nhiều, đúng kiểu "tông nền tổng thể
+   dịu nhẹ" thay vì "khối section tương phản mạnh", tự nhiên/đồng bộ hơn với
+   phần còn lại của site. */
 .pricing-section {
-  background: var(--bg-section);
+  background: var(--bg-section-soft);
 }
 
 .pricing-heading {
