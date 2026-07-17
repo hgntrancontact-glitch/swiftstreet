@@ -940,14 +940,17 @@ p {
   padding: 5px 12px;
 }
 
-/* Vòng 92 — HUỶ vòng 89: khách yêu cầu thu nhỏ RIÊNG "Cập nhật" (khác "Bán
-   chạy", không đụng rule đó) — giảm `font-size:9px→8px`, `padding:5px 12px→
-   3px 9px`, để mép dưới của nó gần ngang hàng với mép dưới "Bán chạy" hơn,
-   đồng thời khép bớt khoảng trắng/viền đen còn hở quanh nhãn danh mục/khung
-   mockup. */
+/* Vòng 92: thu nhỏ RIÊNG "Cập nhật" theo chiều ngang (font-size:9px→8px,
+   padding ngang 12px→9px).
+   Vòng 93: khách gửi ảnh rộng xác nhận sau khi thu nhỏ, "Cập nhật" không còn
+   đủ cao để chạm khung mockup — lộ khoảng trắng + viền đen giữa mép dưới của
+   nó và khung. Tăng RIÊNG padding-bottom (3px→10px, giữ nguyên padding-top
+   3px + ngang 9px) để mép dưới vươn xuống chạm khung mockup, không phóng to
+   lại toàn bộ nhãn (chữ có thể lệch tâm nhẹ do padding không đối xứng, chấp
+   nhận đánh đổi này để hết lộ viền). */
 .product-thumb .badge-update {
   font-size: 8px;
-  padding: 3px 9px;
+  padding: 3px 9px 10px;
 }
 
 /* Bọc badge danh mục + "Cập nhật". Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ
