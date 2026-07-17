@@ -278,13 +278,14 @@ p {
    `border-radius:0 8px 0 8px` (đối xứng gương với `8px 0 8px 0` của "Bán
    chạy"). Không còn 2 hình khác nhau cần ghép vừa nhau nữa — loại bỏ hoàn
    toàn nguồn gốc của vấn đề thay vì tiếp tục vá lỗi từng góc một. */
-/* Vòng 107: khách chỉ ra "Cập nhật" lấn nhẹ lên góc dưới-phải "File kế hoạch"
-   (2 hệ toạ độ neo khác nhau không khớp tuyệt đối). Đẩy XUỐNG 1 chút
-   (`top:0→8px`) — CHỈ đổi trục dọc, KHÔNG đổi `right`/shape/vị trí "File kế
-   hoạch" — để "File kế hoạch" đè lên trọn vẹn thay vì bị "Cập nhật" lấn vào. */
+/* Vòng 108 — HUỶ vòng 107: khách CẤM dịch chuyển vị trí (top/right) của BẤT
+   KỲ nhãn nào — trả "Cập nhật" về ĐÚNG `top:0` như cũ. Việc "File kế hoạch"
+   phải đè lên trọn vẹn giờ xử lý bằng cách tăng KÍCH THƯỚC (không phải vị
+   trí) của "File kế hoạch" — xem `.product-badges-right .badge-orange` bên
+   dưới, dùng `:has()` để chỉ áp dụng cho thẻ có "Cập nhật". */
 .badge-update {
   position: absolute;
-  top: 8px;
+  top: 0;
   right: 0;
   z-index: 1;
   border-radius: 0 8px 0 8px;
@@ -963,6 +964,17 @@ p {
 
 .product-badges-right .badge {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
+}
+
+/* Vòng 108: "File kế hoạch" phải đè TRỌN VẸN lên "Cập nhật" (đang lấn nhẹ lên
+   góc dưới-phải của nó) — khách CẤM dịch vị trí (top/right) của cả 2 nhãn,
+   nên xử lý bằng cách tăng KÍCH THƯỚC (padding-bottom) của riêng "File kế
+   hoạch", CHỈ khi thẻ đó có "Cập nhật" (dùng `:has()`, không ảnh hưởng Travel
+   Planner/Shop Admin/Hotel & Homestay Manager — các thẻ không có "Cập nhật"
+   vẫn giữ nguyên kích thước gốc). Vị trí/neo (`top:18px;right:16px`) không
+   đổi — chỉ hộp của nhãn to ra để che phủ nhiều hơn từ đúng điểm neo cũ. */
+.product-thumb:has(.badge-update) .product-badges-right .badge-orange {
+  padding-bottom: 10px;
 }
 
 /* Vòng 59 — SỬA LỖI GỐC: đã XOÁ HẲN rule tăng riêng `padding-top` cho card có
