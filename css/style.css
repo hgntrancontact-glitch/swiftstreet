@@ -943,11 +943,12 @@ p {
 
 /* Bọc badge danh mục + "Cập nhật" (vòng 86 — quay lại đúng cấu trúc này sau
    khi tách riêng ở vòng 85 gây lỗi đè/che). Vòng 78: đưa nhãn danh mục về
-   ĐÚNG VỊ TRÍ "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66) — GIỮ
-   NGUYÊN xuyên suốt các vòng sau theo đúng yêu cầu khách "không sửa gì". */
+   ĐÚNG VỊ TRÍ "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66).
+   Vòng 87: khách yêu cầu nhích LÊN thêm 1 chút để che hết khoảng trắng/viền
+   đen còn lộ ra phía trên khung mockup — giảm `top:18px→10px`. */
 .product-badges-right {
   position: absolute;
-  top: 18px;
+  top: 10px;
   right: 16px;
   z-index: 2;
   display: flex;
