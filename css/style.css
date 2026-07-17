@@ -250,10 +250,15 @@ p {
    2 góc dưới" như thiết kế cũ (vòng 66) — khách yêu cầu rõ "Cập nhật cũng nên
    vậy" (giống kiểu bo chéo của "Bán chạy"). Giữ nguyên box-shadow (vòng 77) và
    vị trí đã chốt ở vòng 78/79 — CHỈ đổi border-radius. */
+/* Vòng 81: khách xác nhận shape đúng rồi, CHỈ còn "Bán chạy" chưa "bám sát"
+   hẳn vào nội dung mockup (còn hở 1 khoảng sáng phía trên trước khi chạm nội
+   dung thật của mini-dashboard) — "Cập nhật"/nhãn danh mục đã đúng, KHÔNG đụng.
+   Tăng nhẹ `top:38→44px; left:24→28px` (đẩy sâu thêm 1 chút vào bên trong
+   `.device-display`, nơi nội dung mini-dashboard thật sự bắt đầu hiện). */
 .badge-bestseller {
   position: absolute;
-  top: 38px;
-  left: 24px;
+  top: 44px;
+  left: 28px;
   border-radius: 14px 0 14px 0;
   background: linear-gradient(90deg, #e8432b 0%, var(--color-orange) 100%);
   color: var(--color-white);
