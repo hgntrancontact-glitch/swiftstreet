@@ -278,13 +278,16 @@ p {
    `border-radius:0 8px 0 8px` (đối xứng gương với `8px 0 8px 0` của "Bán
    chạy"). Không còn 2 hình khác nhau cần ghép vừa nhau nữa — loại bỏ hoàn
    toàn nguồn gốc của vấn đề thay vì tiếp tục vá lỗi từng góc một. */
-/* Vòng 104 — HUỶ vị trí "đứng riêng" của vòng 100-102: "Cập nhật" quay lại
-   xếp NGAY DƯỚI nhãn danh mục bằng flexbox (xem `.product-badges-right` bên
-   dưới, giờ neo vào CÙNG `.device-screen` với nhãn danh mục — cùng 1 hệ toạ
-   độ, hết lệch). Bo 2 góc DƯỚI (8px, khớp bán kính khung mockup), 2 góc TRÊN
-   vuông (áp sát nhãn danh mục phía trên, gap:0). */
+/* Vòng 105 — HUỶ vòng 104 (khách yêu cầu rõ KHÔNG tự ý đổi vị trí "Cập nhật"
+   khi chưa hỏi): trả về ĐÚNG vị trí/shape vòng 100-102 — đứng riêng, con trực
+   tiếp của `.device-screen`, `top:0;right:0`, `border-radius:0 8px 0 8px`
+   (đối xứng gương "Bán chạy"). KHÔNG đổi gì so với trước vòng 104. */
 .badge-update {
-  border-radius: 0 0 8px 8px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  border-radius: 0 8px 0 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -941,16 +944,14 @@ p {
   padding: 5px 12px;
 }
 
-/* Bọc badge danh mục + "Cập nhật" (nếu có).
-   Vòng 104: chuyển thành con TRỰC TIẾP của `.device-screen` (mirror cách
-   "Bán chạy" đã ổn định từ vòng 84) — `top:0;right:0` đặt ĐÚNG NGAY góc thật
-   của khung mockup, khớp CÙNG hệ toạ độ với "Bán chạy", không còn phải đoán
-   khoảng cách giữa `.product-thumb` và `.device-screen` nữa (nguồn gốc lệch
-   hàng đã gặp suốt vòng 100-103). */
+/* Bọc riêng nhãn danh mục (vòng 105 — HUỶ vòng 104, trả về neo vào
+   `.product-thumb` như trước, "Cập nhật" đã tách ra đứng riêng lại). Vị trí
+   `top:8px` giữ nguyên như vòng 103 — khách nói vẫn CHƯA đúng nhưng dặn KHÔNG
+   tự ý đoán tiếp, chờ hỏi lại giá trị cụ thể trước khi đổi. */
 .product-badges-right {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 8px;
+  right: 16px;
   z-index: 2;
   display: flex;
   flex-direction: column;

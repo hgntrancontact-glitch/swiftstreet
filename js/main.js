@@ -371,26 +371,23 @@ function renderProductGrid() {
     // trái, flush đúng góc (`top:0;left:0`) để border-radius của nó khớp liền
     // mạch với border-radius của `.product-card`.
     const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C8 8 6 11 6 14a6 6 0 0 0 12 0c0-3-2-6-6-11Z"/></svg>Bán chạy</span>` : "";
-    // Vòng 104 — SỬA TẬN GỐC: "Cập nhật" (đứng riêng, neo vào `.device-screen`
-    // từ vòng 100) và nhãn danh mục (neo vào `.product-thumb` từ trước giờ) ở
-    // 2 HỆ TOẠ ĐỘ KHÁC NHAU — mỗi lần chỉnh 1 bên lại lệch so với bên kia
-    // (đúng vấn đề khách liên tục chỉ ra qua nhiều vòng). Chuyển CẢ nhãn danh
-    // mục lẫn "Cập nhật" thành con của CÙNG `.device-screen` (mirror cách
-    // "Bán chạy" đã ổn định), xếp chồng bằng flexbox NGAY BÊN TRONG đó — giờ
-    // CẢ 2 dùng chung 1 hệ toạ độ, LUÔN thẳng hàng/đè đúng lên mockup mà
-    // không cần đoán offset giữa 2 hệ toạ độ nữa.
+    // Vòng 105 — HUỶ vòng 104: khách yêu cầu rõ KHÔNG được tự ý đổi vị trí
+    // "Cập nhật" khi chưa hỏi — trả "Cập nhật" về ĐÚNG cấu trúc/vị trí vòng
+    // 100-103 (đứng riêng, con trực tiếp của `.device-screen`, KHÔNG nằm
+    // trong `.product-badges-right` nữa). Nhãn danh mục quay lại neo vào
+    // `.product-thumb` như trước vòng 104.
     const updatedHTML = p.updated ? `<span class="badge badge-update">Cập nhật</span>` : "";
     const categoryBadgeHTML = `<span class="badge badge-orange">${p.badge}</span>`;
     return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
+          <div class="product-badges-right">
+            ${categoryBadgeHTML}
+          </div>
           <div class="device-screen">
             ${bestSellerHTML}
-            <div class="product-badges-right">
-              ${categoryBadgeHTML}
-              ${updatedHTML}
-            </div>
+            ${updatedHTML}
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>
           <div class="device-base"></div>
