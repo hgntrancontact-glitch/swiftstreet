@@ -2861,26 +2861,19 @@ p {
   margin-bottom: 22px;
 }
 
+/* Vòng 51: khách từng yêu cầu riêng cho BẢNG CÁ NHÂN — nút "Mua ngay"/"Chọn
+   gói này" của thẻ Basic đổi sang nền vàng cam khi ở mode Cá nhân, mode Nhóm
+   giữ nền xám mặc định (qua class `.is-personal-mode` toggle bằng JS).
+   Vòng 118 — khách yêu cầu RÕ: nút Basic phải LUÔN vàng cam ở CẢ 2 mode
+   (Cá nhân lẫn Nhóm), không còn phân biệt theo mode nữa — đổi thẳng màu vàng
+   cam làm mặc định của `.pricing-buy-basic` (bỏ điều kiện `.is-personal-mode`,
+   xem `js/main.js` đã bỏ toggle class này). */
 .pricing-buy-basic {
-  background: #f1f3f5;
-  color: var(--color-black);
-}
-
-.pricing-buy-basic:hover {
-  background: #e6e9ec;
-}
-
-/* Vòng 51: khách yêu cầu riêng cho BẢNG CÁ NHÂN — nút "Mua ngay"/"Chọn gói
-   này" của thẻ Basic đổi sang nền vàng cam thương hiệu/chữ đen (thay vì xám
-   trung tính mặc định) khi đang ở mode Cá nhân — toggle bằng JS trong
-   `setupPricingPage()`/`openPlanPicker()` (`mode === "personal"`). Mode Nhóm
-   KHÔNG được yêu cầu đổi, giữ nguyên nền xám mặc định ở trên. */
-.pricing-buy-basic.is-personal-mode {
   background: var(--color-orange);
   color: var(--color-black);
 }
 
-.pricing-buy-basic.is-personal-mode:hover {
+.pricing-buy-basic:hover {
   background: var(--color-orange-dark);
 }
 
