@@ -2630,22 +2630,11 @@ p {
 }
 
 /* ---------- Bảng giá (products/swiftcopy-drive-bang-gia.html, vòng 36) ---------- */
-/* Vòng 115 — khách phản hồi thẻ BASIC (nền trắng `--color-white`) bị "chìm"
-   vào nền trang (trang này trước đó không có nền riêng, dùng chung nền
-   trắng mặc định của `<body>`) — khiến thẻ Basic gần như không nổi bật,
-   khác hẳn thẻ Premium (đã có `#fffdf7` + viền đen 2px riêng). Đổi nền của
-   CẢ SECTION này sang xám nhạt để tạo tương phản nhẹ, thẻ Basic VẪN giữ
-   nguyên nền trắng tuyệt đối.
-   Vòng 116 — HUỶ MỘT PHẦN vòng 115: khách phản hồi `var(--bg-section)`
-   (#f7f6f3, dùng cho các section xen kẽ mạnh như FAQ/how-it-works) "xám đậm
-   quá, không tự nhiên" cho 1 trang bảng giá đơn lẻ — đổi sang
-   `var(--bg-section-soft)` (#fafafa, biến CÓ SẴN, hiện chỉ dùng cho nền
-   `.hero-shop` ở trang chủ) — nhạt hơn nhiều, đúng kiểu "tông nền tổng thể
-   dịu nhẹ" thay vì "khối section tương phản mạnh", tự nhiên/đồng bộ hơn với
-   phần còn lại của site. */
-.pricing-section {
-  background: var(--bg-section-soft);
-}
+/* Vòng 115/116 (ĐÃ HUỶ HẲN ở vòng 117) — từng thử đổi nền CẢ SECTION sang
+   xám (đậm rồi nhạt hơn) để thẻ Basic nổi bật — khách xác nhận cả 2 lần đều
+   không ổn/không tự nhiên. Vòng 117: trang trở lại nền trắng mặc định
+   (không còn `.pricing-section { background: ... }` nữa), thay vào đó đổi
+   MÀU NỀN CỦA CHÍNH THẺ BASIC sang xám rất nhạt — xem `.pricing-card`. */
 
 .pricing-heading {
   text-align: center;
@@ -2762,9 +2751,16 @@ p {
   margin: 0 auto;
 }
 
+/* Vòng 117 — khách yêu cầu: trang trở lại nền TRẮNG (bỏ nền xám của cả
+   section, xem comment ở đầu mục "Bảng giá" phía trên), thay vào đó đổi
+   MÀU NỀN của chính thẻ BASIC sang xám rất nhạt `#fafafa` (--bg-section-soft,
+   biến có sẵn) để nổi bật nhẹ trên nền trắng. `.pricing-card` là class GỐC
+   dùng chung cho cả Basic lẫn Premium — Premium không bị ảnh hưởng vì
+   `.pricing-card-premium` bên dưới ghi đè lại `#fffdf7` (độ đặc hiệu cao
+   hơn), chỉ Basic (không có class phụ) nhận đúng màu mới này. */
 .pricing-card {
   position: relative;
-  background: var(--color-white);
+  background: var(--bg-section-soft);
   border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 28px 24px;
