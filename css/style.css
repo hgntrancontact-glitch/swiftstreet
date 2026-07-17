@@ -929,26 +929,33 @@ p {
   padding: 2px 7px;
 }
 
-/* Vòng 77: badge-bestseller/badge-update dùng font-size/padding riêng (phải
-   khai báo lại ở đây, không chỉ ở rule `.badge-bestseller, .badge-update`
-   chung phía trên, vì `.product-thumb .badge` có specificity cao hơn) —
-   ĐỒNG BỘ kích thước cả 2 (không còn làm "Cập nhật" thấp hơn "Bán chạy" như
-   thiết kế cũ, vì giờ 2 nhãn tách rời bằng khoảng cách thay vì ép dính liền
-   thành 1 khối, không còn lý do cần chênh chiều cao). */
-.product-thumb .badge-bestseller,
-.product-thumb .badge-update {
+/* Vòng 77: font-size riêng cho "Bán chạy" (giữ NGUYÊN — khách xác nhận đúng,
+   không đụng). */
+.product-thumb .badge-bestseller {
   font-size: 9px;
   padding: 5px 12px;
 }
 
-/* Bọc badge danh mục + "Cập nhật" (vòng 86 — quay lại đúng cấu trúc này sau
-   khi tách riêng ở vòng 85 gây lỗi đè/che). Vòng 78: đưa nhãn danh mục về
-   ĐÚNG VỊ TRÍ "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66).
-   Vòng 87: khách yêu cầu nhích LÊN thêm 1 chút để che hết khoảng trắng/viền
-   đen còn lộ ra phía trên khung mockup — giảm `top:18px→10px`. */
+/* Vòng 88 — khách làm rõ: "File kế hoạch" PHẢI đứng yên (đã đẹp, không đụng —
+   xem `.product-badges-right` bên dưới, `top:18px` được HUỶ vòng 87, quay lại
+   giá trị gốc). Chỉ "Cập nhật" cần "vuốt lên" (ôm khít khung mockup bên dưới
+   nó, giống cách "Bán chạy" đang ôm khít) — vì "Cập nhật" xếp NGAY DƯỚI "File
+   kế hoạch" trong cùng 1 cột flex (không đụng vị trí "File kế hoạch"), cách
+   duy nhất để nó "vươn" xuống gần khung mockup hơn mà KHÔNG dịch chuyển "File
+   kế hoạch" là tăng CHÍNH chiều cao của nó — thêm padding-bottom riêng
+   (12px→18px), kéo dài mép dưới của "Cập nhật" xuống gần khung mockup hơn. */
+.product-thumb .badge-update {
+  font-size: 9px;
+  padding: 5px 12px 18px;
+}
+
+/* Bọc badge danh mục + "Cập nhật". Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ
+   "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66).
+   Vòng 88 — HUỶ vòng 87: khách xác nhận `top:18px` (vị trí GỐC) mới là vị trí
+   đẹp của "File kế hoạch", KHÔNG được đụng — trả về đúng giá trị này. */
 .product-badges-right {
   position: absolute;
-  top: 10px;
+  top: 18px;
   right: 16px;
   z-index: 2;
   display: flex;
