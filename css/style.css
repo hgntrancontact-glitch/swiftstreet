@@ -936,17 +936,13 @@ p {
   padding: 5px 12px;
 }
 
-/* Vòng 88 — khách làm rõ: "File kế hoạch" PHẢI đứng yên (đã đẹp, không đụng —
-   xem `.product-badges-right` bên dưới, `top:18px` được HUỶ vòng 87, quay lại
-   giá trị gốc). Chỉ "Cập nhật" cần "vuốt lên" (ôm khít khung mockup bên dưới
-   nó, giống cách "Bán chạy" đang ôm khít) — vì "Cập nhật" xếp NGAY DƯỚI "File
-   kế hoạch" trong cùng 1 cột flex (không đụng vị trí "File kế hoạch"), cách
-   duy nhất để nó "vươn" xuống gần khung mockup hơn mà KHÔNG dịch chuyển "File
-   kế hoạch" là tăng CHÍNH chiều cao của nó — thêm padding-bottom riêng
-   (12px→18px), kéo dài mép dưới của "Cập nhật" xuống gần khung mockup hơn. */
+/* Vòng 89 — HUỶ vòng 88: khách CẤM tăng riêng padding-bottom ("vươn dài
+   xuống") — vị trí `.product-badges-right` (top:18px) đã đúng, KHÔNG cần
+   "Cập nhật" vươn thêm gì cả. Khách muốn "Cập nhật" giống 100% "Bán chạy" —
+   dùng ĐÚNG cùng 1 padding (5px 12px, không thêm bottom riêng). */
 .product-thumb .badge-update {
   font-size: 9px;
-  padding: 5px 12px 18px;
+  padding: 5px 12px;
 }
 
 /* Bọc badge danh mục + "Cập nhật". Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ
