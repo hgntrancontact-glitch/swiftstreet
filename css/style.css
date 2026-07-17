@@ -942,15 +942,13 @@ p {
 
 /* Vòng 92: thu nhỏ RIÊNG "Cập nhật" theo chiều ngang (font-size:9px→8px,
    padding ngang 12px→9px).
-   Vòng 93: khách gửi ảnh rộng xác nhận sau khi thu nhỏ, "Cập nhật" không còn
-   đủ cao để chạm khung mockup — lộ khoảng trắng + viền đen giữa mép dưới của
-   nó và khung. Tăng RIÊNG padding-bottom (3px→10px, giữ nguyên padding-top
-   3px + ngang 9px) để mép dưới vươn xuống chạm khung mockup, không phóng to
-   lại toàn bộ nhãn (chữ có thể lệch tâm nhẹ do padding không đối xứng, chấp
-   nhận đánh đổi này để hết lộ viền). */
+   Vòng 94 — HUỶ vòng 93: khách xác nhận đệm dưới KHÔNG phải vấn đề, huỷ tăng
+   đó — trả về `padding:3px 9px` như vòng 92. Khoảng trắng/viền đen còn lộ
+   thật ra nằm ở PHÍA TRÊN-PHẢI (đang xác nhận lại chính xác là góc nào —
+   xem trao đổi trong hội thoại trước khi sửa tiếp). */
 .product-thumb .badge-update {
   font-size: 8px;
-  padding: 3px 9px 10px;
+  padding: 3px 9px;
 }
 
 /* Bọc badge danh mục + "Cập nhật". Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ
