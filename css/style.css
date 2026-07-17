@@ -268,22 +268,19 @@ p {
   color: var(--color-white);
 }
 
-/* Vòng 85 — HUỶ kỹ thuật mask-image concave của vòng 83 (rủi ro cao, không
-   kiểm chứng được, khách xác nhận "đang sai"). Áp dụng ĐÚNG pattern đã CHỨNG
-   MINH hiệu quả cho "Bán chạy" ở vòng 84: "Cập nhật" chuyển thành con trực
-   tiếp của `.device-screen` (tách khỏi `.product-badges-right`, xem
-   js/main.js) — MIRROR chính xác "Bán chạy" ở góc phải: `top:0; right:0`,
-   `border-radius: 0 8px 0 8px` (bo trên-phải + dưới-trái, cùng bán kính 8px
-   khớp khung mockup). Nhãn danh mục (`.product-badges-right`, chỉ còn 1 mình
-   badge-orange) giữ NGUYÊN VẸN vị trí `top:18px;right:16px` như khách yêu
-   cầu — do đó "Cập nhật" có thể không chạm khít 100% vào đúng cạnh dưới nhãn
-   danh mục (2 hệ toạ độ neo khác nhau: 1 cái theo `.product-thumb`, 1 cái
-   theo `.device-screen`) — nếu còn hở nhẹ ở đúng chỗ nối này, báo lại để tinh
-   chỉnh thêm 1 giá trị offset nhỏ, không cần đổi lại cách neo. */
+/* Vòng 85 — HUỶ kỹ thuật mask-image concave của vòng 83 (rủi ro cao, khách
+   xác nhận "đang sai") — thử tách "Cập nhật" neo riêng vào `.device-screen`
+   (mirror "Bán chạy") nhưng lại gây lỗi MỚI: đè/che nhãn danh mục (2 hệ toạ
+   độ neo khác nhau khiến chúng chồng lấn sai vị trí, không phải chỉ "hở nhẹ"
+   như dự đoán).
+   Vòng 86 — HUỶ vòng 85: đưa "Cập nhật" TRỞ LẠI làm con của
+   `.product-badges-right` (xem `js/main.js`) — xếp chồng bằng flexbox NGAY
+   DƯỚI nhãn danh mục, dùng CHUNG 1 hệ toạ độ với nó nên vị trí LUÔN đúng
+   tương đối (không cần đoán khoảng cách tới khung mockup nữa, không còn rủi
+   ro chồng lấn). CHỈ giữ lại phần sửa thật sự cần thiết từ vòng 83-85: bỏ
+   mask-image (rủi ro), border-radius đổi 14px→8px (khớp bán kính thật khung
+   mockup, mirror "Bán chạy": bo trên-phải + dưới-trái). */
 .badge-update {
-  position: absolute;
-  top: 0;
-  right: 0;
   border-radius: 0 8px 0 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
@@ -944,11 +941,10 @@ p {
   padding: 5px 12px;
 }
 
-/* Bọc badge danh mục (chỉ còn 1 mình, xem vòng 85 — "Cập nhật" đã tách sang
-   làm con của `.device-screen`, xem `.badge-update` phía trên).
-   Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ "đè lên mockup" (`top:18px;
-   right:16px`, như vòng 65/66) — GIỮ NGUYÊN xuyên suốt vòng 82-85 theo đúng
-   yêu cầu khách "không sửa gì". */
+/* Bọc badge danh mục + "Cập nhật" (vòng 86 — quay lại đúng cấu trúc này sau
+   khi tách riêng ở vòng 85 gây lỗi đè/che). Vòng 78: đưa nhãn danh mục về
+   ĐÚNG VỊ TRÍ "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66) — GIỮ
+   NGUYÊN xuyên suốt các vòng sau theo đúng yêu cầu khách "không sửa gì". */
 .product-badges-right {
   position: absolute;
   top: 18px;
