@@ -268,29 +268,21 @@ p {
   color: var(--color-white);
 }
 
-/* Vòng 85 — HUỶ kỹ thuật mask-image concave của vòng 83 (rủi ro cao, khách
-   xác nhận "đang sai") — thử tách "Cập nhật" neo riêng vào `.device-screen`
-   (mirror "Bán chạy") nhưng lại gây lỗi MỚI: đè/che nhãn danh mục (2 hệ toạ
-   độ neo khác nhau khiến chúng chồng lấn sai vị trí, không phải chỉ "hở nhẹ"
-   như dự đoán).
-   Vòng 86 — HUỶ vòng 85: đưa "Cập nhật" TRỞ LẠI làm con của
-   `.product-badges-right` (xem `js/main.js`) — xếp chồng bằng flexbox NGAY
-   DƯỚI nhãn danh mục, dùng CHUNG 1 hệ toạ độ với nó nên vị trí LUÔN đúng
-   tương đối (không cần đoán khoảng cách tới khung mockup nữa, không còn rủi
-   ro chồng lấn). CHỈ giữ lại phần sửa thật sự cần thiết từ vòng 83-85: bỏ
-   mask-image (rủi ro), border-radius đổi 14px→8px (khớp bán kính thật khung
-   mockup, mirror "Bán chạy": bo trên-phải + dưới-trái).
-   Vòng 91 — HUỶ vòng 90: khách chỉ rõ CHỈ CẦN ĐÚNG 1 góc bo — góc dưới-phải
-   (8px, khớp bán kính thật khung mockup) để nó "đè lên thanh đen mockup tạo
-   cảm giác liền nhau", giống hệt cách "Bán chạy" hoạt động — 3 góc còn lại
-   (trên-trái, trên-phải, dưới-trái) đều vuông thẳng, KHÔNG bo.
-   Vòng 99 — khách gửi mô phỏng đầy đủ cả thẻ: bo CẢ 2 góc DƯỚI (trái + phải)
-   của "Cập nhật" — khớp với cách "Bán chạy" cũng có góc dưới bo tương tự —
-   2 góc TRÊN vẫn vuông (áp sát nhãn danh mục phía trên). CHƯA đụng padding
-   (khách nhắc rõ "File kế hoạch giữ nguyên, không kéo đệm dưới" — phần này
-   cần hỏi lại rõ hơn trước khi đụng, xem phản hồi trong hội thoại). */
+/* Vòng 100 — THIẾT KẾ LẠI: sau rất nhiều vòng cố ghép "Cập nhật" khớp hình
+   với nhãn danh mục (vòng 78-99, luôn lộ khe hở vì 2 hình bo góc khác nhau
+   chạm nhau), khách quyết định ĐƠN GIẢN HOÁ TẬN GỐC — thẻ nào có "Cập nhật"
+   thì BỎ HẲN nhãn danh mục (xem `js/main.js`, `renderProductGrid()`:
+   `categoryBadgeHTML` rỗng khi `p.updated`), "Cập nhật" đứng RIÊNG 1 mình,
+   MIRROR chính xác cách "Bán chạy" hoạt động (đã ổn định, ko còn sửa lại từ
+   lâu): con trực tiếp của `.device-screen`, `top:0;right:0`,
+   `border-radius:0 8px 0 8px` (đối xứng gương với `8px 0 8px 0` của "Bán
+   chạy"). Không còn 2 hình khác nhau cần ghép vừa nhau nữa — loại bỏ hoàn
+   toàn nguồn gốc của vấn đề thay vì tiếp tục vá lỗi từng góc một. */
 .badge-update {
-  border-radius: 0 0 8px 8px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 8px 0 8px;
   background: linear-gradient(90deg, #058249 0%, #1db764 100%);
   color: var(--color-white);
 }
@@ -938,28 +930,18 @@ p {
   padding: 2px 7px;
 }
 
-/* Vòng 77: font-size riêng cho "Bán chạy" (giữ NGUYÊN — khách xác nhận đúng,
-   không đụng). */
-.product-thumb .badge-bestseller {
+/* Vòng 100: "Cập nhật" giờ đứng riêng, mirror "Bán chạy" hoàn toàn — dùng
+   CHUNG kích thước (font-size/padding) với nó, không còn thu nhỏ riêng như
+   vòng 92-94 nữa (khách yêu cầu "giống nhãn bán chạy"). */
+.product-thumb .badge-bestseller,
+.product-thumb .badge-update {
   font-size: 9px;
   padding: 5px 12px;
 }
 
-/* Vòng 92: thu nhỏ RIÊNG "Cập nhật" theo chiều ngang (font-size:9px→8px,
-   padding ngang 12px→9px).
-   Vòng 94 — HUỶ vòng 93: khách xác nhận đệm dưới KHÔNG phải vấn đề, huỷ tăng
-   đó — trả về `padding:3px 9px` như vòng 92. Khoảng trắng/viền đen còn lộ
-   thật ra nằm ở PHÍA TRÊN-PHẢI (đang xác nhận lại chính xác là góc nào —
-   xem trao đổi trong hội thoại trước khi sửa tiếp). */
-.product-thumb .badge-update {
-  font-size: 8px;
-  padding: 3px 9px;
-}
-
-/* Bọc badge danh mục + "Cập nhật". Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ
-   "đè lên mockup" (`top:18px;right:16px`, như vòng 65/66).
-   Vòng 88 — HUỶ vòng 87: khách xác nhận `top:18px` (vị trí GỐC) mới là vị trí
-   đẹp của "File kế hoạch", KHÔNG được đụng — trả về đúng giá trị này. */
+/* Bọc badge danh mục (CHỈ hiện khi sản phẩm KHÔNG có "Cập nhật", xem
+   js/main.js — `categoryBadgeHTML`). Vòng 78: `top:18px;right:16px`, như
+   vòng 65/66 — GIỮ NGUYÊN cho các thẻ không có "Cập nhật". */
 .product-badges-right {
   position: absolute;
   top: 18px;

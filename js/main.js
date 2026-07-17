@@ -371,17 +371,22 @@ function renderProductGrid() {
     // trái, flush đúng góc (`top:0;left:0`) để border-radius của nó khớp liền
     // mạch với border-radius của `.product-card`.
     const bestSellerHTML = p.bestSeller ? `<span class="badge badge-bestseller"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C8 8 6 11 6 14a6 6 0 0 0 12 0c0-3-2-6-6-11Z"/></svg>Bán chạy</span>` : "";
+    // Vòng 100: khách yêu cầu — thẻ có "Cập nhật" thì BỎ HẲN nhãn danh mục,
+    // "Cập nhật" đứng riêng đè lên góc trên-phải khung mockup, giống hệt cách
+    // "Bán chạy" hoạt động (loại bỏ hẳn vấn đề 2 nhãn khác hình phải ghép vừa
+    // nhau — nguồn gốc của rất nhiều lần sửa qua lại trước đó).
     const updatedHTML = p.updated ? `<span class="badge badge-update">Cập nhật</span>` : "";
+    const categoryBadgeHTML = p.updated ? "" : `<span class="badge badge-orange">${p.badge}</span>`;
     return `
     <div class="product-card">
       <a class="product-card-link" href="products/${p.slug}.html">
         <div class="product-thumb">
           <div class="product-badges-right">
-            <span class="badge badge-orange">${p.badge}</span>
-            ${updatedHTML}
+            ${categoryBadgeHTML}
           </div>
           <div class="device-screen">
             ${bestSellerHTML}
+            ${updatedHTML}
             <div class="device-display">${renderDashboard(p.type)}</div>
           </div>
           <div class="device-base"></div>
