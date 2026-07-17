@@ -940,13 +940,14 @@ p {
   padding: 5px 12px;
 }
 
-/* Vòng 89 — HUỶ vòng 88: khách CẤM tăng riêng padding-bottom ("vươn dài
-   xuống") — vị trí `.product-badges-right` (top:18px) đã đúng, KHÔNG cần
-   "Cập nhật" vươn thêm gì cả. Khách muốn "Cập nhật" giống 100% "Bán chạy" —
-   dùng ĐÚNG cùng 1 padding (5px 12px, không thêm bottom riêng). */
+/* Vòng 92 — HUỶ vòng 89: khách yêu cầu thu nhỏ RIÊNG "Cập nhật" (khác "Bán
+   chạy", không đụng rule đó) — giảm `font-size:9px→8px`, `padding:5px 12px→
+   3px 9px`, để mép dưới của nó gần ngang hàng với mép dưới "Bán chạy" hơn,
+   đồng thời khép bớt khoảng trắng/viền đen còn hở quanh nhãn danh mục/khung
+   mockup. */
 .product-thumb .badge-update {
-  font-size: 9px;
-  padding: 5px 12px;
+  font-size: 8px;
+  padding: 3px 9px;
 }
 
 /* Bọc badge danh mục + "Cập nhật". Vòng 78: đưa nhãn danh mục về ĐÚNG VỊ TRÍ
