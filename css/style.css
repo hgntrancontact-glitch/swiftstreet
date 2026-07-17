@@ -966,16 +966,8 @@ p {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
-/* Vòng 108: "File kế hoạch" phải đè TRỌN VẸN lên "Cập nhật" (đang lấn nhẹ lên
-   góc dưới-phải của nó) — khách CẤM dịch vị trí (top/right) của cả 2 nhãn,
-   nên xử lý bằng cách tăng KÍCH THƯỚC (padding-bottom) của riêng "File kế
-   hoạch", CHỈ khi thẻ đó có "Cập nhật" (dùng `:has()`, không ảnh hưởng Travel
-   Planner/Shop Admin/Hotel & Homestay Manager — các thẻ không có "Cập nhật"
-   vẫn giữ nguyên kích thước gốc). Vị trí/neo (`top:18px;right:16px`) không
-   đổi — chỉ hộp của nhãn to ra để che phủ nhiều hơn từ đúng điểm neo cũ. */
-.product-thumb:has(.badge-update) .product-badges-right .badge-orange {
-  padding-bottom: 10px;
-}
+/* Vòng 109 — HUỶ vòng 108: khách KHÔNG yêu cầu tăng kích thước — bỏ hẳn rule
+   này. Không đổi vị trí, không đổi kích thước bất kỳ nhãn nào nữa. */
 
 /* Vòng 59 — SỬA LỖI GỐC: đã XOÁ HẲN rule tăng riêng `padding-top` cho card có
    "Cập nhật" (từng là 60px ở vòng 57, 52px ở vòng 58). Lý do: `.product-grid`
