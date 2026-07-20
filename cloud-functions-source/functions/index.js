@@ -421,15 +421,17 @@ async function xuLyDonHangSauDuyet(maDon) {
     const slugChinh = (donHang.san_pham && donHang.san_pham[0] && donHang.san_pham[0].slug) || null;
     const fileIdMau = slugChinh && FILE_MAU_THEO_SLUG[slugChinh];
     if (isCloudFnReady_(AUTOMATION_CONTROLLER_URL) && fileIdMau && !fileIdMau.startsWith("ĐIỀN_") && !THU_MUC_DICH_GIAO_HANG_ID.startsWith("ĐIỀN_")) {
-      // Vòng 119 — tên bản copy PHẢI bắt đầu bằng "SwiftCopy.Drive" (hardcode, không dựa vào
-      // `tenGoi` vì tên đó có thể là "SwiftCopy.Drive — Basic"/"— Premium Team..." tuỳ gói) để
-      // khách dễ nhận diện đây là ứng dụng của Swiftstreet ngay trong Drive/Apps Script của họ.
-      const tenKhachChoTenFile = (donHang.khach && donHang.khach.ten) || (donHang.khach && donHang.khach.email) || "Khách hàng";
+      // Vòng 120 — HUỶ MỘT PHẦN vòng 119: khách chỉ ra dùng TÊN khách hàng dễ trùng (2 người
+      // trùng tên là bình thường) — đổi sang EMAIL (định danh duy nhất, luôn có vì bắt buộc
+      // nhập ở form thanh toán) + MÃ ĐƠN HÀNG `maDon` (đã có sẵn, dạng "SS12345", đảm bảo duy
+      // nhất tuyệt đối vì được kiểm tra trùng lúc sinh ra — xem `sinhMaDonHangDuyNhat()`) — tên
+      // bản copy vẫn bắt đầu bằng "SwiftCopy.Drive" (hardcode, không dựa vào `tenGoi` vì tên đó
+      // có thể là "SwiftCopy.Drive — Basic"/"— Premium Team..." tuỳ gói).
       ketQuaController = await goiControllerGAS("copy_and_deploy", {
         fileIdMau,
         thuMucDichId: THU_MUC_DICH_GIAO_HANG_ID,
         email: donHang.khach.email,
-        tenBanSao: `SwiftCopy.Drive - ${tenKhachChoTenFile}`,
+        tenBanSao: `SwiftCopy.Drive - ${donHang.khach.email} - ${maDon}`,
       });
       // Chuyển quyền sở hữu NGAY sau khi deploy thành công (tách action riêng, xem Code.gs Controller).
       await goiControllerGAS("transfer_ownership", { fileId: ketQuaController.fileId, emailKhach: donHang.khach.email });
