@@ -421,10 +421,15 @@ async function xuLyDonHangSauDuyet(maDon) {
     const slugChinh = (donHang.san_pham && donHang.san_pham[0] && donHang.san_pham[0].slug) || null;
     const fileIdMau = slugChinh && FILE_MAU_THEO_SLUG[slugChinh];
     if (isCloudFnReady_(AUTOMATION_CONTROLLER_URL) && fileIdMau && !fileIdMau.startsWith("ĐIỀN_") && !THU_MUC_DICH_GIAO_HANG_ID.startsWith("ĐIỀN_")) {
+      // Vòng 119 — tên bản copy PHẢI bắt đầu bằng "SwiftCopy.Drive" (hardcode, không dựa vào
+      // `tenGoi` vì tên đó có thể là "SwiftCopy.Drive — Basic"/"— Premium Team..." tuỳ gói) để
+      // khách dễ nhận diện đây là ứng dụng của Swiftstreet ngay trong Drive/Apps Script của họ.
+      const tenKhachChoTenFile = (donHang.khach && donHang.khach.ten) || (donHang.khach && donHang.khach.email) || "Khách hàng";
       ketQuaController = await goiControllerGAS("copy_and_deploy", {
         fileIdMau,
         thuMucDichId: THU_MUC_DICH_GIAO_HANG_ID,
         email: donHang.khach.email,
+        tenBanSao: `SwiftCopy.Drive - ${tenKhachChoTenFile}`,
       });
       // Chuyển quyền sở hữu NGAY sau khi deploy thành công (tách action riêng, xem Code.gs Controller).
       await goiControllerGAS("transfer_ownership", { fileId: ketQuaController.fileId, emailKhach: donHang.khach.email });
